@@ -13,7 +13,9 @@ Copyright 2016 Aviata Inc.
    limitations under the License.
 
 March 31, 2016
-Many thanks to the original contributors who toiled long hours and weekends to make this happen. This contributor list is shared across all of our (cogswell.io) public SDKs and other works for our initial beta launch.
+Many thanks to the original contributors who toiled long hours and weekends
+to make this happen. This contributor list is shared across all of our
+(cogswell.io) public SDKs and other works for our initial beta launch.
 
 Original Project Contributors:
 Name | Github id
