@@ -11,21 +11,37 @@ instance of the service internally. You simply need to make sure your client aut
 components (access-key, client-salt, and client-secret) are available for each of your requests.
 
 ```swift
+import GambitSDK
+
+// Hex encoded access-key from one of your api keys in the Web UI.
 let accessKey: String = "0000"
+
+// Hex encoded client salt/secret pair acquired from /client_secret endpoint and 
+// associated with above access-key.
 let clientSalt: String = "0000"
 let clientSecret: String = "0000"
+
+// Acquire the Cogs SDK service singleton
+cogsService = GambitService.sharedGambitService
 ```
 
 ### POST /event
 This API route is used send an event to Cogs.
 
 ```swift
+// This will be sent along with messages so that you can identify the event which
+// "triggered" the message delivery.
 let eventName: String = "my-event"
+
+// The name of the namespace for which the event is destined.
 let namespace: String = "my-namespace"
+
+// The event attributes whose names and types should match the namespace schema.
 let attributes: [String: AnyObject] = [
   "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
 ]
 
+// Assemble the event
 let eventRequeset = GambitRequestEvent(
   accessKey: accessKey,
   clientSalt: clientSalt,
@@ -35,9 +51,8 @@ let eventRequeset = GambitRequestEvent(
   attributes: attributes
 )
 
-GambitService.registerPush(gambitRequest: eventRequeset, completionHandler: {
-  dat, rsp, err in
-
+// Send the event, and handle the response
+cogsService.registerPush(eventRequeset) { dat, rsp, err in
   if let error = err {
     // Handle error
   }
@@ -48,35 +63,45 @@ GambitService.registerPush(gambitRequest: eventRequeset, completionHandler: {
       // Handle non-200 status code
     }
   }
-})
+}
 ```
 
 ### POST /register_push
 This API route is used to register a device to receive push notifications for a particular topic within a namespace.
 
 ```swift
+// The iOS app identifier.
 let platformAppId: String = "com.example.app"
+
+// The app environment.
 let environment: String = "production"
+
+// The unique identifier for the device used to deliver APNS notifications.
 let udid: String = "0000"
-let eventName: String = "my-event"
+
+// The name of the namespace to which the device is registering for notifications
+// on the specified topic.
 let namespace: String = "my-namespace"
-let attributes: [String: AnyObject] = [
+
+// The primary key attributes which identify the topic, whose names and types 
+// must match the namespace schema.
+let pkAttributes: [String: AnyObject] = [
   "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
 ]
 
 let pushRequest = GambitRequestPush(
-  accessKey: accessKey,
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  platformAppID: platformAppId,
-  environment: environment,
-  namespace: namespace,
-  attributes: attributes
+  clientSalt,
+  clientSecret,
+  udid,
+  accessKey,
+  pkAttributes,
+  environment,
+  platformAppId,
+  namespace
 )
 
-GambitService.registerPush(gambitRequest: pushRequest, completionHandler: {
-  dat, rsp, err in
-
+// Send the push registration, and handle the response.
+cogsService.registerPush(pushRequest) { dat, rsp, err in
   if let error = err {
     // Handle error
   }
@@ -87,35 +112,46 @@ GambitService.registerPush(gambitRequest: pushRequest, completionHandler: {
       // Handle non-200 status code
     }
   }
-})
+}
 ```
 
 ### DELETE /unregister_push
 This API route is used to unregister a device from a particular namespace/topic pair to which it was previously registered for push notifications.
 
 ```swift
+// The iOS app identifier.
 let platformAppId: String = "com.example.app"
+
+// The app environment.
 let environment: String = "production"
+
+// The unique identifier for the device used to deliver APNS notifications.
 let udid: String = "0000"
-let eventName: String = "my-event"
+
+// The name of the namespace from which the device is unregistering for
+// notifications on the specified topic.
 let namespace: String = "my-namespace"
-let attributes: [String: AnyObject] = [
+
+// The primary key attributes which identify the topic, whose names and types 
+// must match the namespace schema.
+let pkAttributes: [String: AnyObject] = [
   "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
 ]
 
+// Assemble the push de-registration request
 let pushRequest = GambitRequestPush(
-  accessKey: accessKey,
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  platformAppID: platformAppId,
-  environment: environment,
-  namespace: namespace,
-  attributes: attributes
+  clientSalt,
+  clientSecret,
+  udid,
+  accessKey,
+  pkAttributes,
+  environment,
+  platformAppId,
+  namespace
 )
 
-GambitService.unregisterPush(gambitRequest: pushRequest, completionHandler: {
-  dat, rsp, err in
-
+// Send the push de-registration, and handle the response.
+cogsService.unregisterPush(pushRequest) { dat, rsp, err in
   if let error = err {
     // Handle error
   }
@@ -126,29 +162,36 @@ GambitService.unregisterPush(gambitRequest: pushRequest, completionHandler: {
       // Handle non-200 status code
     }
   }
-})
+}
 ```
 
 ### GET /message
 This API route is used to fetch the full content of a message by its ID. This is necessary since push notifications don't deliver the entire message content, only the message's ID.
 
 ```swift
+// The ID of the message to be fetched.
+let messageId: String = "00000000-0000-0000-0000-000000000000"
+
+// The namespace of the message to be fetched.
 let namespace: String = "my-namespace"
-let attributes: [String: AnyObject] = [
+
+// The attributes identifying the topic of the message.
+let pkAttributes: [String: AnyObject] = [
   "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
 ]
 
+// Assemble the message request.
 let messageRequest = GambitRequestPush(
-  accessKey: accessKey,
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  namespace: namespace,
-  attributes: attributes
+  accessKey,
+  clientSalt,
+  clientSecret,
+  messageId,
+  namespace,
+  pkAttributes
 )
 
-GambitService.message(gambitRequest: messageRequest, completionHandler: {
-  dat, rsp, err in
-
+// Send request the message, and handle the response.
+cogsService.message(messageRequest) { dat, rsp, err in
   if let error = err {
     // Handle error
   }
@@ -164,6 +207,6 @@ GambitService.message(gambitRequest: messageRequest, completionHandler: {
       // Handle non-200 status code
     }
   }
-})
+}
 ```
 
