@@ -43,12 +43,15 @@ let attributes: [String: AnyObject] = [
 
 // Assemble the event
 let eventRequeset = GambitRequestEvent(
-  accessKey: accessKey,
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  eventName: eventName,
-  namespace: namespace,
-  attributes: attributes
+  nil,
+  nil,
+  accessKey,
+  clientSalt,
+  clientSecret,
+  nil,
+  eventName,
+  namespace,
+  attributes
 )
 
 // Send the event, and handle the response
