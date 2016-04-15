@@ -51,7 +51,6 @@ GambitService.registerPush(gambitRequest: eventRequeset, completionHandler: {
       }
     }
   }
-    // TODO: handle error, response, and data
 })
 ```
 
@@ -94,7 +93,6 @@ GambitService.registerPush(gambitRequest: pushRequest, completionHandler: {
       }
     }
   }
-    // TODO: handle error, response, and data
 })
 ```
 
@@ -137,7 +135,6 @@ GambitService.unregisterPush(gambitRequest: pushRequest, completionHandler: {
       }
     }
   }
-    // TODO: handle error, response, and data
 })
 ```
 
@@ -174,7 +171,6 @@ GambitService.message(gambitRequest: messageRequest, completionHandler: {
       }
     }
   }
-    // TODO: handle error, response, and data
 })
 ```
 
