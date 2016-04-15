@@ -43,12 +43,9 @@ GambitService.registerPush(gambitRequest: eventRequeset, completionHandler: {
   }
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
-      if let data = dat {
-        // Handle successful request
-      }
-      else {
-        // Handle non-200 status code
-      }
+      // Handle successful request
+    } else {
+      // Handle non-200 status code
     }
   }
 })
@@ -85,12 +82,9 @@ GambitService.registerPush(gambitRequest: pushRequest, completionHandler: {
   }
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
-      if let data = dat {
-        // Handle successful request
-      }
-      else {
-        // Handle non-200 status code
-      }
+      // Handle successful request
+    } else {
+      // Handle non-200 status code
     }
   }
 })
@@ -127,12 +121,9 @@ GambitService.unregisterPush(gambitRequest: pushRequest, completionHandler: {
   }
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
-      if let data = dat {
-        // Handle successful request
-      }
-      else {
-        // Handle non-200 status code
-      }
+      // Handle successful request
+    } else {
+      // Handle non-200 status code
     }
   }
 })
@@ -164,11 +155,13 @@ GambitService.message(gambitRequest: messageRequest, completionHandler: {
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
       if let data = dat {
-        // Handle successful request
+        // Handle message body
       }
       else {
-        // Handle non-200 status code
+        // Handle no message body
       }
+    } else {
+      // Handle non-200 status code
     }
   }
 })
