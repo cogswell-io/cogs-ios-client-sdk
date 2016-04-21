@@ -91,7 +91,17 @@ cogsService.requestEvent(eventRequeset) { dat, rsp, err in
   }
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
-      // Handle successful request
+      if let data = dat {
+        do {
+            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            let parsedResponse = try GambitResponseEvent(json: json)
+            // Handle message content
+        } catch {
+            // Handle JSON parse error
+        }
+      } else {
+        // Handle no response data
+      }
     } else {
       // Handle non-200 status code
     }
@@ -140,7 +150,17 @@ cogsService.registerPush(pushRequest) { dat, rsp, err in
   }
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
-      // Handle successful request
+      if let data = dat {
+        do {
+            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            let parsedResponse = try GambitResponsePush(json: json)
+            // Handle message content
+        } catch {
+            // Handle JSON parse error
+        }
+      } else {
+        // Handle no response data
+      }
     } else {
       // Handle non-200 status code
     }
@@ -190,7 +210,17 @@ cogsService.unregisterPush(pushRequest) { dat, rsp, err in
   }
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
-      // Handle successful request
+      if let data = dat {
+        do {
+            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            let parsedResponse = try GambitResponsePush(json: json)
+            // Handle message content
+        } catch {
+            // Handle JSON parse error
+        }
+      } else {
+        // Handle no response data
+      }
     } else {
       // Handle non-200 status code
     }
@@ -231,10 +261,15 @@ cogsService.message(messageRequest) { dat, rsp, err in
   else if let response = rsp as? NSHTTPURLResponse {
     if response.statusCode == 200 {
       if let data = dat {
-        // Handle message body
-      }
-      else {
-        // Handle no message body
+        do {
+            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            let parsedResponse = try GambitResponseMessage(json: json)
+            // Handle message content
+        } catch {
+            // Handle JSON parse error
+        }
+      } else {
+        // Handle no response data
       }
     } else {
       // Handle non-200 status code
