@@ -76,19 +76,16 @@ let attributes: [String: AnyObject] = [
 
 // Assemble the event
 let eventRequeset = GambitRequestEvent(
-  nil,
-  nil,
-  accessKey,
-  clientSalt,
-  clientSecret,
-  nil,
-  eventName,
-  namespace,
-  attributes
+  accessKey: accessKey,
+  clientSalt: clientSalt,
+  clientSecret: clientSecret,
+  eventName: eventName,
+  namespace: namespace,
+  attributes: attributes
 )
 
 // Send the event, and handle the response
-cogsService.registerPush(eventRequeset) { dat, rsp, err in
+cogsService.requestEvent(eventRequeset) { dat, rsp, err in
   if let error = err {
     // Handle error
   }
@@ -126,14 +123,14 @@ let pkAttributes: [String: AnyObject] = [
 ]
 
 let pushRequest = GambitRequestPush(
-  clientSalt,
-  clientSecret,
-  udid,
-  accessKey,
-  pkAttributes,
-  environment,
-  platformAppId,
-  namespace
+  clientSalt: clientSalt,
+  clientSecret: clientSecret,
+  UDID: udid,
+  accessKey: accessKey,
+  attributes: pkAttributes,
+  environment: environment,
+  platformAppID: platformAppId,
+  namespace: namespace
 )
 
 // Send the push registration, and handle the response.
@@ -176,14 +173,14 @@ let pkAttributes: [String: AnyObject] = [
 
 // Assemble the push de-registration request
 let pushRequest = GambitRequestPush(
-  clientSalt,
-  clientSecret,
-  udid,
-  accessKey,
-  pkAttributes,
-  environment,
-  platformAppId,
-  namespace
+  clientSalt: clientSalt,
+  clientSecret: clientSecret,
+  UDID: udid,
+  accessKey: accessKey,
+  attributes: pkAttributes,
+  environment: environment,
+  platformAppID: platformAppId,
+  namespace: namespace
 )
 
 // Send the push de-registration, and handle the response.
@@ -218,12 +215,12 @@ let pkAttributes: [String: AnyObject] = [
 
 // Assemble the message request.
 let messageRequest = GambitRequestPush(
-  accessKey,
-  clientSalt,
-  clientSecret,
-  messageId,
-  namespace,
-  pkAttributes
+  accessKey: accessKey,
+  clientSalt: clientSalt,
+  clientSecret: clientSecret,
+  token: messageId,
+  namespace: namespace,
+  attributes: pkAttributes
 )
 
 // Send request the message, and handle the response.
