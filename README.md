@@ -16,7 +16,7 @@ The Swift Cogs client SDK for the Cogs real-time message brokering system.
 * Build the framework
 * Navigate to the derived data folder and copy GambitSDK.framework and add it to you project
 
-You can view a demo example using the SDK here: https://github.com/cogswell-io/cogs-ios-client-sdk
+You can view a demo example app using the SDK here: https://github.com/cogswell-io/cogs-ios-example-app
 
 ### Submodule
 
