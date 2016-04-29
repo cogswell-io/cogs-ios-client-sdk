@@ -1,4 +1,4 @@
-# Cogs iOS Example App for Cogs SDK
+# Cogs iOS Swift Client SDK
 
 ## Description
 The Swift Cogs client SDK for the Cogs real-time message brokering system.
