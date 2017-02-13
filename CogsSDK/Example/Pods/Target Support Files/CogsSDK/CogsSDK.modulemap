@@ -1,0 +1,6 @@
+framework module CogsSDK {
+  umbrella header "CogsSDK-umbrella.h"
+
+  export *
+  module * { export * }
+}
