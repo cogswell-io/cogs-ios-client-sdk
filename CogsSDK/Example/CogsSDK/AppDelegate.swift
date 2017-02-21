@@ -79,7 +79,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     #else
         GambitService.sharedGambitService.baseURL = nil
         CogsPubSubService.sharedService.baseWSURL = nil
-    #endif
 
     // Register the supported notification types.
     let types: UIUserNotificationType = [.badge, .sound, .alert]

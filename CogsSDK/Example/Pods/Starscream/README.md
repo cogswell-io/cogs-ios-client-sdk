@@ -11,6 +11,10 @@ It's Objective-C counter part can be found here: [Jetfire](https://github.com/ac
 - TLS/WSS support.
 - Simple concise codebase at just a few hundred LOC.
 
+## Swift 2.3
+
+See release/tag 1.1.4 for Swift 2.3 support.
+
 ## Example
 
 First thing is to import the framework. See the Installation instructions on how to add the framework to your project.
