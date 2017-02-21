@@ -18,7 +18,7 @@ struct AuthKey {
         if keyParts.count != 3 {
             assertionFailure("Invalid format for project key.")
         }
-      
+
         if !AuthKey.validKeyParts.contains(keyParts[0]) {
             assertionFailure("Invalid permission prefix for project key. The valid prefixes are \(AuthKey.validKeyParts)")
         }
