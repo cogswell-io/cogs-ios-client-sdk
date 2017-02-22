@@ -64,6 +64,7 @@
 		41D9E82159C56F49755C1D7AED4C15C4 /* ChaCha20.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B3893FAEC2BCAF3CAA6DB98C5486CA /* ChaCha20.swift */; };
 		4491AB9D1C3FA39D2EA11CF20A1AB790 /* CFB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3118A2F3041FA84030B1025487847D3 /* CFB.swift */; };
 		44D2A1CC1E5C49EA00DE4631 /* PubSubResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44D2A1CB1E5C49EA00DE4631 /* PubSubResponse.swift */; };
+		44D2A1D01E5D854B00DE4631 /* PubSubOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44D2A1CF1E5D854B00DE4631 /* PubSubOptions.swift */; };
 		458A8CA17CDBD786466D043A3287F762 /* Bit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74AA91DCA46E2F9CF161C4900E235C32 /* Bit.swift */; };
 		45BBBE31803170FFB2EE41963A9F2837 /* World.h in Headers */ = {isa = PBXBuildFile; fileRef = C9F616F87561ECFA0A26E9FABAA8F752 /* World.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		469E9C3ED9FD6009F7C9AAF9E537E212 /* Nimble.h in Headers */ = {isa = PBXBuildFile; fileRef = D2E6D32C79D5365D3EC5F801D9235954 /* Nimble.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -313,6 +314,7 @@
 		3F512495F7AEA9C48A48E6045482308A /* Cryptors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Cryptors.swift; path = Sources/CryptoSwift/Cryptors.swift; sourceTree = "<group>"; };
 		42EA70197AEAC86BAAB2E9FB285BC532 /* CTR.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CTR.swift; path = Sources/CryptoSwift/BlockMode/CTR.swift; sourceTree = "<group>"; };
 		44D2A1CB1E5C49EA00DE4631 /* PubSubResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubResponse.swift; sourceTree = "<group>"; };
+		44D2A1CF1E5D854B00DE4631 /* PubSubOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubOptions.swift; sourceTree = "<group>"; };
 		4865663620853DACD0E5AB0B97F40A74 /* Nimble-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Nimble-umbrella.h"; sourceTree = "<group>"; };
 		49BC8A7A562DAF046A914FF185B027BA /* Pods-CogsSDK_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-CogsSDK_Example-resources.sh"; sourceTree = "<group>"; };
 		4A023832B62A8AA89AA53ED9E03C4270 /* Blowfish.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Blowfish.swift; path = Sources/CryptoSwift/Blowfish.swift; sourceTree = "<group>"; };
@@ -650,6 +652,7 @@
 				B6864112033D038DBC019DC4133C1846 /* SocketAuthentication.swift */,
 				ECA53A922298075D6579A928DA3B2344 /* AuthKey.swift */,
 				44D2A1CB1E5C49EA00DE4631 /* PubSubResponse.swift */,
+				44D2A1CF1E5D854B00DE4631 /* PubSubOptions.swift */,
 			);
 			name = PubSub;
 			sourceTree = "<group>";
@@ -1395,6 +1398,7 @@
 				44D2A1CC1E5C49EA00DE4631 /* PubSubResponse.swift in Sources */,
 				6D018F5DB511762951528AA4B1DABEFD /* AuthKey.swift in Sources */,
 				0DEA5CF372431A8FB1BFD356B4C944FB /* CogsPubSubService.swift in Sources */,
+				44D2A1D01E5D854B00DE4631 /* PubSubOptions.swift in Sources */,
 				7E18DA519310A7E878036BD6991DF2F9 /* CogsSDK-dummy.m in Sources */,
 				41B03B0CF87264E4A588EFCF1EF08927 /* Date+Utils.swift in Sources */,
 				8BBDF4282AF8EDA912610C9C8E2B635A /* GambitRequest.swift in Sources */,

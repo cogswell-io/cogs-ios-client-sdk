@@ -8,7 +8,7 @@ class SocketAuthentication {
     ///
     /// - Parameter keys: passed keys
     /// - Returns: payloadBase64 and payloadHmac strings
-    static func authenticate(keys: [String]) -> (payloadBase64: String, payloadHmac: String) {
+    static func authenticate(keys: [String], sessionUUID: String?) -> (payloadBase64: String, payloadHmac: String) {
 
         if keys.isEmpty {
             assertionFailure("No keys supplied")
@@ -28,11 +28,15 @@ class SocketAuthentication {
         let identity: String  = dict.first!.value.identity
         let timestamp: String = Date().toISO8601
 
-        let params: [String: Any] = [
+        var params: [String: Any] = [
             "identity": identity,
             "permissions": permissions,
             "security_timestamp": timestamp
         ]
+
+        if let id = sessionUUID {
+            params["session_uuid"] = id
+        }
 
         let payloadData: Data = try! JSONSerialization.data(withJSONObject: params, options: .init(rawValue: 0))
         let payload = String(NSString(data: payloadData, encoding: String.Encoding.utf8.rawValue)!)

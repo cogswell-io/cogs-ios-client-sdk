@@ -2,7 +2,7 @@
 import Foundation
 
 /// Base cogs pubsub response class
-open class PubSubResponse: GambitResponse {
+open class PubSubResponse: GambitResponse, CustomStringConvertible {
 
     open let seq: Int
     open let action: String
@@ -24,6 +24,16 @@ open class PubSubResponse: GambitResponse {
         self.seq    = seq
         self.action = action
         self.code   = code
+    }
+
+    open var description: String {
+        var s = ""
+
+        s += "seq: \(self.seq)\n"
+        s += "action: \(self.action)\n"
+        s += "code: \(self.code)"
+        
+        return s
     }
 }
 
@@ -112,6 +122,43 @@ open class PubSubMessage: GambitResponse {
         self.time    = time
         self.channel = channel
         self.message = message
+    }
+}
+
+open class PubSubErrorResponse: GambitResponse {
+
+    open let seq: Int
+    open let action: String
+    open let code: Int
+    open let message: String
+    open let details: String
+
+    public required init(json: JSON) throws {
+        guard let seq = json["seq"] as? Int else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let action = json["action"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let code = json["code"] as? Int else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let message = json["message"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let details = json["details"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        self.seq     = seq
+        self.action  = action
+        self.code    = code
+        self.message = message
+        self.details = details
     }
 }
 

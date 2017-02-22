@@ -75,10 +75,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // set API_BASE_URL
     #if DEBUG
         GambitService.sharedGambitService.baseURL = nil
-        CogsPubSubService.sharedService.baseWSURL = nil
     #else
         GambitService.sharedGambitService.baseURL = nil
-        CogsPubSubService.sharedPubSubService.baseWSURL = nil
     #endif
 
     // Register the supported notification types.
