@@ -33,17 +33,11 @@ public class ConnectionHandle {
         }
         
         webSocket.onDisconnect = { (error: NSError?) in
-//<<<<<<< HEAD
-//            self.onClose?(error)
-//=======
-//            
-//            if (error != nil) {
-//                self.onError?(error)
-//            }
-//            else {
-//               self.onClose?()
-//            }
-//>>>>>>> c57d02cf0e3f816d1b6d2ee50f8aa9c74216931b
+            if let err = error, err.code != 1000 {
+                self.onClose?(error)
+            }
+
+            self.onClose?(nil)
 
             if self.options.autoReconnect {
                 self.connect(sessionUUID: self.sessionUUID)
@@ -51,24 +45,30 @@ public class ConnectionHandle {
         }
 
         webSocket.onText = { (text: String) in
-            DialectValidator.parseAndAutoValidate(record: text, completionHandler: { (object, error, responseError) in
+            DialectValidator.parseAndAutoValidate(record: text, completionHandler: { (json, error, responseError) in
                 if let error = error {
                     self.onError?(error)
                 } else if let respError = responseError {
                     self.onErrorResponse?(respError)
-                } else if let obj = object {
-                    if let message = object as? PubSubMessage {
-                        self.onMessage?(message)
-                    } else if let sessionUUID = object as? PubSubResponseUUID {
+                } else if let j = json {
+                    do {
+                        let sessionUUID = try PubSubResponseUUID(json: j)
+
                         if sessionUUID.uuid == self.sessionUUID {
                             self.onReconnect?()
+                            self.onRawRecord?(text)
                         } else {
                             self.onNewSession?(sessionUUID.uuid)
                         }
 
                         self.sessionUUID = sessionUUID.uuid
-                    } else {
-                        self.onRawRecord?(text)
+                    } catch {
+                        do {
+                            let message = try PubSubMessage(json: j)
+                            self.onMessage?(message)
+                        } catch {
+                            self.onRawRecord?(text)
+                        }
                     }
                 }
             })
@@ -102,6 +102,7 @@ public class ConnectionHandle {
     /// Getting session UUID
     public func getSessionUuid() {
         sequence += 1
+
         let params: [String: Any] = [
             "seq": sequence ,
             "action": "session-uuid"
@@ -115,6 +116,7 @@ public class ConnectionHandle {
     /// - Parameter channelName: the name of the channel to subscribe
     public func subscribe(channelName: String) {
         sequence += 1
+
         let params: [String: Any] = [
             "seq": sequence,
             "action": "subscribe",
@@ -142,6 +144,7 @@ public class ConnectionHandle {
     /// Unsubscribing from all channels
     public func unsubscribeAll() {
         sequence += 1
+
         let params: [String: Any] = [
             "seq": sequence,
             "action": "unsubscribe-all"
@@ -167,8 +170,9 @@ public class ConnectionHandle {
     ///   - channelName: the channel where message will be published
     ///   - message: the message to publish
     ///   - acknowledgement: acknowledgement for the published message
-    public func publish(channelName: String, message: String, acknowledgement: Bool? = false) {
+    public func publish(channelName: String, message: String, acknowledgement: Bool = false) {
         sequence += 1
+
         let params: [String: Any] = [
             "seq": sequence,
             "action": "pub",
@@ -198,21 +202,9 @@ public class ConnectionHandle {
         
         do {
             let data: Data = try JSONSerialization.data(withJSONObject: params, options: .init(rawValue: 0))
-            webSocket.write(data: data) { _ in
-                self.sequence = params["seq"] as! Int
-            }
+            webSocket.write(data: data)
         } catch {
             assertionFailure(error.localizedDescription)
-        }
-    }
-    
-    private func parseResponse(_ response: String) -> JSON? {
-        do {
-            let json = try JSONSerialization.jsonObject(with: response.data(using: String.Encoding.utf8)!, options: .allowFragments) as JSON
-            
-            return json
-        } catch {
-            return nil
         }
     }
 }

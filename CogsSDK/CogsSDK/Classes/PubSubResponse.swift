@@ -209,9 +209,4 @@ open class PubSubInvalidRequestResponse: PubSubErrorResponse {
     }
 }
 
-public typealias RawRecord             = String
-
-typealias SubscribeResponse            = PubSubResponseSubscription
-typealias UnSubscribeResponse          = PubSubResponseSubscription
-typealias UnSubscribeAllResponse       = PubSubResponseSubscription
-typealias ListAllSubscriptionsResponse = PubSubResponseSubscription
+public typealias RawRecord                    = String
