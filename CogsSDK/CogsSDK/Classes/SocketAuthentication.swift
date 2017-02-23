@@ -2,7 +2,7 @@
 import Foundation
 import CryptoSwift
 
-class SocketAuthentication {
+final class SocketAuthentication {
 
     /// Compute the auth hmac for the specified keys.
     ///

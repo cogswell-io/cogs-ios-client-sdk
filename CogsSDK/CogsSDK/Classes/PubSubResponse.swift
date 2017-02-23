@@ -1,6 +1,15 @@
 
 import Foundation
 
+public protocol PubSubErrorResponse {
+    var code: Int { get }
+    var action: String { get }
+    var message: String { get}
+    var details: String { get }
+
+    init(json: JSON) throws
+}
+
 /// Base cogs pubsub response class
 open class PubSubResponse: GambitResponse, CustomStringConvertible {
 
@@ -125,7 +134,8 @@ open class PubSubMessage: GambitResponse {
     }
 }
 
-open class PubSubErrorResponse: GambitResponse {
+// Error responces
+open class PubSubGeneralErrorResponse: PubSubErrorResponse {
 
     open let seq: Int
     open let action: String
@@ -161,6 +171,45 @@ open class PubSubErrorResponse: GambitResponse {
         self.details = details
     }
 }
+
+open class PubSubInvalidRequestResponse: PubSubErrorResponse {
+
+    open let action: String
+    open let code: Int
+    open let message: String
+    open let details: String
+    open let request: String
+
+    public required init(json: JSON) throws {
+        guard let action = json["action"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let code = json["code"] as? Int else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let message = json["message"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let details = json["details"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let request = json["bad_request"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        self.action  = action
+        self.code    = code
+        self.message = message
+        self.details = details
+        self.request = request
+    }
+}
+
+public typealias RawRecord             = String
 
 typealias SubscribeResponse            = PubSubResponseSubscription
 typealias UnSubscribeResponse          = PubSubResponseSubscription

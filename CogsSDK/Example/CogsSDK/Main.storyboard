@@ -702,19 +702,19 @@ for example:
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="5HU-Ah-XLl">
                                 <rect key="frame" x="16" y="72" width="344" height="132"/>
                                 <subviews>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="URL" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="obc-8p-E6e">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="wss://gamqa-api.aviatainc.com/pubsub" borderStyle="roundedRect" placeholder="URL" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="obc-8p-E6e">
                                         <rect key="frame" x="0.0" y="0.0" width="344" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Read key" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8US-MU-WrX">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="R-6481112d4758dc51c59360ca7124742b-8ee36ea80f02ff9762f9b4dc62e79e5c8c5e23c11acd9beccad99fee10bfb690" borderStyle="roundedRect" placeholder="Read key" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8US-MU-WrX">
                                         <rect key="frame" x="0.0" y="34" width="344" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Write key" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Oof-ZB-Q0M">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="W-6481112d4758dc51c59360ca7124742b-e15d6a5a1bd755b5a37abcb6f10230e44bf08a05196881b70adf28112f80dc83" borderStyle="roundedRect" placeholder="Write key" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Oof-ZB-Q0M">
                                         <rect key="frame" x="0.0" y="68" width="344" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -722,6 +722,7 @@ for example:
                                     </textField>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Admin key" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HLW-2J-wMH">
                                         <rect key="frame" x="0.0" y="102" width="344" height="30"/>
+                                        <string key="text">A-6481112d4758dc51c59360ca7124742b-6f00499e82c694d97d3096f37ed63e136f86170c99ce736a869558806f8e42f42e4b158a4093ead428bb36b36dbff1623f7ca784e079c3783382333b5db58e51</string>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
