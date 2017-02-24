@@ -24,6 +24,16 @@ class WSSMessagingVC: ViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if let path = Bundle.main.path(forResource: "Keys", ofType: "plist") {
+
+            if let dict = NSDictionary(contentsOfFile: path) as? [String: Any] {
+                self.urlTextField.text = dict["url"] as? String
+                self.readKeyTextField.text = dict["readKey"] as? String
+                self.writeKeyTextField.text = dict["writeKey"] as? String
+                self.adminKeyTextField.text = dict["adminKey"] as? String
+            }
+        }
     }
 
     @IBAction func connectWS(_ sender: UIBarButtonItem) {
@@ -68,6 +78,7 @@ class WSSMessagingVC: ViewController {
         }
 
         connectionHandler.onRawRecord = { (record) in
+            print (record)
             do {
                  let json = try JSONSerialization.jsonObject(with: record.data(using: String.Encoding.utf8)!, options: .allowFragments) as JSON
 
@@ -85,10 +96,10 @@ class WSSMessagingVC: ViewController {
                             self.channelListLabel.text = subscription.channels.joined(separator: ", ")
                         }
                     } catch {
-                        let error = NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-                        DispatchQueue.main.async {
-                            self.openAlertWithMessage(message: error.localizedDescription, title: "PubSub Error")
-                        }
+//                        let error = NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+//                        DispatchQueue.main.async {
+//                            //self.openAlertWithMessage(message: error.localizedDescription, title: "PubSub Error")
+//                        }
                     }
                 }
             } catch {
@@ -114,7 +125,7 @@ class WSSMessagingVC: ViewController {
 
         connectionHandler.onErrorResponse = { (responseError) in
             DispatchQueue.main.async {
-                self.openAlertWithMessage(message: responseError.message, title: "PubSub Response Error")
+                self.openAlertWithMessage(message: "\(responseError.message) \n \(responseError.code)", title: "PubSub Response Error")
             }
         }
         
@@ -130,46 +141,60 @@ class WSSMessagingVC: ViewController {
     @IBAction func getSessionUUID(_ sender: UIButton) {
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.getSessionUuid()
+        connectionHandler.getSessionUuid {json, error in
+            print(json as Any)
+        }
     }
 
     @IBAction func subscribeToChannel(_ sender: UIButton) {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.subscribe(channelName: channelName)
+        connectionHandler.subscribe(channelName: channelName){ json, error in
+            print(json as Any)
+        }
     }
 
     @IBAction func unsubscribeFromCahnnel(_ sender: UIButton) {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.unsubsribe(channelName: channelName)
+        connectionHandler.unsubsribe(channelName: channelName){ json, error in
+            print(json as Any)
+        }
     }
 
     @IBAction func getAllSubscriptions(_ sender: UIButton) {
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.listSubscriptions()
+        connectionHandler.listSubscriptions(){ json, error in
+            print(json as Any)
+        }
     }
 
     @IBAction func unsubscribeFromAll(_ sender: UIButton) {
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.unsubscribeAll()
+        connectionHandler.unsubscribeAll(){ json, error in
+            print(json as Any)
+        }
     }
 
     @IBAction func publishMessage(_ sender: UIButton) {
-        guard let channel = channelNameTextField.text, !channel.isEmpty else { return }
+        guard let channel = messageChannelTextField.text, !channel.isEmpty else { return }
         let messageText = messageTextView.text!
         let ack = ackSwitch.isOn
 
         guard (connectionHandler) != nil else { return }
 
         if ack {
-            connectionHandler.publishWithAck(channelName: channel, message: messageText)
+            connectionHandler.publishWithAck(channelName: channel, message: messageText){ json, error in
+                print(json as Any)
+            }
         } else {
-            connectionHandler.publish(channelName: channel, message: messageText)
+            connectionHandler.publish(channelName: channel, message: messageText){ json, error in
+                print(json as Any)
+            }
         }
     }
 
@@ -179,5 +204,15 @@ class WSSMessagingVC: ViewController {
         actionCtrl.addAction(action)
 
         self.present(actionCtrl, animated: true, completion: nil)
+    }
+}
+
+//MARK: UITextFieldDelegate
+
+extension WSSMessagingVC: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

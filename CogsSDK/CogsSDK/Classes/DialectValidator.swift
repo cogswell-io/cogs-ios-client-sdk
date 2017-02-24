@@ -3,7 +3,7 @@ import Foundation
 
 final class DialectValidator {
 
-    static func parseAndAutoValidate(record: String, completionHandler: @escaping (JSON?, Error?, PubSubErrorResponse?) -> Void) {
+    static func parseAndAutoValidate(record: String, completionHandler: @escaping (JSON?, Error?, PubSubResponseError?) -> Void) {
         do {
             let json = try JSONSerialization.jsonObject(with: record.data(using: String.Encoding.utf8)!, options: .allowFragments) as JSON
             self.autoValidate(json, completionHandler: { (object, error, errorResponse) in
@@ -15,13 +15,18 @@ final class DialectValidator {
         }
     }
 
-    private static func autoValidate(_ json: JSON, completionHandler: @escaping (JSON?, Error?, PubSubErrorResponse?) -> Void) {
+    private static func autoValidate(_ json: JSON, completionHandler: @escaping (JSON?, Error?, PubSubResponseError?) -> Void) {
         do {
-            let responseError = try PubSubGeneralErrorResponse(json: json)
+            let generalError = try PubSubGeneralErrorResponse(json: json)
 
-            completionHandler(nil, nil, responseError)
+            completionHandler(nil, nil, generalError)
         } catch {
-            completionHandler(json, nil, nil)
+            do {
+                let invalidRequestError = try PubSubBadRequestResponse(json: json)
+                completionHandler(nil, nil, invalidRequestError)
+            } catch {
+                completionHandler(json, nil, nil)
+            }
         }
     }
 }

@@ -1,15 +1,6 @@
 
 import Foundation
 
-public protocol PubSubErrorResponse {
-    var code: Int { get }
-    var action: String { get }
-    var message: String { get}
-    var details: String { get }
-
-    init(json: JSON) throws
-}
-
 /// Base cogs pubsub response class
 open class PubSubResponse: GambitResponse, CustomStringConvertible {
 
@@ -134,78 +125,78 @@ open class PubSubMessage: GambitResponse {
     }
 }
 
-// Error responces
-open class PubSubGeneralErrorResponse: PubSubErrorResponse {
 
-    open let seq: Int
+/// Base cogs pubsub error response class
+open class PubSubResponseError: GambitResponse {
+
     open let action: String
     open let code: Int
     open let message: String
     open let details: String
+
+    public required init(json: JSON) throws {
+
+        guard let action = json["action"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let code = json["code"] as? Int else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let message = json["message"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        guard let details = json["details"] as? String else {
+            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        }
+
+        self.action   = action
+        self.code     = code
+        self.message  = message
+        self.details  = details
+    }
+}
+
+// MARK: General error response
+open class PubSubGeneralErrorResponse: PubSubResponseError {
+
+    open let sequence: Int
 
     public required init(json: JSON) throws {
         guard let seq = json["seq"] as? Int else {
             throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
         }
 
-        guard let action = json["action"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
+        self.sequence = seq
 
-        guard let code = json["code"] as? Int else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
+        do {
+            try super.init(json: json)
+        } catch {
+            throw error
         }
-
-        guard let message = json["message"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        guard let details = json["details"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        self.seq     = seq
-        self.action  = action
-        self.code    = code
-        self.message = message
-        self.details = details
     }
 }
 
-open class PubSubInvalidRequestResponse: PubSubErrorResponse {
+// Bad request response
+open class PubSubBadRequestResponse: PubSubResponseError {
 
-    open let action: String
-    open let code: Int
-    open let message: String
-    open let details: String
-    open let request: String
+    open let request: [String: Any]
 
     public required init(json: JSON) throws {
-        guard let action = json["action"] as? String else {
+
+        guard let request = json["bad_request"] as? [String: Any] else {
             throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
         }
 
-        guard let code = json["code"] as? Int else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        guard let message = json["message"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        guard let details = json["details"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        guard let request = json["bad_request"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        self.action  = action
-        self.code    = code
-        self.message = message
-        self.details = details
         self.request = request
+
+        do {
+            try super.init(json: json)
+        } catch {
+            throw error
+        }
     }
 }
 

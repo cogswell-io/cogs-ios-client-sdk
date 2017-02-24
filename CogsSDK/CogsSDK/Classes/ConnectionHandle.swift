@@ -4,7 +4,7 @@ import Starscream
 
 public class ConnectionHandle {
    
-    private let defaultReconnectDelay: Int = 5000
+    private let defaultReconnectDelay: Double = 5
     
     private var webSocket : WebSocket
     private var options: PubSubOptions
@@ -12,13 +12,17 @@ public class ConnectionHandle {
     private var sessionUUID: String?
     private var sequence: Int = 0
     
+    private var handlerDispatcher = HandlersCache()
+    private var callbackQueue = DispatchQueue.main
+    
     public var onNewSession: ((String) -> ())?
     public var onReconnect: (() -> ())?
     public var onClose: ((Error?) -> ())?
     public var onError: ((Error) -> ())?
-    public var onErrorResponse: ((PubSubErrorResponse) -> ())?
+    public var onErrorResponse: ((PubSubResponseError) -> ())?
     public var onMessage: ((PubSubMessage) -> ())?
     public var onRawRecord: ((RawRecord) -> ())?
+    
     
     public init(keys: [String], options: PubSubOptions) {
         
@@ -29,22 +33,24 @@ public class ConnectionHandle {
         webSocket.timeout = self.options.connectionTimeout
         
         webSocket.onConnect = {
-            self.getSessionUuid()
+            self.getSessionUuid{ _,_ in }
         }
         
         webSocket.onDisconnect = { (error: NSError?) in
             if let err = error, err.code != 1000 {
                 self.onClose?(error)
+            } else {
+                self.onClose?(nil)
             }
 
-            self.onClose?(nil)
-
             if self.options.autoReconnect {
-                self.connect(sessionUUID: self.sessionUUID)
+                Timer.scheduledTimer(timeInterval: self.defaultReconnectDelay, target: self, selector: #selector(self.reconnect(_:)), userInfo: nil, repeats: false)
             }
         }
 
         webSocket.onText = { (text: String) in
+            self.onRawRecord?(text)
+            
             DialectValidator.parseAndAutoValidate(record: text, completionHandler: { (json, error, responseError) in
                 if let error = error {
                     self.onError?(error)
@@ -56,7 +62,7 @@ public class ConnectionHandle {
 
                         if sessionUUID.uuid == self.sessionUUID {
                             self.onReconnect?()
-                            self.onRawRecord?(text)
+                            //self.onRawRecord?(text)
                         } else {
                             self.onNewSession?(sessionUUID.uuid)
                         }
@@ -64,11 +70,22 @@ public class ConnectionHandle {
                         self.sessionUUID = sessionUUID.uuid
                     } catch {
                         do {
-                            let message = try PubSubMessage(json: j)
+                            let message = try PubSubMessage(json: j) 
                             self.onMessage?(message)
                         } catch {
-                            self.onRawRecord?(text)
+                            //self.onRawRecord?(text)
                         }
+                    }
+                }
+                
+                //call method's completion handler
+                self.callbackQueue.async { [weak self] in
+                    guard let weakSelf = self else { return }
+                    
+                    if let seq = json?["seq"] as? Int , let completion = weakSelf.handlerDispatcher.object(forKey: seq as! Int),
+                        let closure = completion.closure {
+                            closure(json, responseError)
+                            weakSelf.handlerDispatcher.removeObject(forKey: seq as! Int)
                     }
                 }
             })
@@ -96,15 +113,19 @@ public class ConnectionHandle {
     public func close() {
         if webSocket.isConnected {
             webSocket.disconnect()
+            handlerDispatcher.removeAllObjects()
         }
     }
     
     /// Getting session UUID
-    public func getSessionUuid() {
-        sequence += 1
-
+    public func getSessionUuid(completion: @escaping CompletionHandler) {
+        let seq = sequence + 1
+        sequence = seq
+        
+        handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
         let params: [String: Any] = [
-            "seq": sequence ,
+            "seq": seq ,
             "action": "session-uuid"
         ]
 
@@ -114,8 +135,11 @@ public class ConnectionHandle {
     /// Subscribing to a channel
     ///
     /// - Parameter channelName: the name of the channel to subscribe
-    public func subscribe(channelName: String) {
-        sequence += 1
+    public func subscribe(channelName: String, completion: @escaping CompletionHandler) {
+        let seq = sequence + 1
+        sequence = seq
+        
+        handlerDispatcher.setObject(Handler(completion), forKey: seq)
 
         let params: [String: Any] = [
             "seq": sequence,
@@ -129,8 +153,11 @@ public class ConnectionHandle {
     /// Unsubscribing from a channel
     ///
     /// - Parameter channelName: the name of the channel to unsubscribe from
-    public func unsubsribe(channelName: String) {
-        sequence += 1
+    public func unsubsribe(channelName: String, completion: @escaping CompletionHandler) {
+        let seq = sequence + 1
+        sequence = seq
+        
+        handlerDispatcher.setObject(Handler(completion), forKey: seq)
 
         let params: [String: Any] = [
             "seq": sequence,
@@ -142,8 +169,11 @@ public class ConnectionHandle {
     }
     
     /// Unsubscribing from all channels
-    public func unsubscribeAll() {
-        sequence += 1
+    public func unsubscribeAll(completion: @escaping CompletionHandler) {
+        let seq = sequence + 1
+        sequence = seq
+        
+        handlerDispatcher.setObject(Handler(completion), forKey: seq)
 
         let params: [String: Any] = [
             "seq": sequence,
@@ -154,8 +184,12 @@ public class ConnectionHandle {
     }
     
     /// Gets all subscriptions
-    public func listSubscriptions() {
-        sequence += 1
+    public func listSubscriptions(completion: @escaping CompletionHandler) {
+        let seq = sequence + 1
+        sequence = seq
+        
+        handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
         let params: [String: Any] = [
             "seq": sequence,
             "action": "subscriptions"
@@ -170,8 +204,11 @@ public class ConnectionHandle {
     ///   - channelName: the channel where message will be published
     ///   - message: the message to publish
     ///   - acknowledgement: acknowledgement for the published message
-    public func publish(channelName: String, message: String, acknowledgement: Bool = false) {
-        sequence += 1
+    public func publish(channelName: String, message: String, acknowledgement: Bool = false, completion: @escaping CompletionHandler) {
+        let seq = sequence + 1
+        sequence = seq
+        
+        handlerDispatcher.setObject(Handler(completion), forKey: seq)
 
         let params: [String: Any] = [
             "seq": sequence,
@@ -189,14 +226,17 @@ public class ConnectionHandle {
     /// - Parameters:
     ///   - channelName: the channel where message will be published
     ///   - message: the message to publish
-    public func publishWithAck(channelName: String, message: String) {
-        self.publish(channelName: channelName, message: message, acknowledgement: true)
+    public func publishWithAck(channelName: String, message: String, completion: @escaping CompletionHandler) {
+        
+        self.publish(channelName: channelName, message: message, acknowledgement: true) {json, error in
+            completion(json, error)
+        }
     }
     
     private func writeToSocket(params: [String: Any]) {
         guard webSocket.isConnected else {
-            assertionFailure("Web socket is disconnected")
-            
+            self.onError?(NSError(domain: WebSocket.ErrorDomain, code: Int(100), userInfo: [NSLocalizedDescriptionKey: "Web socket is disconnected"]))
+            //assertionFailure("Web socket is disconnected")
             return
         }
         
@@ -204,7 +244,12 @@ public class ConnectionHandle {
             let data: Data = try JSONSerialization.data(withJSONObject: params, options: .init(rawValue: 0))
             webSocket.write(data: data)
         } catch {
-            assertionFailure(error.localizedDescription)
+            self.onError?(error)
+            //assertionFailure(error.localizedDescription)
         }
+    }
+    
+    @objc private func reconnect(_ timer: Timer) {
+        self.connect(sessionUUID: self.sessionUUID)
     }
 }
