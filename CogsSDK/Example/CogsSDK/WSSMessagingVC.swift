@@ -96,10 +96,14 @@ class WSSMessagingVC: ViewController {
                             self.channelListLabel.text = subscription.channels.joined(separator: ", ")
                         }
                     } catch {
-//                        let error = NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-//                        DispatchQueue.main.async {
-//                            //self.openAlertWithMessage(message: error.localizedDescription, title: "PubSub Error")
-//                        }
+                        do {
+                            let ack = try PubSubResponse(json: json)
+                            DispatchQueue.main.async {
+                                self.acknowledgeLabel.text = ack.description
+                            }
+                        } catch {
+
+                        }
                     }
                 }
             } catch {
