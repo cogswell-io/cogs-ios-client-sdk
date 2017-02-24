@@ -15,6 +15,7 @@
 		44464A531E4A171B00A1CED3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44464A521E4A171B00A1CED3 /* AppDelegate.swift */; };
 		44464A551E4A178300A1CED3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 44464A541E4A178300A1CED3 /* Main.storyboard */; };
 		44464A571E4A17A800A1CED3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 44464A561E4A17A800A1CED3 /* LaunchScreen.storyboard */; };
+		44EC40291E56EB3800D87E7F /* WSSMessagingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EC40281E56EB3800D87E7F /* WSSMessagingVC.swift */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		794F55354ECA2ED267EF362B /* Pods_CogsSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A43127693C98CF7432FEECD6 /* Pods_CogsSDK_Tests.framework */; };
@@ -41,6 +42,7 @@
 		44464A541E4A178300A1CED3 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		44464A561E4A17A800A1CED3 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		44464A661E4B5E9F00A1CED3 /* CogsSDK_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CogsSDK_Example.entitlements; sourceTree = "<group>"; };
+		44EC40281E56EB3800D87E7F /* WSSMessagingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WSSMessagingVC.swift; sourceTree = "<group>"; };
 		4AEBA20E7E8EC2DE4161FFBB /* CogsSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = CogsSDK.podspec; path = ../CogsSDK.podspec; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* CogsSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CogsSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				44464A4E1E4A16BC00A1CED3 /* NotificationsVC.swift */,
 				44464A4C1E4A16B200A1CED3 /* EventVC.swift */,
 				44464A501E4A16CD00A1CED3 /* ViewController.swift */,
+				44EC40281E56EB3800D87E7F /* WSSMessagingVC.swift */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				44464A541E4A178300A1CED3 /* Main.storyboard */,
 				44464A561E4A17A800A1CED3 /* LaunchScreen.storyboard */,
@@ -380,6 +383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				44464A511E4A16CD00A1CED3 /* ViewController.swift in Sources */,
+				44EC40291E56EB3800D87E7F /* WSSMessagingVC.swift in Sources */,
 				44464A4F1E4A16BC00A1CED3 /* NotificationsVC.swift in Sources */,
 				44464A4B1E4A169F00A1CED3 /* AboutVC.swift in Sources */,
 				44464A531E4A171B00A1CED3 /* AppDelegate.swift in Sources */,
@@ -551,6 +555,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CogsSDK_Example.app/CogsSDK_Example";
 			};
 			name = Debug;
 		};
@@ -569,6 +574,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CogsSDK_Example.app/CogsSDK_Example";
 			};
 			name = Release;
 		};

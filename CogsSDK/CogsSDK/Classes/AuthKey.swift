@@ -1,5 +1,4 @@
 
-
 import Foundation
 
 struct AuthKey {
@@ -20,7 +19,7 @@ struct AuthKey {
             assertionFailure("Invalid format for project key.")
         }
 
-        if !keyParts[0].contains(AuthKey.validKeyParts) {
+        if !AuthKey.validKeyParts.contains(keyParts[0]) {
             assertionFailure("Invalid permission prefix for project key. The valid prefixes are \(AuthKey.validKeyParts)")
         }
 

@@ -244,7 +244,7 @@ class NotificationsVC: ViewController {
       self.clientSecretField.text = clientSecret
     }
     if let applicationID = prefs.string(forKey: "applicationID") {
-      self.applicationIDField.text = "com.aviatainc.CogsSDKExample" //applicationID
+      self.applicationIDField.text = applicationID
     }
     if let namespaceName = prefs.string(forKey: "namespaceName") {
       self.namespaceField.text = namespaceName

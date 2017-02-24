@@ -85,7 +85,7 @@ public class GambitService {
     let body = String(request.getBody())
     let bodyBuffer = [UInt8](body.utf8)
     let clientSecretBuffer = gambitRequest.clientSecret.hexToByteArray()
-    let hmac = try! HMAC(key: clientSecretBuffer, variant: .sha256).authenticate(bodyBuffer)
+    let hmac: [UInt8] = try! HMAC(key: clientSecretBuffer, variant: .sha256).authenticate(bodyBuffer)
     
     request.setPayloadHmac(hmac.toHexString())
     

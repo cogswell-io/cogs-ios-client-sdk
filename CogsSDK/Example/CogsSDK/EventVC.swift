@@ -182,25 +182,25 @@ class EventVC: ViewController {
   fileprivate func readInputFieldsData(){
     let prefs = UserDefaults.standard
     if let accessKey = prefs.string(forKey: "accessKey") {
-      self.accessKeyTextField.text = "f78d976d21dd83d957a8c6f0b1688d62" //accessKey
+      self.accessKeyTextField.text = accessKey
     }
     if let clientSalt = prefs.string(forKey: "clientSalt") {
-        self.clientSaltTextField.text = "5b8db085525c78ab8fae70c7ed82a30584a442a0fed159ee09c529312342cc6f" //clientSalt
+        self.clientSaltTextField.text = clientSalt
     }
     if let clientSecret = prefs.string(forKey: "clientSecret") {
-        self.clientSecretTextField.text = "87aa24a167944f961493b811bc3e2d517d23c5ce81520fa7144a6ed3bd14822d" //clientSecret
+        self.clientSecretTextField.text = clientSecret
     }
     if let campaignID = prefs.string(forKey: "campaignID") {
-      self.campaignIDTextField.text = "633"//campaignID
+      self.campaignIDTextField.text = campaignID
     }
     if let eventName = prefs.string(forKey: "eventName") {
-      self.eventNameTextField.text = "Test Event" //eventName
+      self.eventNameTextField.text = eventName
     }
     if let namespaceName = prefs.string(forKey: "namespaceName") {
-      self.namespaceTextField.text = "CogsSDKExample" //namespaceName
+      self.namespaceTextField.text = namespaceName
     }
     if let attributesList = prefs.string(forKey: "attributesList") {
-        self.attributesTextView.text = "{ \"customer_id\": 1, \"email\": \"standimitroff@gmail.com\" }" //"{\"bool_attribite\": true, \"client_id_u\": 1, \"client_name\": \"TEST\", \"gender\": \"male\", \"neshto\": \"helloo\", \"test_attr\": \"mest\"}"// //attributesList
+        self.attributesTextView.text = attributesList
     }
   }
 }
