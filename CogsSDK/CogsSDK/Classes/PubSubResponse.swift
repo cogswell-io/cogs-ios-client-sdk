@@ -1,12 +1,19 @@
 
 import Foundation
 
+public protocol PubSubResponsable {
+    init(json: JSON) throws
+}
+
 /// Base cogs pubsub response class
-open class PubSubResponse: GambitResponse, CustomStringConvertible {
+open class PubSubResponse: PubSubResponsable, CustomStringConvertible {
 
     open let seq: Int
     open let action: String
     open let code: Int
+    open let uuid: String?
+    open let channels: [String]?
+    open let messageUUID: String?
 
     public required init(json: JSON) throws {
         guard let seq = json["seq"] as? Int else {
@@ -21,9 +28,16 @@ open class PubSubResponse: GambitResponse, CustomStringConvertible {
             throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
         }
 
-        self.seq    = seq
-        self.action = action
-        self.code   = code
+        let uuid     = json["uuid"] as? String
+        let channels = json["channels"] as? [String]
+        let id       = json["id"] as? String
+
+        self.seq         = seq
+        self.action      = action
+        self.code        = code
+        self.uuid        = uuid
+        self.channels    = channels
+        self.messageUUID = id
     }
 
     open var description: String {
@@ -37,64 +51,7 @@ open class PubSubResponse: GambitResponse, CustomStringConvertible {
     }
 }
 
-open class PubSubResponseUUID: PubSubResponse {
-
-    open let uuid: String
-
-    public required init(json: JSON) throws {
-        guard let uuid = json["uuid"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        self.uuid = uuid
-
-        do {
-            try super.init(json: json)
-        } catch {
-            throw error
-        }
-    }
-}
-
-open class PubSubResponseSubscription: PubSubResponse {
-
-    open let channels: [String]
-
-    public required init(json: JSON) throws {
-        guard let channels = json["channels"] as? [String] else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        self.channels = channels
-
-        do {
-            try super.init(json: json)
-        } catch {
-            throw error
-        }
-    }
-}
-
-open class PubSubResponsePublishMessage: PubSubResponse {
-
-    open let messageUUID: String
-
-    public required init(json: JSON) throws {
-        guard let id = json["id"] as? String else {
-            throw NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
-        }
-
-        self.messageUUID = id
-
-        do {
-            try super.init(json: json)
-        } catch {
-            throw error
-        }
-    }
-}
-
-open class PubSubMessage: GambitResponse {
+open class PubSubMessage: PubSubResponsable {
 
     open let id: String
     open let time: String
@@ -127,7 +84,7 @@ open class PubSubMessage: GambitResponse {
 
 
 /// Base cogs pubsub error response class
-open class PubSubResponseError: GambitResponse {
+open class PubSubErrorResponse: PubSubResponsable {
 
     open let action: String
     open let code: Int
@@ -157,10 +114,17 @@ open class PubSubResponseError: GambitResponse {
         self.message  = message
         self.details  = details
     }
+    
+    public init(code: Int, message: String) {
+        self.code = code
+        self.message = message
+        self.action = ""
+        self.details = ""
+    }
 }
 
 // MARK: General error response
-open class PubSubGeneralErrorResponse: PubSubResponseError {
+open class PubSubGeneralErrorResponse: PubSubErrorResponse {
 
     open let sequence: Int
 
@@ -180,7 +144,7 @@ open class PubSubGeneralErrorResponse: PubSubResponseError {
 }
 
 // Bad request response
-open class PubSubBadRequestResponse: PubSubResponseError {
+open class PubSubBadRequestResponse: PubSubErrorResponse {
 
     open let request: [String: Any]
 

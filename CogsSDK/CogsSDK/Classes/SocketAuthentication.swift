@@ -14,8 +14,10 @@ final class SocketAuthentication {
             assertionFailure("No keys supplied")
         }
 
+        let uniqueKeys = Set(keys)
+
         var dict: [String: AuthKey] = [:]
-        for key in keys {
+        for key in uniqueKeys {
             let authKey = AuthKey(keyAsString: key)
             dict[authKey.perm] = authKey
         }

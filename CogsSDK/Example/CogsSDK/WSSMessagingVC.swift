@@ -81,30 +81,28 @@ class WSSMessagingVC: ViewController {
             print (record)
             do {
                  let json = try JSONSerialization.jsonObject(with: record.data(using: String.Encoding.utf8)!, options: .allowFragments) as JSON
-
                 do {
-                    let sessionUUID = try PubSubResponseUUID(json: json)
+                    let response = try PubSubResponse(json: json)
 
-                    DispatchQueue.main.async {
-                        self.sessionUUIDLabel.text = sessionUUID.uuid
+                    if let sessionUUID = response.uuid {
+                        DispatchQueue.main.async {
+                            self.sessionUUIDLabel.text = sessionUUID
+                        }
+                    }
+
+                    if let channels = response.channels {
+                        DispatchQueue.main.async {
+                            self.channelListLabel.text = channels.joined(separator: ", ")
+                        }
+                    }
+
+                    if let id = response.messageUUID {
+                        DispatchQueue.main.async {
+                            self.acknowledgeLabel.text = "MessageID: \(id)"
+                        }
                     }
                 } catch {
-                    do {
-                        let subscription = try PubSubResponseSubscription(json: json)
 
-                        DispatchQueue.main.async {
-                            self.channelListLabel.text = subscription.channels.joined(separator: ", ")
-                        }
-                    } catch {
-                        do {
-                            let ack = try PubSubResponse(json: json)
-                            DispatchQueue.main.async {
-                                self.acknowledgeLabel.text = ack.description
-                            }
-                        } catch {
-
-                        }
-                    }
                 }
             } catch {
                 let error = NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
