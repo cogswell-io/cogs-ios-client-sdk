@@ -5,7 +5,6 @@
 
 import Foundation
 
-
 class Handler {
     
     public var closure: CompletionHandler?
@@ -16,8 +15,17 @@ class Handler {
     
     public var isAlive: Bool = true
     
+    public var disposable: Bool = true
+    
     public init(_ closure: @escaping CompletionHandler) {
         self.closure = closure
+    }
+    
+    public init(_ failure: @escaping (PubSubErrorResponse?) -> ()) {
+        self.disposable = false
+        self.closure = { (_ result: JSON?, _ error: PubSubErrorResponse?) -> () in
+            failure(error)
+        }
     }
 }
 
@@ -25,9 +33,11 @@ class HandlersCache {
     
     private var cache:[String : Handler] = [String : Handler]()
     
+    private var timerQueue = DispatchQueue(label: "TimerQueue")
+    
     public var countLimit: Int = 10000
     
-    public var objectAge: Int  = 10 //seconds
+    public var objectAge: Int  = 60 //seconds
     
     public var dispose: ((_ handler: Handler, _ sequence: String) -> ())?
     
@@ -54,11 +64,11 @@ class HandlersCache {
         //set handler's live timer
         obj.timer = {
             let deadlineTime = DispatchTime.now() + .seconds(self.objectAge)
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime, execute: {
+            self.timerQueue.asyncAfter(deadline: deadlineTime, execute: {
                 obj.isAlive = false
                 self.dispose?(obj, String(key))
                 self.removeObject(forKey: key)
-                print("OBJECT LIVE EXPIRED.")
+                print("\(key) OBJECT LIVE EXPIRED.")
             })
         }
         

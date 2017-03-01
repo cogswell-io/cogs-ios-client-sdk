@@ -2,7 +2,7 @@
 import Foundation
 import Starscream
 
-public typealias CompletionHandler = (_ json: JSON?, _ error: PubSubErrorResponse?) -> ()
+public typealias CompletionHandler = (_ result: JSON?, _ error: PubSubErrorResponse?) -> ()
 public typealias MessageHandler    = (_ message: PubSubMessage) -> ()
 
 /// PubSub connection handler
@@ -107,26 +107,18 @@ public class PubSubConnectionHandle {
             self.onRawRecord?(text)
             
             DialectValidator.parseAndAutoValidate(record: text) { json, error, responseError in
+                var seq: Int?
+                
                 if let error = error {
                     self.onError?(error)
                 } else if let respError = responseError {
+                    seq = respError.sequence
                     self.onErrorResponse?(respError)
                 } else if let j = json {
                     do {
                         let response = try PubSubResponse(json: j)
+                        seq = response.seq
    
-                        // call method's completion handler
-                        self.callbackQueue.async { [weak self] in
-                            guard let weakSelf = self else { return }
-
-                            if let completion = weakSelf.handlerDispatcher.object(forKey: response.seq),
-                                let closure = completion.closure {
-                                completion.completed = true
-                                closure(json, responseError)
-                                weakSelf.handlerDispatcher.removeObject(forKey: response.seq)
-                            }
-                        }
-
                         if let sessionUUID = response.uuid {
                             if sessionUUID == self.sessionUUID {
                                 self.onReconnect?()
@@ -146,11 +138,23 @@ public class PubSubConnectionHandle {
                         }
                     }
                 }
+                
+                // call method's completion handler
+                self.callbackQueue.async { [weak self] in
+                    guard let weakSelf = self else { return }
+                    
+                    if let sequence = seq, let completion = weakSelf.handlerDispatcher.object(forKey: sequence),
+                        let closure = completion.closure {
+                        completion.completed = true
+                        closure(json, responseError)
+                        weakSelf.handlerDispatcher.removeObject(forKey: sequence)
+                    }
+                }
             }
         }
         
         handlerDispatcher.dispose = { handler, sequence in
-            if (handler.completed != true){
+            if (handler.completed != true && handler.disposable){
                 if let closure = handler.closure {
                     closure(nil, PubSubErrorResponse(code: Int(101), message: "Timeout awaiting response to sequence \(sequence)"))
                 }
@@ -286,16 +290,16 @@ public class PubSubConnectionHandle {
     ///   - channelName: The channel where message will be published.
     ///   - message: The message to publish.
     ///   - acknowledgement: Acknowledgement for the published message.
-    ///   - completion: The completion handler that returns the response or an error.
-    public func publish(channelName: String, message: String, acknowledgement: Bool = false, completion: @escaping CompletionHandler) {
+    ///   - failure: The error handler if an error occured.
+    public func publish(channelName: String, message: String, acknowledgement: Bool = false, failure: @escaping (PubSubErrorResponse?) -> ()) {
 
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(completion), forKey: seq)
-
+        handlerDispatcher.setObject(Handler(failure), forKey: seq)
+        
         let params: [String: Any] = [
             "seq": sequence,
             "action": "pub",
-            "chan": channelName,
+            "chan": "",
             "msg": message,
             "ack": acknowledgement
         ]
@@ -311,9 +315,18 @@ public class PubSubConnectionHandle {
     ///   - completion: The completion handler that returns the response or an error.
     public func publishWithAck(channelName: String, message: String, completion: @escaping CompletionHandler) {
         
-        self.publish(channelName: channelName, message: message, acknowledgement: true) {json, error in
-            completion(json, error)
-        }
+        let seq = incrementSequence()
+        handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
+        let params: [String: Any] = [
+            "seq": sequence,
+            "action": "pub",
+            "chan": channelName,
+            "msg": message,
+            "ack": true
+        ]
+        
+        writeToSocket(params: params)
     }
     
     private func incrementSequence() -> Int {

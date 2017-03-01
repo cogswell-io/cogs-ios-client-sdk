@@ -309,7 +309,7 @@ class PubSubSpec: QuickSpec {
                         xit("is succesfull") {
                             waitUntil(timeout: 2) { done in
                                 connectionHandle.subscribe(channelName: testChannelName, channelHandler: nil) { _ in
-                                    connectionHandle.publish(channelName: testChannelName, message: testMessage) { json, error in
+                                    connectionHandle.publishWithAck(channelName: testChannelName, message: testMessage) { json, error in
                                         let response = try! PubSubMessage(json: json!)
 
                                         expect(error).to(beNil())
@@ -328,7 +328,7 @@ class PubSubSpec: QuickSpec {
                             let uniqueChannelName = UUID().uuidString
 
                             waitUntil { done in
-                                connectionHandle.publish(channelName: uniqueChannelName, message: testMessage) { json, error in
+                                connectionHandle.publishWithAck(channelName: uniqueChannelName, message: testMessage) { json, error in
 
                                     expect(json).to(beNil())
                                     expect(error).toNot(beNil())

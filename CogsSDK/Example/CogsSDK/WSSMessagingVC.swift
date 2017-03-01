@@ -197,8 +197,8 @@ class WSSMessagingVC: ViewController {
                 print(json as Any)
             }
         } else {
-            connectionHandler.publish(channelName: channel, message: messageText){ json, error in
-                print(json as Any)
+            connectionHandler.publish(channelName: channel, message: messageText){ error in
+                print(error as Any)
             }
         }
     }
