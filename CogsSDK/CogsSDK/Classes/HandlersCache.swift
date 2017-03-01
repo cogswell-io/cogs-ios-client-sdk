@@ -5,7 +5,6 @@
 
 import Foundation
 
-public typealias CompletionHandler = (_ json: JSON?, _ error: PubSubErrorResponse?) -> ()
 
 class Handler {
     

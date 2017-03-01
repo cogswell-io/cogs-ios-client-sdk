@@ -2,10 +2,15 @@
 import Foundation
 import Starscream
 
-public class ConnectionHandle {
+public typealias CompletionHandler = (_ json: JSON?, _ error: PubSubErrorResponse?) -> ()
+public typealias MessageHandler    = (_ message: PubSubMessage) -> ()
+
+/// PubSub connection handler
+public class PubSubConnectionHandle {
    
     private let defaultReconnectDelay: Double = 5.0
-    private let maxReconnectDelay: Double = 120.0
+    private let maxReconnectDelay: Double = 150.0
+    private let maxReconnectDuration: Double = 300.0
 
     private var autoReconnectDelay: Double!
     
@@ -18,16 +23,38 @@ public class ConnectionHandle {
     private let lock = DispatchSemaphore(value: 1)
     private var handlerDispatcher = HandlersCache()
     private var callbackQueue = DispatchQueue.main
+
+    private var channelHandlers = [String : MessageHandler]()
+
+    private var startReconnectTime: Date?
     
+    /// New session completion handler
     public var onNewSession: ((String) -> ())?
+    
+    /// Reconnect completion handler
     public var onReconnect: (() -> ())?
-    public var onClose: ((Error?) -> ())?
-    public var onError: ((Error) -> ())?
-    public var onErrorResponse: ((PubSubErrorResponse) -> ())?
-    public var onMessage: ((PubSubMessage) -> ())?
+    
+    /// A handler for any raw record received from the server, whether a response to a request or a message.
     public var onRawRecord: ((RawRecord) -> ())?
     
+    /// Message completion handler
+    public var onMessage: ((PubSubMessage) -> ())?
+
+    /// Close completion handler
+    public var onClose: ((Error?) -> ())?
     
+    /// General error completion handler
+    public var onError: ((Error) -> ())?
+    
+    /// Response error completion handler
+    public var onErrorResponse: ((PubSubErrorResponse) -> ())?
+    
+    
+    /// Initializes and returns a connection handler.
+    ///
+    /// - Parameters:
+    ///   - keys: The provided project keys
+    ///   - options: The connection options.
     public init(keys: [String], options: PubSubOptions) {
         
         self.keys               = keys
@@ -50,22 +77,36 @@ public class ConnectionHandle {
             }
 
             if self.options.autoReconnect {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.autoReconnectDelay) {
-                    self.reconnect()
+                if self.startReconnectTime == nil {
+                    self.startReconnectTime = Date()
                 }
 
-                print(self.autoReconnectDelay)
+                guard let startTime = self.startReconnectTime else { return }
+                let endReconnectTime = Date()
+                let timeInterval: Double = endReconnectTime.timeIntervalSince(startTime)
 
-                let minumumDelay = max(self.defaultReconnectDelay, self.autoReconnectDelay)
-                let nextDelay = min(minumumDelay, self.maxReconnectDelay) * 2
-                self.autoReconnectDelay = nextDelay
+                if timeInterval < self.maxReconnectDuration {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.autoReconnectDelay) {
+                        self.reconnect()
+                    }
+
+                    print(self.autoReconnectDelay)
+
+                    let minumumDelay = max(self.defaultReconnectDelay, self.autoReconnectDelay)
+                    let nextDelay = min(minumumDelay, self.maxReconnectDelay) * 2
+                    self.autoReconnectDelay = nextDelay
+                } else {
+                    let error = NSError(domain: "CogsSDKError - Connection Timeout", code: Int(102), userInfo: [NSLocalizedDescriptionKey: "Connection timed out"])
+                    self.onClose?(error)
+                    print(timeInterval)
+                }
             }
         }
 
         webSocket.onText = { (text: String) in
             self.onRawRecord?(text)
             
-            DialectValidator.parseAndAutoValidate(record: text, completionHandler: { (json, error, responseError) in
+            DialectValidator.parseAndAutoValidate(record: text) { json, error, responseError in
                 if let error = error {
                     self.onError?(error)
                 } else if let respError = responseError {
@@ -98,13 +139,14 @@ public class ConnectionHandle {
                     } catch {
                         do {
                             let message = try PubSubMessage(json: j)
+                            self.channelHandlers[message.channel]?(message)
                             self.onMessage?(message)
                         } catch {
                             self.onError?(error)
                         }
                     }
                 }
-            })
+            }
         }
         
         handlerDispatcher.dispose = { handler, sequence in
@@ -119,9 +161,9 @@ public class ConnectionHandle {
         }
     }
     
-    /// Provides connection with the websocket
+    /// Creates connection with the websocket.
     ///
-    /// - Parameter sessionUUID: when supplied client session will be restored if possible
+    /// - Parameter sessionUUID: When supplied client session will be restored if possible.
     public func connect(sessionUUID: String?) {
         
         self.sessionUUID = sessionUUID
@@ -134,7 +176,7 @@ public class ConnectionHandle {
         webSocket.connect()
     }
     
-    ///  Disconnect from the websocket
+    ///  Disconnect from the websocket.
     public func close() {
         if webSocket.isConnected {
             webSocket.disconnect()
@@ -142,9 +184,9 @@ public class ConnectionHandle {
         }
     }
     
-    /// Getting session UUID
+    /// Getting session UUID.
     ///
-    /// - Parameter completion: The completion handler that returns the response or an error
+    /// - Parameter completion: The completion handler that returns the response or an error.
     public func getSessionUuid(completion: @escaping CompletionHandler) {
         
         let seq = incrementSequence()
@@ -163,11 +205,16 @@ public class ConnectionHandle {
     ///
     /// - Parameters:
     ///   - channelName: The chanel name.
+    ///   - channelHandler: The channel specific handler. It is called when message on this channel comes.
     ///   - completion: The completion handler that returns the response or an error.
-    public func subscribe(channelName: String, completion: @escaping CompletionHandler) {
+    public func subscribe(channelName: String, channelHandler: MessageHandler? , completion: @escaping CompletionHandler) {
         
         let seq = incrementSequence()
         handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
+        if let chHandler = channelHandler {
+            channelHandlers[channelName] = chHandler
+        }
 
         let params: [String: Any] = [
             "seq": sequence,
@@ -183,10 +230,12 @@ public class ConnectionHandle {
     /// - Parameters:
     ///   - channelName: The name of the channel to unsubscribe from.
     ///   - completion: The completion handler that returns the response or an error.
-    public func unsubsribe(channelName: String, completion: @escaping CompletionHandler) {
+    public func unsubscribe(channelName: String, completion: @escaping CompletionHandler) {
         
         let seq = incrementSequence()
         handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
+        channelHandlers.removeValue(forKey: channelName)
 
         let params: [String: Any] = [
             "seq": sequence,
@@ -205,6 +254,8 @@ public class ConnectionHandle {
         let seq = incrementSequence()
         handlerDispatcher.setObject(Handler(completion), forKey: seq)
 
+        channelHandlers.removeAll()
+        
         let params: [String: Any] = [
             "seq": sequence,
             "action": "unsubscribe-all"
@@ -213,7 +264,7 @@ public class ConnectionHandle {
         writeToSocket(params: params)
     }
     
-    /// Gets all subscriptions
+    /// Gets all subscriptions.
     ///
     /// - Parameter completion: The completion handler that returns the response or an error.
     public func listSubscriptions(completion: @escaping CompletionHandler) {
@@ -229,7 +280,7 @@ public class ConnectionHandle {
         writeToSocket(params: params)
     }
     
-    /// Publishing a message to a channel
+    /// Publishing a message to a channel.
     ///
     /// - Parameters:
     ///   - channelName: The channel where message will be published.

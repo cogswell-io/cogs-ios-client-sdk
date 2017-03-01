@@ -19,8 +19,8 @@ class WSSMessagingVC: ViewController {
     @IBOutlet weak var receivedMessageLabel: UILabel!
     @IBOutlet weak var acknowledgeLabel: UILabel!
 
-    fileprivate var fpubSubService: CogsPubSubService!
-    fileprivate var connectionHandler: ConnectionHandle!
+    fileprivate var fpubSubService: PubSubService!
+    fileprivate var connectionHandler: PubSubConnectionHandle!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +45,7 @@ class WSSMessagingVC: ViewController {
         
         let keys: [String] = [readKey, writeKey, adminKey]
         
-        let pubSubService = CogsPubSubService()
+        let pubSubService = PubSubService()
         let connectionHandler = pubSubService.connnect(keys: keys,
                                                         options: PubSubOptions(url: url,
                                                                                timeout: 30,
@@ -152,7 +152,10 @@ class WSSMessagingVC: ViewController {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.subscribe(channelName: channelName){ json, error in
+        connectionHandler.subscribe(channelName: channelName, channelHandler: { (message) in
+            print("\(message.id) | \(message.message)")
+
+        }) { (json, error) in
             print(json as Any)
         }
     }
@@ -161,7 +164,7 @@ class WSSMessagingVC: ViewController {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.unsubsribe(channelName: channelName){ json, error in
+        connectionHandler.unsubscribe(channelName: channelName){ json, error in
             print(json as Any)
         }
     }
