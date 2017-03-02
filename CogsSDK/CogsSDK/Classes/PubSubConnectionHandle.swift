@@ -10,7 +10,6 @@ public class PubSubConnectionHandle {
    
     private let defaultReconnectDelay: Double = 5.0
     private let maxReconnectDelay: Double = 150.0
-    private let maxReconnectDuration: Double = 300.0
 
     private var autoReconnectDelay: Double!
     
@@ -25,8 +24,7 @@ public class PubSubConnectionHandle {
     private var callbackQueue = DispatchQueue.main
 
     private var channelHandlers = [String : MessageHandler]()
-
-    private var startReconnectTime: Date?
+    private var connectHandler: (() -> ())?
     
     /// New session completion handler
     public var onNewSession: ((String) -> ())?
@@ -65,8 +63,9 @@ public class PubSubConnectionHandle {
         webSocket.timeout = self.options.connectionTimeout
         
         webSocket.onConnect = {
+            self.connectHandler?()
             self.autoReconnectDelay = self.defaultReconnectDelay
-            self.getSessionUuid{ _,_ in }
+            self.getSessionUuid{ _, _ in }
         }
         
         webSocket.onDisconnect = { (error: NSError?) in
@@ -77,29 +76,15 @@ public class PubSubConnectionHandle {
             }
 
             if self.options.autoReconnect {
-                if self.startReconnectTime == nil {
-                    self.startReconnectTime = Date()
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.autoReconnectDelay) {
+                    self.reconnect()
                 }
 
-                guard let startTime = self.startReconnectTime else { return }
-                let endReconnectTime = Date()
-                let timeInterval: Double = endReconnectTime.timeIntervalSince(startTime)
+                print(self.autoReconnectDelay)
 
-                if timeInterval < self.maxReconnectDuration {
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.autoReconnectDelay) {
-                        self.reconnect()
-                    }
-
-                    print(self.autoReconnectDelay)
-
-                    let minumumDelay = max(self.defaultReconnectDelay, self.autoReconnectDelay)
-                    let nextDelay = min(minumumDelay, self.maxReconnectDelay) * 2
-                    self.autoReconnectDelay = nextDelay
-                } else {
-                    let error = NSError(domain: "CogsSDKError - Connection Timeout", code: Int(102), userInfo: [NSLocalizedDescriptionKey: "Connection timed out"])
-                    self.onClose?(error)
-                    print(timeInterval)
-                }
+                let minumumDelay = max(self.defaultReconnectDelay, self.autoReconnectDelay)
+                let nextDelay = min(minumumDelay, self.maxReconnectDelay) * 2
+                self.autoReconnectDelay = nextDelay
             }
         }
 
@@ -168,9 +153,10 @@ public class PubSubConnectionHandle {
     /// Creates connection with the websocket.
     ///
     /// - Parameter sessionUUID: When supplied client session will be restored if possible.
-    public func connect(sessionUUID: String?) {
+    public func connect(sessionUUID: String?, completion: (() -> ())? = nil) {
         
         self.sessionUUID = sessionUUID
+        self.connectHandler = completion
         
         let headers = SocketAuthentication.authenticate(keys: keys, sessionUUID: self.sessionUUID)
         
@@ -211,7 +197,7 @@ public class PubSubConnectionHandle {
     ///   - channelName: The chanel name.
     ///   - channelHandler: The channel specific handler. It is called when message on this channel comes.
     ///   - completion: The completion handler that returns the response or an error.
-    public func subscribe(channelName: String, channelHandler: MessageHandler? , completion: @escaping CompletionHandler) {
+    public func subscribe(channelName: String, channelHandler: MessageHandler?, completion: @escaping CompletionHandler) {
         
         let seq = incrementSequence()
         handlerDispatcher.setObject(Handler(completion), forKey: seq)
@@ -289,9 +275,8 @@ public class PubSubConnectionHandle {
     /// - Parameters:
     ///   - channelName: The channel where message will be published.
     ///   - message: The message to publish.
-    ///   - acknowledgement: Acknowledgement for the published message.
     ///   - failure: The error handler if an error occured.
-    public func publish(channelName: String, message: String, acknowledgement: Bool = false, failure: @escaping (PubSubErrorResponse?) -> ()) {
+    public func publish(channelName: String, message: String, failure: @escaping (PubSubErrorResponse?) -> ()) {
 
         let seq = incrementSequence()
         handlerDispatcher.setObject(Handler(failure), forKey: seq)
@@ -299,9 +284,8 @@ public class PubSubConnectionHandle {
         let params: [String: Any] = [
             "seq": sequence,
             "action": "pub",
-            "chan": "",
-            "msg": message,
-            "ack": acknowledgement
+            "chan": channelName,
+            "msg": message
         ]
 
         writeToSocket(params: params)
