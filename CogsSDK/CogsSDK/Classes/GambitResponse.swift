@@ -35,7 +35,7 @@ open class GambitResponseMessage: GambitResponse {
   }
 }
 
-open class CogsResponseError:  GambitResponse {
+open class GambitErrorResponse:  GambitResponse {
     open fileprivate(set) var message: String = ""
     open fileprivate(set) var description: String = ""
 

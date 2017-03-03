@@ -137,7 +137,7 @@ class EventVC: ViewController {
       } catch {
         do {
             let json: JSON = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as JSON
-            let responseError = try CogsResponseError(json: json)
+            let responseError = try GambitErrorResponse(json: json)
 
             DispatchQueue.main.async {
                 self.openAlertWithMessage(message: responseError.description, title: responseError.message)

@@ -19,8 +19,8 @@ class WSSMessagingVC: ViewController {
     @IBOutlet weak var receivedMessageLabel: UILabel!
     @IBOutlet weak var acknowledgeLabel: UILabel!
 
-    fileprivate var fpubSubService: CogsPubSubService!
-    fileprivate var connectionHandler: ConnectionHandle!
+    fileprivate var fpubSubService: PubSubService!
+    fileprivate var connectionHandler: PubSubConnectionHandle!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +45,7 @@ class WSSMessagingVC: ViewController {
         
         let keys: [String] = [readKey, writeKey, adminKey]
         
-        let pubSubService = CogsPubSubService()
+        let pubSubService = PubSubService()
         let connectionHandler = pubSubService.connnect(keys: keys,
                                                         options: PubSubOptions(url: url,
                                                                                timeout: 30,
@@ -81,30 +81,28 @@ class WSSMessagingVC: ViewController {
             print (record)
             do {
                  let json = try JSONSerialization.jsonObject(with: record.data(using: String.Encoding.utf8)!, options: .allowFragments) as JSON
-
                 do {
-                    let sessionUUID = try PubSubResponseUUID(json: json)
+                    let response = try PubSubResponse(json: json)
 
-                    DispatchQueue.main.async {
-                        self.sessionUUIDLabel.text = sessionUUID.uuid
+                    if let sessionUUID = response.uuid {
+                        DispatchQueue.main.async {
+                            self.sessionUUIDLabel.text = sessionUUID
+                        }
+                    }
+
+                    if let channels = response.channels {
+                        DispatchQueue.main.async {
+                            self.channelListLabel.text = channels.joined(separator: ", ")
+                        }
+                    }
+
+                    if let id = response.messageUUID {
+                        DispatchQueue.main.async {
+                            self.acknowledgeLabel.text = "MessageID: \(id)"
+                        }
                     }
                 } catch {
-                    do {
-                        let subscription = try PubSubResponseSubscription(json: json)
 
-                        DispatchQueue.main.async {
-                            self.channelListLabel.text = subscription.channels.joined(separator: ", ")
-                        }
-                    } catch {
-                        do {
-                            let ack = try PubSubResponse(json: json)
-                            DispatchQueue.main.async {
-                                self.acknowledgeLabel.text = ack.description
-                            }
-                        } catch {
-
-                        }
-                    }
                 }
             } catch {
                 let error = NSError(domain: "CogsSDKError - PubSub Response", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
@@ -154,7 +152,10 @@ class WSSMessagingVC: ViewController {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.subscribe(channelName: channelName){ json, error in
+        connectionHandler.subscribe(channelName: channelName, channelHandler: { (message) in
+            print("\(message.id) | \(message.message)")
+
+        }) { (json, error) in
             print(json as Any)
         }
     }
@@ -163,7 +164,7 @@ class WSSMessagingVC: ViewController {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.unsubsribe(channelName: channelName){ json, error in
+        connectionHandler.unsubscribe(channelName: channelName){ json, error in
             print(json as Any)
         }
     }
@@ -196,8 +197,8 @@ class WSSMessagingVC: ViewController {
                 print(json as Any)
             }
         } else {
-            connectionHandler.publish(channelName: channel, message: messageText){ json, error in
-                print(json as Any)
+            connectionHandler.publish(channelName: channel, message: messageText){ error in
+                print(error as Any)
             }
         }
     }
