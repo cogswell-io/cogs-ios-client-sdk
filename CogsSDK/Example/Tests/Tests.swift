@@ -36,6 +36,7 @@ class PubSubUnitTests: QuickSpec {
 
         pubSubService = PubSubService()
 
+        /*
         describe("Cogs PubSub Service") {
 
             describe("get sessionUUID") {
@@ -441,7 +442,7 @@ class PubSubUnitTests: QuickSpec {
                     }
                 }
             }
-        }
+        }*/
     }
 }
 
@@ -478,6 +479,7 @@ class PubSubIntegrationTests: QuickSpec {
         
         pubSubService = PubSubService()
 
+        /*
         describe("Full Sweep Test") {
             let testChannelName = "Test channel"
             let testMessage = "Test message"
@@ -535,6 +537,6 @@ class PubSubIntegrationTests: QuickSpec {
                     }
                 }
             }
-        }
+        }*/
     }
 }

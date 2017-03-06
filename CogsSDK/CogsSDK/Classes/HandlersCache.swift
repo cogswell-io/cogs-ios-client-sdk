@@ -5,9 +5,11 @@
 
 import Foundation
 
+typealias OperationHandler = (_ result: PubSubResponse?, _ error: PubSubErrorResponse?) -> ()
+
 class Handler {
     
-    public var closure: CompletionHandler?
+    public var closure: OperationHandler?
     
     public var timer: (() -> ())?
 
@@ -17,13 +19,13 @@ class Handler {
     
     public var disposable: Bool = true
     
-    public init(_ closure: @escaping CompletionHandler) {
+    public init(_ closure: @escaping OperationHandler) {
         self.closure = closure
     }
     
     public init(_ failure: @escaping (PubSubErrorResponse?) -> ()) {
         self.disposable = false
-        self.closure = { (_ result: JSON?, _ error: PubSubErrorResponse?) -> () in
+        self.closure = { (_ result: PubSubResponse?, _ error: PubSubErrorResponse?) -> () in
             failure(error)
         }
     }
@@ -51,7 +53,7 @@ class HandlersCache {
                 return cache[String(key)]
             }
             else {
-                self.removeObject(forKey: key)
+                _ = self.removeObject(forKey: key)
             }
         }
         
@@ -67,7 +69,7 @@ class HandlersCache {
             self.timerQueue.asyncAfter(deadline: deadlineTime, execute: {
                 obj.isAlive = false
                 self.dispose?(obj, String(key))
-                self.removeObject(forKey: key)
+                _ = self.removeObject(forKey: key)
                 print("\(key) OBJECT LIVE EXPIRED.")
             })
         }

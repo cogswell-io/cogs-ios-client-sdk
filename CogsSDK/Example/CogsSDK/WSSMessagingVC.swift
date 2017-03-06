@@ -143,8 +143,8 @@ class WSSMessagingVC: ViewController {
     @IBAction func getSessionUUID(_ sender: UIButton) {
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.getSessionUuid {json, error in
-            print(json as Any)
+        connectionHandler.getSessionUuid { outcome in
+            print(outcome as Any)
         }
     }
 
@@ -152,11 +152,11 @@ class WSSMessagingVC: ViewController {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.subscribe(channelName: channelName, channelHandler: { (message) in
+        connectionHandler.subscribe(channelName: channelName, messageHandler: { (message) in
             print("\(message.id) | \(message.message)")
 
-        }) { (json, error) in
-            print(json as Any)
+        }) { outcome in
+            print(outcome as Any)
         }
     }
 
@@ -164,24 +164,24 @@ class WSSMessagingVC: ViewController {
         guard let channelName = channelNameTextField.text, !channelName.isEmpty else { return }
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.unsubscribe(channelName: channelName){ json, error in
-            print(json as Any)
+        connectionHandler.unsubscribe(channelName: channelName){ outcome in
+            print(outcome as Any)
         }
     }
 
     @IBAction func getAllSubscriptions(_ sender: UIButton) {
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.listSubscriptions(){ json, error in
-            print(json as Any)
+        connectionHandler.listSubscriptions(){ outcome in
+            print(outcome as Any)
         }
     }
 
     @IBAction func unsubscribeFromAll(_ sender: UIButton) {
         guard (connectionHandler) != nil else { return }
 
-        connectionHandler.unsubscribeAll(){ json, error in
-            print(json as Any)
+        connectionHandler.unsubscribeAll(){ outcome in
+            print(outcome as Any)
         }
     }
 
@@ -193,8 +193,8 @@ class WSSMessagingVC: ViewController {
         guard (connectionHandler) != nil else { return }
 
         if ack {
-            connectionHandler.publishWithAck(channelName: channel, message: messageText){ json, error in
-                print(json as Any)
+            connectionHandler.publishWithAck(channelName: channel, message: messageText){ outcome in
+                print(outcome as Any)
             }
         } else {
             connectionHandler.publish(channelName: channel, message: messageText){ error in

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>PubSubBadRequestResponse Class Reference</title>
+    <title>PubSubOutcome Enum Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -10,8 +10,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/PubSubBadRequestResponse" class="dashAnchor"></a>
-    <a title="PubSubBadRequestResponse Class Reference"></a>
+    <a name="//apple_ref/swift/Enum/PubSubOutcome" class="dashAnchor"></a>
+    <a title="PubSubOutcome Enum Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">CogsSDK Docs</a> (100% documented)</p>
@@ -21,7 +21,7 @@
       <p id="breadcrumbs">
         <a href="../index.html">CogsSDK Reference</a>
         <img id="carat" src="../img/carat.png" />
-        PubSubBadRequestResponse Class Reference
+        PubSubOutcome Enum Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -31,16 +31,10 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Classes/PubSubBadRequestResponse.html">PubSubBadRequestResponse</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/PubSubConnectionHandle.html">PubSubConnectionHandle</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/PubSubGeneralErrorResponse.html">PubSubGeneralErrorResponse</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/PubSubMessage.html">PubSubMessage</a>
@@ -57,6 +51,20 @@
             </ul>
           </li>
           <li class="nav-group-name">
+            <a href="../Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/PubSubAction.html">PubSubAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/PubSubOutcome.html">PubSubOutcome</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/PubSubResponseCode.html">PubSubResponseCode</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
             <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
@@ -69,14 +77,19 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>PubSubBadRequestResponse</h1>
+            <h1>PubSubOutcome</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubBadRequestResponse</span><span class="p">:</span> <span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span></code></pre>
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PubSubOutcome</span></code></pre>
 
                 </div>
               </div>
-            <p>Cogs pubsub bad request response class</p>
+            <p>The result of Pub/Sub operation</p>
+
+<ul>
+<li>PubSubResponseError: The operation completed with error.</li>
+<li>PubSubSuccess: The operation completed successfully with response object.</li>
+</ul>
 
           </section>
           <section class="section task-group-section">
@@ -85,9 +98,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:vC7CogsSDK24PubSubBadRequestResponse7requestGVs10DictionarySSP__"></a>
-                    <a name="//apple_ref/swift/Property/request" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vC7CogsSDK24PubSubBadRequestResponse7requestGVs10DictionarySSP__">request</a>
+                    <a name="/s:FO7CogsSDK13PubSubOutcome19PubSubResponseErrorFMS0_FCS_19PubSubErrorResponseS0_"></a>
+                    <a name="//apple_ref/swift/Element/PubSubResponseError" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FO7CogsSDK13PubSubOutcome19PubSubResponseErrorFMS0_FCS_19PubSubErrorResponseS0_">PubSubResponseError</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -102,19 +115,23 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubBadRequestResponse</span><span class="p">:</span> <span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PubSubOutcome</span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC7CogsSDK24PubSubBadRequestResponsecERR"></a>
-                    <a name="//apple_ref/swift/Method/init(json:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7CogsSDK24PubSubBadRequestResponsecERR">init(json:)</a>
+                    <a name="/s:FO7CogsSDK13PubSubOutcome13PubSubSuccessFMS0_FPS_17PubSubResponsible_S0_"></a>
+                    <a name="//apple_ref/swift/Element/PubSubSuccess" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FO7CogsSDK13PubSubOutcome13PubSubSuccessFMS0_FPS_17PubSubResponsible_S0_">PubSubSuccess</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -129,7 +146,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubBadRequestResponse</span><span class="p">:</span> <span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PubSubOutcome</span></code></pre>
 
                         </div>
                       </div>
@@ -141,7 +158,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell</a>. All rights reserved. (Last updated: 2017-03-01)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell</a>. All rights reserved. (Last updated: 2017-03-06)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

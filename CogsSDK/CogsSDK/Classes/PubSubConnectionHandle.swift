@@ -2,8 +2,18 @@
 import Foundation
 import Starscream
 
-public typealias CompletionHandler = (_ result: JSON?, _ error: PubSubErrorResponse?) -> ()
-public typealias MessageHandler    = (_ message: PubSubMessage) -> ()
+/// The result of Pub/Sub operation
+///
+/// - PubSubResponseError: The operation completed with error.
+/// - PubSubSuccess: The operation completed successfully with response object.
+public enum PubSubOutcome {
+    case PubSubResponseError(PubSubErrorResponse)
+    case PubSubSuccess(PubSubResponsible)
+    //case PubSubError(Error) //It is impossible to get the completion handler when general error occures.
+}
+
+
+//public typealias MessageHandler    =
 
 /// PubSub connection handler
 public class PubSubConnectionHandle {
@@ -23,7 +33,7 @@ public class PubSubConnectionHandle {
     private var handlerDispatcher = HandlersCache()
     private var callbackQueue = DispatchQueue.main
 
-    private var channelHandlers = [String : MessageHandler]()
+    private var channelHandlers = [String : (PubSubMessage) -> ()]()
     private var connectHandler: (() -> ())?
     
     /// New session completion handler
@@ -65,7 +75,7 @@ public class PubSubConnectionHandle {
         webSocket.onConnect = {
             self.connectHandler?()
             self.autoReconnectDelay = self.defaultReconnectDelay
-            self.getSessionUuid{ _, _ in }
+            self.getSessionUuid{ _ in }
         }
         
         webSocket.onDisconnect = { (error: NSError?) in
@@ -93,6 +103,7 @@ public class PubSubConnectionHandle {
             
             DialectValidator.parseAndAutoValidate(record: text) { json, error, responseError in
                 var seq: Int?
+                var response: PubSubResponse?
                 
                 if let error = error {
                     self.onError?(error)
@@ -101,10 +112,10 @@ public class PubSubConnectionHandle {
                     self.onErrorResponse?(respError)
                 } else if let j = json {
                     do {
-                        let response = try PubSubResponse(json: j)
-                        seq = response.seq
+                        response = try PubSubResponse(json: j)
+                        seq = response?.seq
    
-                        if let sessionUUID = response.uuid {
+                        if let sessionUUID = response?.uuid {
                             if sessionUUID == self.sessionUUID {
                                 self.onReconnect?()
                             } else {
@@ -131,8 +142,8 @@ public class PubSubConnectionHandle {
                     if let sequence = seq, let completion = weakSelf.handlerDispatcher.object(forKey: sequence),
                         let closure = completion.closure {
                         completion.completed = true
-                        closure(json, responseError)
-                        weakSelf.handlerDispatcher.removeObject(forKey: sequence)
+                        closure(response, responseError)
+                        _ = weakSelf.handlerDispatcher.removeObject(forKey: sequence)
                     }
                 }
             }
@@ -176,11 +187,22 @@ public class PubSubConnectionHandle {
     
     /// Getting session UUID.
     ///
-    /// - Parameter completion: The completion handler that returns the response or an error.
-    public func getSessionUuid(completion: @escaping CompletionHandler) {
+    /// - Parameter completion: The closure called when the `getSessionUuid` is complete.
+    public func getSessionUuid(completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
+        func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
+            if let err = error {
+                completion(PubSubOutcome.PubSubResponseError(err))
+            } else {
+                if let result = response {
+                    completion(PubSubOutcome.PubSubSuccess(result))
+                }
+            }
+        }
+        
+        handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
         
         let params: [String: Any] = [
             "seq": seq ,
@@ -195,17 +217,29 @@ public class PubSubConnectionHandle {
     ///
     /// - Parameters:
     ///   - channelName: The chanel name.
-    ///   - channelHandler: The channel specific handler. It is called when message on this channel comes.
-    ///   - completion: The completion handler that returns the response or an error.
-    public func subscribe(channelName: String, channelHandler: MessageHandler?, completion: @escaping CompletionHandler) {
+    ///   - messageHandler: The channel specific handler. It is called when a message on this channel comes.
+    ///   - completion: The closure called when the `subscribe` is complete.
+    public func subscribe(channelName: String, messageHandler: ((PubSubMessage) -> ())?, completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(completion), forKey: seq)
         
-        if let chHandler = channelHandler {
-            channelHandlers[channelName] = chHandler
+        if let msgHandler = messageHandler {
+            channelHandlers[channelName] = msgHandler
         }
-
+        
+        func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
+            if let err = error {
+                channelHandlers.removeValue(forKey: channelName)
+                completion(PubSubOutcome.PubSubResponseError(err))
+            } else {
+                if let result = response {
+                    completion(PubSubOutcome.PubSubSuccess(result))
+                }
+            }
+        }
+        
+        handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
+        
         let params: [String: Any] = [
             "seq": sequence,
             "action": "subscribe",
@@ -219,13 +253,23 @@ public class PubSubConnectionHandle {
     ///
     /// - Parameters:
     ///   - channelName: The name of the channel to unsubscribe from.
-    ///   - completion: The completion handler that returns the response or an error.
-    public func unsubscribe(channelName: String, completion: @escaping CompletionHandler) {
+    ///   - completion: The closure called when the `unsubscribe` is complete.
+    public func unsubscribe(channelName: String, completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(completion), forKey: seq)
         
-        channelHandlers.removeValue(forKey: channelName)
+        func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
+            if let err = error {
+                completion(PubSubOutcome.PubSubResponseError(err))
+            } else {
+                if let result = response {
+                    channelHandlers.removeValue(forKey: channelName)
+                    completion(PubSubOutcome.PubSubSuccess(result))
+                }
+            }
+        }
+        
+        handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
 
         let params: [String: Any] = [
             "seq": sequence,
@@ -238,14 +282,24 @@ public class PubSubConnectionHandle {
     
     /// Unsubscribing from all channels
     ///
-    /// - Parameter completion: The completion handler that returns the response or an error.
-    public func unsubscribeAll(completion: @escaping CompletionHandler) {
+    /// - Parameter completion: The closure called when the `unsubscribeAll` is complete.
+    public func unsubscribeAll(completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(completion), forKey: seq)
-
-        channelHandlers.removeAll()
         
+        func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
+            if let err = error {
+                completion(PubSubOutcome.PubSubResponseError(err))
+            } else {
+                if let result = response {
+                    channelHandlers.removeAll()
+                    completion(PubSubOutcome.PubSubSuccess(result))
+                }
+            }
+        }
+        
+        handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
+
         let params: [String: Any] = [
             "seq": sequence,
             "action": "unsubscribe-all"
@@ -256,11 +310,22 @@ public class PubSubConnectionHandle {
     
     /// Gets all subscriptions.
     ///
-    /// - Parameter completion: The completion handler that returns the response or an error.
-    public func listSubscriptions(completion: @escaping CompletionHandler) {
+    /// - Parameter completion: The closure called when the `listSubscriptions` is complete.
+    public func listSubscriptions(completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
+        func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
+            if let err = error {
+                completion(PubSubOutcome.PubSubResponseError(err))
+            } else {
+                if let result = response {
+                    completion(PubSubOutcome.PubSubSuccess(result))
+                }
+            }
+        }
+        
+        handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
         
         let params: [String: Any] = [
             "seq": sequence,
@@ -275,7 +340,7 @@ public class PubSubConnectionHandle {
     /// - Parameters:
     ///   - channelName: The channel where message will be published.
     ///   - message: The message to publish.
-    ///   - failure: The error handler if an error occured.
+    ///   - failure: The closure called when an error occured.
     public func publish(channelName: String, message: String, failure: @escaping (PubSubErrorResponse?) -> ()) {
 
         let seq = incrementSequence()
@@ -296,11 +361,22 @@ public class PubSubConnectionHandle {
     /// - Parameters:
     ///   - channelName: The channel where message will be published.
     ///   - message: The message to publish.
-    ///   - completion: The completion handler that returns the response or an error.
-    public func publishWithAck(channelName: String, message: String, completion: @escaping CompletionHandler) {
+    ///   - completion: The closure called when the `publishWithAck` is complete.
+    public func publishWithAck(channelName: String, message: String, completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(completion), forKey: seq)
+        
+        func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
+            if let err = error {
+                completion(PubSubOutcome.PubSubResponseError(err))
+            } else {
+                if let result = response {
+                    completion(PubSubOutcome.PubSubSuccess(result))
+                }
+            }
+        }
+        
+        handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
         
         let params: [String: Any] = [
             "seq": sequence,
