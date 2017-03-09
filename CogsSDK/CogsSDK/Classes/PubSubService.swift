@@ -15,7 +15,7 @@ public class PubSubService {
     ///   - keys: The provided project keys.
     ///   - options: The connection options.
     /// - Returns: Returns a configured pub/sub connection handler to manage the connection.
-    public func connnect(keys: [String], options: PubSubOptions) -> PubSubConnectionHandle {
+    public func connnect(keys: [String], options: PubSubOptions?) -> PubSubConnectionHandle {
         return PubSubConnectionHandle(keys: keys, options: options)
     }
 }

@@ -18,7 +18,7 @@ class PubSubUnitTests: QuickSpec {
         var noReadKeys: [String]!
         var noWriteKeys: [String]!
 
-        let defaultTimeout: TimeInterval = 5
+        let defaultTimeout: TimeInterval = 10
 
         if let path = Bundle.main.path(forResource: "Keys", ofType: "plist") {
 
@@ -39,29 +39,35 @@ class PubSubUnitTests: QuickSpec {
         describe("Cogs PubSub Service") {
 
             describe("get sessionUUID") {
-                it("is successfull") {
+                it("returns sessionUUID") {
                     let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                                   options: PubSubOptions(url: url,
-                                                                                         timeout: 30,
-                                                                                         autoReconnect: false))
+                                                                                         connectionTimeout: 30,
+                                                                                         autoReconnect: true,
+                                                                                         minReconnectDelay: 5,
+                                                                                         maxReconnectDelay: 300,
+                                                                                         maxReconnectAttempts: -1))
                     waitUntil(timeout: defaultTimeout) { done in
                         connectionHandle.connect(sessionUUID: nil) {
                             connectionHandle.getSessionUuid() { outcome in
                                 switch outcome {
-                                case .PubSubSuccess(let success):
-                                    let successResponse = success as! PubSubResponse
+                                case .pubSubSuccess(let object):
+                                    if let uuid = object as? String {
+                                        expect(uuid).toNot(beNil())
+                                        expect(uuid).toNot(beEmpty())
+                                    } else {
+                                        fail("Expected String, got \(object)")
+                                    }
 
-                                    expect(successResponse.action == PubSubAction.sessionUuid.rawValue).to(beTruthy())
-                                    expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                    expect(successResponse.uuid).toNot(beNil())
-                                    expect(successResponse.uuid!).toNot(beEmpty())
-                                case .PubSubResponseError(let errorResponse):
+                                    done()
+
+                                case .pubSubResponseError(let errorResponse):
 
                                     expect(errorResponse.action == PubSubAction.sessionUuid.rawValue).to(beTruthy())
                                     expect(errorResponse.code).toNot(equal(PubSubResponseCode.success.rawValue))
-                                }
 
-                                done()
+                                    done()
+                                }
                             }
                         }
                     }
@@ -75,22 +81,25 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is supplied") {
                         let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
 
-                        it("is successfull") {
+                        it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { outcome in
                                         switch outcome {
-                                        case .PubSubSuccess(let success):
-                                            let successResponse = success as! PubSubResponse
-
-                                            expect(successResponse.action == PubSubAction.subscribe.rawValue).to(beTruthy())
-                                            expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                            expect(successResponse.channels).toNot(beNil())
-                                            expect(successResponse.channels!).toNot(beEmpty())
-                                            expect(successResponse.channels!.count).to(equal(1))
+                                        case .pubSubSuccess(let object):
+                                            if let channels = object as? [String] {
+                                                expect(channels).toNot(beNil())
+                                                expect(channels).toNot(beEmpty())
+                                                expect(channels.count).to(equal(1))
+                                            } else {
+                                                fail("Expected [String], got \(object)")
+                                            }
 
                                         default:
                                             fail("Expected success, got error response")
@@ -106,21 +115,25 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is not supplied") {
                         let connectionHandle = pubSubService.connnect(keys: noReadKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { outcome in
                                         switch outcome {
-                                        case .PubSubResponseError(let errorResponse):
+                                        case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.subscribe.rawValue
                                             expect(errorResponse.code).to(equal(PubSubResponseCode.unauthorised.rawValue))
+
                                         default:
                                             fail("Expected error response, got success")
                                         }
 
-                                        done()
+                                         done()
                                     }
                                 }
                             }
@@ -132,25 +145,27 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is supplied") {
                         let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
 
-                        it("is successfull") {
-
+                        it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
                                         connectionHandle.listSubscriptions() { outcome in
 
                                             switch outcome {
-                                            case .PubSubSuccess(let success):
-                                                guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
-
-                                                expect(successResponse.action) == PubSubAction.subscriptions.rawValue
-                                                expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                                expect(successResponse.channels).toNot(beNil())
-                                                expect(successResponse.channels!).toNot(beEmpty())
-                                                expect(successResponse.channels!.count).to(equal(1))
+                                            case .pubSubSuccess(let object):
+                                                if let channels = object as? [String] {
+                                                    expect(channels).toNot(beNil())
+                                                    expect(channels).toNot(beEmpty())
+                                                    expect(channels.count).to(equal(1))
+                                                } else {
+                                                    fail("Expected [String], got \(object)")
+                                                }
 
                                             default:
                                                 fail("Expected success, got error response")
@@ -167,14 +182,17 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is not supplied") {
                         let connectionHandle = pubSubService.connnect(keys: noReadKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.listSubscriptions() { outcome in
                                         switch outcome {
-                                        case .PubSubResponseError(let errorResponse):
+                                        case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.subscriptions.rawValue
                                             expect(errorResponse.code).to(equal(PubSubResponseCode.unauthorised.rawValue))
 
@@ -194,29 +212,30 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is supplied") {
                         let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
-
-                        it("is successfull") {
-
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
+                        it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
                                         connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
                                             switch outcome {
-                                            case .PubSubSuccess(let success):
-                                                guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
-
-                                                expect(successResponse.action) == PubSubAction.unsubscribe.rawValue
-                                                expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                                expect(successResponse.channels).toNot(beNil())
-                                                expect(successResponse.channels!).to(beEmpty())
+                                            case .pubSubSuccess(let object):
+                                                if let channels = object as? [String] {
+                                                    expect(channels).toNot(beNil())
+                                                    expect(channels).to(beEmpty())
+                                                } else {
+                                                    fail("Expected [], got \(object)")
+                                                }
 
                                             default:
                                                 fail("Expected success, got error response")
                                             }
 
-                                            done()
+                                             done()
                                         }
                                     }
                                 }
@@ -227,7 +246,7 @@ class PubSubUnitTests: QuickSpec {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
                                     switch outcome {
-                                    case .PubSubResponseError(let errorResponse):
+                                    case .pubSubResponseError(let errorResponse):
                                         expect(errorResponse.action) == PubSubAction.unsubscribe.rawValue
                                         expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
 
@@ -244,19 +263,22 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is not supplied") {
                         let connectionHandle = pubSubService.connnect(keys: noReadKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
                                         switch outcome {
-                                        case .PubSubResponseError(let errorResponse):
+                                        case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.unsubscribe.rawValue
                                             expect(errorResponse.code).to(equal(PubSubResponseCode.unauthorised.rawValue))
 
                                         default:
-                                            fail("Expected error response, got success")
+                                            fail("Expected error response, got object")
                                         }
 
                                         done()
@@ -271,23 +293,26 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is supplied") {
                         let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
-                        it("is successfull") {
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
+                        it("returns unsubscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: "Test", messageHandler: nil) { _ in
                                         connectionHandle.subscribe(channelName: "Test2", messageHandler: nil) { _ in
                                             connectionHandle.unsubscribeAll() { outcome in
                                                 switch outcome {
-                                                case.PubSubSuccess(let success):
-                                                    guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
-
-                                                    expect(successResponse.action) == PubSubAction.unsubscribeAll.rawValue
-                                                    expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                                    expect(successResponse.channels).toNot(beNil())
-                                                    expect(successResponse.channels!).toNot(beEmpty())
-                                                    expect(successResponse.channels!.count).to(equal(2))
+                                                case.pubSubSuccess(let object):
+                                                    if let channels = object as? [String] {
+                                                        expect(channels).toNot(beNil())
+                                                        expect(channels).toNot(beEmpty())
+                                                        expect(channels.count).to(equal(2))
+                                                    } else {
+                                                        fail("Expected [String], got \(object)")
+                                                    }
 
                                                 default:
                                                     fail("Expected success, got error response")
@@ -305,20 +330,23 @@ class PubSubUnitTests: QuickSpec {
                     context("when read key is not supplied") {
                         let connectionHandle = pubSubService.connnect(keys: noReadKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
                         it("returns unauthorised") {
 
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.unsubscribeAll() { outcome in
                                         switch outcome {
-                                        case .PubSubResponseError(let errorRespoinse):
+                                        case .pubSubResponseError(let errorRespoinse):
                                             expect(errorRespoinse.action) == PubSubAction.unsubscribeAll.rawValue
                                             expect(errorRespoinse.code).to(equal(PubSubResponseCode.unauthorised.rawValue))
 
                                         default:
-                                            fail("Expected error response, got success")
+                                            fail("Expected error response, got object")
                                         }
 
                                         done()
@@ -336,12 +364,19 @@ class PubSubUnitTests: QuickSpec {
 
                 describe("publish") {
                     context("when write key is supplied") {
+
                         let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
-                        it("is succesfull") {
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
+                        afterEach {
+                            connectionHandle.close()
+                        }
 
+                        it("returns published message") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
@@ -365,12 +400,12 @@ class PubSubUnitTests: QuickSpec {
                             waitUntil { done in
                                 connectionHandle.publishWithAck(channelName: uniqueChannelName, message: testMessage) { outcome in
                                     switch outcome {
-                                    case .PubSubResponseError(let errorResponse):
+                                    case .pubSubResponseError(let errorResponse):
                                         expect(errorResponse.action) == PubSubAction.publish.rawValue
                                         expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
 
                                     default:
-                                        fail("Expected error response, got success")
+                                        fail("Expected error response, got object")
                                     }
 
                                     done()
@@ -382,10 +417,16 @@ class PubSubUnitTests: QuickSpec {
                     context("when write key in not supplied") {
                         let connectionHandle = pubSubService.connnect(keys: noWriteKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
-                        it("returns unauthorised") {
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
+                        afterEach {
+                            connectionHandle.close()
+                        }
 
+                        it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
@@ -408,21 +449,28 @@ class PubSubUnitTests: QuickSpec {
                     context("when write key is supplied") {
                         let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
-                        xit("is successfull") {
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
+                        afterEach {
+                            connectionHandle.close()
+                        }
+
+                        it("returns success ack") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
                                         connectionHandle.publishWithAck(channelName: testChannelName, message: testMessage) { outcome in
                                             switch outcome {
-                                            case .PubSubSuccess(let success):
-                                                guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
-
-                                                expect(successResponse.action) == PubSubAction.publish.rawValue
-                                                expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                                expect(successResponse.messageUUID).toNot(beNil())
-                                                expect(successResponse.messageUUID).toNot(beEmpty())
+                                            case .pubSubSuccess(let object):
+                                                if let messageUuid = object as? String {
+                                                    expect(messageUuid).toNot(beNil())
+                                                    expect(messageUuid).toNot(beEmpty())
+                                                } else {
+                                                    fail("Expected String, got \(object)")
+                                                }
 
                                             default:
                                                 fail("Expected success, got error response")
@@ -442,7 +490,7 @@ class PubSubUnitTests: QuickSpec {
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.publishWithAck(channelName: uniqueChannelName, message: testMessage) { outcome in
                                         switch outcome {
-                                        case .PubSubResponseError(let errorResponse):
+                                        case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.publish.rawValue
                                             expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
 
@@ -460,15 +508,22 @@ class PubSubUnitTests: QuickSpec {
                     context("when write key is not supplied") {
                         let connectionHandle = pubSubService.connnect(keys: noWriteKeys,
                                                                       options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+                                                                                             connectionTimeout: 30,
+                                                                                             autoReconnect: true,
+                                                                                             minReconnectDelay: 5,
+                                                                                             maxReconnectDelay: 300,
+                                                                                             maxReconnectAttempts: -1))
+                        afterEach {
+                            connectionHandle.close()
+                        }
+
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
                                     connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
                                         connectionHandle.publishWithAck(channelName: testChannelName, message: testMessage) { outcome in
                                             switch outcome {
-                                            case .PubSubResponseError(let errorResponse):
+                                            case .pubSubResponseError(let errorResponse):
                                                 expect(errorResponse.action) == PubSubAction.publish.rawValue
                                                 expect(errorResponse.code) == PubSubResponseCode.unauthorised.rawValue
 
@@ -505,7 +560,7 @@ class PubSubIntegrationTests: QuickSpec {
         var noReadKeys: [String]!
         var noWriteKeys: [String]!
 
-        let defaultTimeout: TimeInterval = 5
+        let defaultTimeout: TimeInterval = 10
 
         if let path = Bundle.main.path(forResource: "Keys", ofType: "plist") {
 
@@ -526,15 +581,15 @@ class PubSubIntegrationTests: QuickSpec {
         func getSessionUUID(_ connectionHandle: PubSubConnectionHandle, completion: @escaping (String) -> Void) {
             connectionHandle.getSessionUuid() { outcome in
                 switch outcome {
-                case .PubSubSuccess(let success):
-                    guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
+                case .pubSubSuccess(let object):
+                    if let uuid = object as? String {
+                        expect(uuid).toNot(beNil())
+                        expect(uuid).toNot(beEmpty())
 
-                    expect(successResponse.action) == PubSubAction.sessionUuid.rawValue
-                    expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                    expect(successResponse.uuid).toNot(beNil())
-                    expect(successResponse.uuid!).toNot(beEmpty())
-
-                    completion(successResponse.uuid!)
+                        completion(uuid)
+                    } else {
+                        fail("Expected String, got \(object)")
+                    }
 
                 default:
                     fail("Expected success, got error response")
@@ -545,43 +600,57 @@ class PubSubIntegrationTests: QuickSpec {
         describe("Full Sweep Test") {
             let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                           options: PubSubOptions(url: url,
-                                                                                 timeout: 30,
-                                                                                 autoReconnect: false))
+                                                                                 connectionTimeout: 30,
+                                                                                 autoReconnect: true,
+                                                                                 minReconnectDelay: 5,
+                                                                                 maxReconnectDelay: 300,
+                                                                                 maxReconnectAttempts: -1))
+            afterEach {
+                connectionHandle.close()
+            }
 
             it("is successfull") {
                 waitUntil(timeout: defaultTimeout) { done in
                     connectionHandle.connect(sessionUUID: nil) {
                         connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { outcome in
                             switch outcome {
-                            case .PubSubSuccess(let success):
-                                guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
+                            case .pubSubSuccess(let object):
+                                if let channels = object as? [String] {
+                                    expect(channels).toNot(beNil())
+                                    expect(channels).toNot(beEmpty())
+                                    expect(channels.count).to(equal(1))
+                                } else {
+                                    fail("Expected [String], got \(object)")
 
-                                expect(successResponse.action) == PubSubAction.subscribe.rawValue
-                                expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                expect(successResponse.channels).toNot(beNil())
-                                expect(successResponse.channels!).toNot(beEmpty())
-                                expect(successResponse.channels!.count).to(equal(1))
+                                    done()
+                                }
+
+                                connectionHandle.listSubscriptions() { outcome in
+                                    switch outcome {
+                                    case .pubSubSuccess(let object):
+                                        if let channels = object as? [String] {
+                                            expect(channels).toNot(beNil())
+                                            expect(channels).toNot(beEmpty())
+                                            expect(channels.count).to(equal(1))
+                                        } else {
+                                            fail("Expected [String], got \(object)")
+
+                                            done()
+                                        }
+
+                                    default:
+                                        fail("Expected success, got error response")
+
+                                        done()
+                                    }
+
+                                    connectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                                }
 
                             default:
                                 fail("Expected success, got error response")
-                            }
 
-                            connectionHandle.listSubscriptions() { outcome in
-                                switch outcome {
-                                case .PubSubSuccess(let success):
-                                    guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
-
-                                    expect(successResponse.action) == PubSubAction.subscriptions.rawValue
-                                    expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                    expect(successResponse.channels).toNot(beNil())
-                                    expect(successResponse.channels!).toNot(beEmpty())
-                                    expect(successResponse.channels!.count).to(equal(1))
-
-                                default:
-                                    fail("Expected success, got error response")
-                                }
-
-                                connectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                                done()
                             }
                         }
                     }
@@ -593,16 +662,20 @@ class PubSubIntegrationTests: QuickSpec {
 
                         connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
                             switch outcome {
-                            case .PubSubSuccess(let success):
-                                guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
+                            case .pubSubSuccess(let object):
+                                if let channels = object as? [String] {
+                                    expect(channels).toNot(beNil())
+                                    expect(channels).to(beEmpty())
+                                } else {
+                                    fail("Expected [], got \(object)")
 
-                                expect(successResponse.action) == PubSubAction.unsubscribe.rawValue
-                                expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                expect(successResponse.channels).toNot(beNil())
-                                expect(successResponse.channels!).to(beEmpty())
+                                    done()
+                                }
 
                             default:
                                 fail("Expected success, got error response")
+
+                                done()
                             }
 
                             connectionHandle.close()
@@ -619,18 +692,25 @@ class PubSubIntegrationTests: QuickSpec {
         }
 
         describe("Interaction Test") {
-            var firstFinished: Bool = false
-            var secondFinished: Bool = false
-
             let clientOneConnectionHandle = pubSubService.connnect(keys: allKeys,
-                                                                   options: PubSubOptions(url: url,
-                                                                                          timeout: 30,
-                                                                                          autoReconnect: false))
+                                                          options: PubSubOptions(url: url,
+                                                                                 connectionTimeout: 30,
+                                                                                 autoReconnect: true,
+                                                                                 minReconnectDelay: 5,
+                                                                                 maxReconnectDelay: 300,
+                                                                                 maxReconnectAttempts: -1))
 
             let clientTwoConnectionHandle = pubSubService.connnect(keys: allKeys,
-                                                                   options: PubSubOptions(url: url,
-                                                                                          timeout: 30,
-                                                                                          autoReconnect: false))
+                                                          options: PubSubOptions(url: url,
+                                                                                 connectionTimeout: 30,
+                                                                                 autoReconnect: true,
+                                                                                 minReconnectDelay: 5,
+                                                                                 maxReconnectDelay: 300,
+                                                                                 maxReconnectAttempts: -1))
+            afterEach {
+                clientOneConnectionHandle.close()
+                clientTwoConnectionHandle.close()
+            }
 
             it("is successfull") {
                 waitUntil(timeout: defaultTimeout) { done in
@@ -644,23 +724,31 @@ class PubSubIntegrationTests: QuickSpec {
 
                         }, completion: { outcome in
                             switch outcome {
-                            case .PubSubSuccess(let success):
-                                guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
+                            case .pubSubSuccess(let object):
+                                if let channels = object as? [String] {
+                                    expect(channels).toNot(beNil())
+                                    expect(channels).toNot(beEmpty())
+                                    expect(channels.count).to(equal(1))
+                                } else {
+                                    fail("Expected [String], got \(object)")
 
-                                expect(successResponse.action) == PubSubAction.subscribe.rawValue
-                                expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                expect(successResponse.channels).toNot(beNil())
-                                expect(successResponse.channels!).toNot(beEmpty())
-                                expect(successResponse.channels!.count).to(equal(1))
+                                    done()
+                                }
 
                             default:
                                 fail("Expected success, got error response")
+
+                                done()
                             }
 
                             clientOneConnectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+
+                            done()
                         })
                     }
+                }
 
+                waitUntil(timeout: defaultTimeout) { done in
                     clientTwoConnectionHandle.connect(sessionUUID: nil) {
                         clientTwoConnectionHandle.subscribe(channelName: testChannelName, messageHandler: { message in
 
@@ -671,73 +759,73 @@ class PubSubIntegrationTests: QuickSpec {
 
                         }, completion: { outcome in
                             switch outcome {
-                            case .PubSubSuccess(let success):
-                                guard let successResponse = success as? PubSubResponse  else { fail("Could not cast to PubSubResponse"); return }
+                            case .pubSubSuccess(let object):
+                                if let channels = object as? [String] {
+                                    expect(channels).toNot(beNil())
+                                    expect(channels).toNot(beEmpty())
+                                    expect(channels.count).to(equal(1))
+                                } else {
+                                    fail("Expected [String], got \(object)")
 
-                                expect(successResponse.action) == PubSubAction.subscribe.rawValue
-                                expect(successResponse.code).to(equal(PubSubResponseCode.success.rawValue))
-                                expect(successResponse.channels).toNot(beNil())
-                                expect(successResponse.channels!).toNot(beEmpty())
-                                expect(successResponse.channels!.count).to(equal(1))
+                                    done()
+                                }
 
                             default:
                                 fail("Expected success, got error response")
+
+                                done()
                             }
 
                             clientTwoConnectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+
+                            done()
                         })
                     }
+                }
 
+                waitUntil(timeout: 15) { done in
                     clientOneConnectionHandle.onMessage = { message in
                         expect(message.action) == PubSubAction.message.rawValue
                         expect(message.channel) == testChannelName
                         expect(message.message) == testMessage
 
-                        firstFinished = true
-
-                        if firstFinished && secondFinished {
-                            clientOneConnectionHandle.close()
-                            clientTwoConnectionHandle.close()
-
-                            done()
-                        }
+                        done()
                     }
+                }
 
+                waitUntil(timeout: 15) { done in
                     clientTwoConnectionHandle.onMessage = { message in
                         expect(message.action) == PubSubAction.message.rawValue
                         expect(message.channel) == testChannelName
                         expect(message.message) == testMessage
 
-                        secondFinished = true
-
-                        if firstFinished && secondFinished {
-                            clientOneConnectionHandle.close()
-                            clientTwoConnectionHandle.close()
-
-                            done()
-                        }
+                       done()
                     }
                 }
             }
         }
 
         describe("Reconnect Test") {
-            var sessionUUID: String!
             let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                           options: PubSubOptions(url: url,
-                                                                                 timeout: 30,
-                                                                                 autoReconnect: true))
+                                                                                 connectionTimeout: 30,
+                                                                                 autoReconnect: true,
+                                                                                 minReconnectDelay: 5,
+                                                                                 maxReconnectDelay: 300,
+                                                                                 maxReconnectAttempts: -1))
+            var sessionUUID: String!
+
             afterEach {
                 connectionHandle.close()
             }
 
             it("successfully restores current session") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: 15) { done in
                     connectionHandle.connect(sessionUUID: nil) {
                         getSessionUUID(connectionHandle) { uuid in
                             sessionUUID = uuid
 
-                            connectionHandle.close()
+                            connectionHandle.dropConnection()
                         }
                     }
 
@@ -752,21 +840,27 @@ class PubSubIntegrationTests: QuickSpec {
                 }
             }
 
-            xit("successfully opens new session") {
-                waitUntil(timeout: 310) { done in
-                    getSessionUUID(connectionHandle) { uuid in
-                        sessionUUID = uuid
+            xit("successfully opens new session after session expire") {
+                var sessionUuid: String?
 
-                        connectionHandle.close()
-                        sleep(300)
+                waitUntil(timeout: 310) { done in
+                    connectionHandle.connect(sessionUUID: nil) {
+                        getSessionUUID(connectionHandle) { uuid in
+                            sessionUUID = uuid
+
+                            connectionHandle.dropConnection()
+                            Thread.sleep(forTimeInterval: 300)
+                            connectionHandle.connect(sessionUUID: uuid)
+                        }
                     }
 
-                    connectionHandle.onReconnect = {
-                        getSessionUUID(connectionHandle) { uuid in
-
-                            expect(uuid != sessionUUID).to(beTruthy())
+                    connectionHandle.onNewSession = { uuid in
+                        if sessionUUID != nil {
+                            expect(uuid != sessionUuid).to(beTruthy())
 
                             done()
+                        } else {
+                            sessionUuid = uuid
                         }
                     }
                 }
@@ -776,8 +870,11 @@ class PubSubIntegrationTests: QuickSpec {
         describe("Get Session Uuid Test") {
             let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                           options: PubSubOptions(url: url,
-                                                                                 timeout: 30,
-                                                                                 autoReconnect: false))
+                                                                                 connectionTimeout: 30,
+                                                                                 autoReconnect: true,
+                                                                                 minReconnectDelay: 5,
+                                                                                 maxReconnectDelay: 300,
+                                                                                 maxReconnectAttempts: -1))
             afterEach {
                 connectionHandle.close()
             }
@@ -806,8 +903,11 @@ class PubSubIntegrationTests: QuickSpec {
         describe("Event Handlers Tests") {
             let connectionHandle = pubSubService.connnect(keys: allKeys,
                                                           options: PubSubOptions(url: url,
-                                                                                 timeout: 30,
-                                                                                 autoReconnect: false))
+                                                                                 connectionTimeout: 30,
+                                                                                 autoReconnect: true,
+                                                                                 minReconnectDelay: 5,
+                                                                                 maxReconnectDelay: 300,
+                                                                                 maxReconnectAttempts: -1))
             afterEach {
                 connectionHandle.close()
             }
@@ -837,17 +937,23 @@ class PubSubIntegrationTests: QuickSpec {
             }
 
             describe("onErrorResponse Test") {
-
                 context("when read key is not supplied") {
+                    let connectionHandle = pubSubService.connnect(keys: noReadKeys,
+                                                                  options: PubSubOptions(url: url,
+                                                                                         connectionTimeout: 30,
+                                                                                         autoReconnect: true,
+                                                                                         minReconnectDelay: 5,
+                                                                                         maxReconnectDelay: 300,
+                                                                                         maxReconnectAttempts: -1))
                     var isEmitting: Bool = false
                     var error: PubSubErrorResponse?
 
-                    fit("emits an error") {
-                        let connectionHandle = pubSubService.connnect(keys: noReadKeys,
-                                                                      options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
-                        waitUntil(timeout: 10) { done in
+                    afterEach {
+                        connectionHandle.close()
+                    }
+
+                    it("emits error response") {
+                        waitUntil(timeout: defaultTimeout) { done in
                             connectionHandle.connect(sessionUUID: nil) {
                                 connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in }
                             }
@@ -872,14 +978,21 @@ class PubSubIntegrationTests: QuickSpec {
                 }
                 
                 context("when write key is not supplied") {
+                    let connectionHandle = pubSubService.connnect(keys: noWriteKeys,
+                                                                  options: PubSubOptions(url: url,
+                                                                                         connectionTimeout: 30,
+                                                                                         autoReconnect: true,
+                                                                                         minReconnectDelay: 5,
+                                                                                         maxReconnectDelay: 300,
+                                                                                         maxReconnectAttempts: -1))
                     var isEmitting: Bool = false
                     var error: PubSubErrorResponse?
-                    
-                    fit("emits an error") {
-                        let connectionHandle = pubSubService.connnect(keys: noWriteKeys,
-                                                                      options: PubSubOptions(url: url,
-                                                                                             timeout: 30,
-                                                                                             autoReconnect: false))
+
+                    afterEach {
+                        connectionHandle.close()
+                    }
+
+                    it("emits error response") {
                         waitUntil(timeout: 10) { done in
                             connectionHandle.connect(sessionUUID: nil) {
                                 connectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
@@ -906,14 +1019,36 @@ class PubSubIntegrationTests: QuickSpec {
             }
             
             describe("onReconnect Test") {
-                
+                var isEmitting: Bool = false
+
+                it("emits reconnect event") {
+                    waitUntil(timeout: defaultTimeout) { done in
+                        connectionHandle.connect(sessionUUID: nil)
+
+                        connectionHandle.onNewSession = { uuid in
+                            connectionHandle.dropConnection()
+                        }
+
+                        connectionHandle.onReconnect = {
+                            isEmitting = true
+
+                            done()
+                        }
+                    }
+
+                    waitUntil(timeout: 11) { done in
+                        expect(isEmitting == true).to(beTruthy())
+
+                        done()
+                    }
+                }
             }
             
             describe("onClose Test") {
                 var isEmitting: Bool = false
                 
                 it("emits close event") {
-                    waitUntil(timeout: 10) { done in
+                    waitUntil(timeout: defaultTimeout) { done in
                         connectionHandle.connect(sessionUUID: nil) {
                             connectionHandle.close()
                         }
@@ -937,22 +1072,25 @@ class PubSubIntegrationTests: QuickSpec {
                 var isEmitting: Bool = false
                 var sessionUuid: String?
                 
-                it("on new session event") {
-                    waitUntil(timeout: 10) { done in
+                it("emits on new session event") {
+                    waitUntil(timeout: defaultTimeout) { done in
                         
-                        connectionHandle.connect(sessionUUID: nil) {
-                            connectionHandle.close()
-                        }
+                        connectionHandle.connect(sessionUUID: nil)
                         
                         connectionHandle.onClose = { (error) in
                             connectionHandle.connect(sessionUUID: nil)
                         }
                         
                         connectionHandle.onNewSession = { uuid in
-                            isEmitting = true
-                            sessionUuid = uuid
-                            
-                            done()
+
+                            if sessionUuid != nil {
+                                isEmitting = true
+
+                                done()
+                            } else {
+                                sessionUuid = uuid
+                                connectionHandle.close()
+                            }
                         }
                     }
                     

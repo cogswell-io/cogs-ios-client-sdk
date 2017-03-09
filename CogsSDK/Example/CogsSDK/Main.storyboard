@@ -795,7 +795,12 @@ for example:
                     </view>
                     <navigationItem key="navigationItem" title="WSS Messaging" id="emi-vf-6Am">
                         <rightBarButtonItems>
-                            <barButtonItem title="Disconnect" id="IsC-V1-4N5">
+                            <barButtonItem title="Drop" id="Aop-b8-cgH">
+                                <connections>
+                                    <action selector="dropConnection:" destination="E1O-12-LuY" id="Iqd-6X-wfa"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Close" id="IsC-V1-4N5">
                                 <connections>
                                     <action selector="disconnectWS:" destination="E1O-12-LuY" id="O3g-DN-6kB"/>
                                 </connections>

@@ -47,9 +47,12 @@ class WSSMessagingVC: ViewController {
         
         let pubSubService = PubSubService()
         let connectionHandler = pubSubService.connnect(keys: keys,
-                                                        options: PubSubOptions(url: url,
-                                                                               timeout: 30,
-                                                                               autoReconnect: true))
+                                                       options:  PubSubOptions(url: url,
+                                                                               connectionTimeout: 30,
+                                                                               autoReconnect: true,
+                                                                               minReconnectDelay: 5,
+                                                                               maxReconnectDelay: 300,
+                                                                               maxReconnectAttempts: -1))
         self.connectionHandler = connectionHandler
         
         connectionHandler.onNewSession = { sessionUUID in
@@ -140,11 +143,24 @@ class WSSMessagingVC: ViewController {
         connectionHandler.close()
     }
 
+    @IBAction func dropConnection(_ sender: UIBarButtonItem) {
+        guard (connectionHandler) != nil else { return }
+
+        connectionHandler.dropConnection()
+    }
+
     @IBAction func getSessionUUID(_ sender: UIButton) {
         guard (connectionHandler) != nil else { return }
 
         connectionHandler.getSessionUuid { outcome in
-            print(outcome as Any)
+            
+            switch outcome {
+            case .pubSubSuccess(let uuid):
+                print("Session uuid \(uuid)")
+    
+            case .pubSubResponseError(let error):
+                print(error)
+            }
         }
     }
 
@@ -156,7 +172,13 @@ class WSSMessagingVC: ViewController {
             print("\(message.id) | \(message.message)")
 
         }) { outcome in
-            print(outcome as Any)
+            switch outcome {
+            case .pubSubSuccess(let subscribedChannels):
+                print(subscribedChannels)
+                
+            case .pubSubResponseError(let error):
+                print(error)
+            }
         }
     }
 
@@ -165,7 +187,13 @@ class WSSMessagingVC: ViewController {
         guard (connectionHandler) != nil else { return }
 
         connectionHandler.unsubscribe(channelName: channelName){ outcome in
-            print(outcome as Any)
+            switch outcome {
+            case .pubSubSuccess(let subscribedChannels):
+                print(subscribedChannels)
+                
+            case .pubSubResponseError(let error):
+                print(error)
+            }
         }
     }
 
@@ -173,7 +201,14 @@ class WSSMessagingVC: ViewController {
         guard (connectionHandler) != nil else { return }
 
         connectionHandler.listSubscriptions(){ outcome in
-            print(outcome as Any)
+            switch outcome {
+            case .pubSubSuccess(let subscribedChannels):
+                print(subscribedChannels)
+                
+            case .pubSubResponseError(let error):
+                print(error)
+            }
+
         }
     }
 
@@ -181,7 +216,13 @@ class WSSMessagingVC: ViewController {
         guard (connectionHandler) != nil else { return }
 
         connectionHandler.unsubscribeAll(){ outcome in
-            print(outcome as Any)
+            switch outcome {
+            case .pubSubSuccess(let subscribedChannels):
+                print(subscribedChannels)
+                
+            case .pubSubResponseError(let error):
+                print(error)
+            }
         }
     }
 
@@ -194,7 +235,13 @@ class WSSMessagingVC: ViewController {
 
         if ack {
             connectionHandler.publishWithAck(channelName: channel, message: messageText){ outcome in
-                print(outcome as Any)
+                switch outcome {
+                case .pubSubSuccess(let messadeUuid):
+                    print(messadeUuid)
+                    
+                case .pubSubResponseError(let error):
+                    print(error)
+                }
             }
         } else {
             connectionHandler.publish(channelName: channel, message: messageText){ error in

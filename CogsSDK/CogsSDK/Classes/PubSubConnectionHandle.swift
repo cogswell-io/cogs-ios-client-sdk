@@ -7,22 +7,18 @@ import Starscream
 /// - PubSubResponseError: The operation completed with error.
 /// - PubSubSuccess: The operation completed successfully with response object.
 public enum PubSubOutcome {
-    case PubSubResponseError(PubSubErrorResponse)
-    case PubSubSuccess(PubSubResponsible)
-    //case PubSubError(Error) //It is impossible to get the completion handler when general error occures.
+    case pubSubResponseError(PubSubErrorResponse)
+    case pubSubSuccess(Any)
 }
 
 
-//public typealias MessageHandler    =
-
 /// PubSub connection handler
 public class PubSubConnectionHandle {
-   
-    private let defaultReconnectDelay: Double = 5.0
-    private let maxReconnectDelay: Double = 150.0
 
-    private var autoReconnectDelay: Double!
-    
+    private var currentReconnectDelay: Double
+    private var currentReconnectAtempts: Int = 0
+    private var autoReconnect: Bool
+
     private var webSocket : WebSocket
     private var options: PubSubOptions
     private var keys: [String]!
@@ -36,25 +32,37 @@ public class PubSubConnectionHandle {
     private var channelHandlers = [String : (PubSubMessage) -> ()]()
     private var connectHandler: (() -> ())?
     
-    /// New session completion handler
+    /// New session event handler.
+    ///
+    /// Indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.
     public var onNewSession: ((String) -> ())?
     
-    /// Reconnect completion handler
+    /// Reconnect event handler.
+    ///
+    /// The event is emitted on socket reconnection if it disconnected for any reason.
     public var onReconnect: (() -> ())?
     
-    /// A handler for any raw record received from the server, whether a response to a request or a message.
+    /// Raw record event handler.
+    ///
+    /// The event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.
     public var onRawRecord: ((RawRecord) -> ())?
     
-    /// Message completion handler
+    /// Message event handler.
+    ///
+    /// The event is emitted whenever the socket receives messages from any channel.
     public var onMessage: ((PubSubMessage) -> ())?
 
-    /// Close completion handler
+    /// Close event handler
     public var onClose: ((Error?) -> ())?
     
-    /// General error completion handler
+    /// General error event handler.
+    ///
+    /// The event is emitted on any connection errors, failed publishes, or when any exception is thrown.
     public var onError: ((Error) -> ())?
     
-    /// Response error completion handler
+    /// Response error event handler.
+    ///
+    /// The event is emitted whenever a message is sent to the user with an error status code.
     public var onErrorResponse: ((PubSubErrorResponse) -> ())?
     
     
@@ -63,18 +71,26 @@ public class PubSubConnectionHandle {
     /// - Parameters:
     ///   - keys: The provided project keys
     ///   - options: The connection options.
-    public init(keys: [String], options: PubSubOptions) {
+    public init(keys: [String], options: PubSubOptions?) {
+
+        if let ops = options {
+            self.options = ops
+        } else {
+            self.options = PubSubOptions.defaultOptions
+        }
         
-        self.keys               = keys
-        self.options            = options
-        self.autoReconnectDelay = defaultReconnectDelay
+        self.keys                    = keys
+        self.currentReconnectDelay   = self.options.minReconnectDelay
+        self.autoReconnect           = self.options.autoReconnect
 
         webSocket = WebSocket(url: URL(string: self.options.url)!)
         webSocket.timeout = self.options.connectionTimeout
         
         webSocket.onConnect = {
             self.connectHandler?()
-            self.autoReconnectDelay = self.defaultReconnectDelay
+            self.autoReconnect         = self.options.autoReconnect
+            self.currentReconnectDelay = self.options.minReconnectDelay
+            self.currentReconnectAtempts = 0
             self.getSessionUuid{ _ in }
         }
         
@@ -85,16 +101,30 @@ public class PubSubConnectionHandle {
                 self.onClose?(nil)
             }
 
-            if self.options.autoReconnect {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.autoReconnectDelay) {
+            func execute() {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.currentReconnectDelay) {
                     self.reconnect()
                 }
+            }
 
-                print(self.autoReconnectDelay)
+            if self.autoReconnect {
+                if self.options.maxReconnectAttempts > -1 {
+                    guard self.currentReconnectAtempts < self.options.maxReconnectAttempts else { return }
 
-                let minumumDelay = max(self.defaultReconnectDelay, self.autoReconnectDelay)
-                let nextDelay = min(minumumDelay, self.maxReconnectDelay) * 2
-                self.autoReconnectDelay = nextDelay
+                    execute()
+                    self.currentReconnectAtempts += 1
+                } else {
+                    execute()
+                }
+
+                print(self.currentReconnectDelay)
+                print(self.currentReconnectAtempts)
+
+                self.currentReconnectDelay *= 2.0
+
+                if self.currentReconnectDelay > self.options.maxReconnectDelay {
+                    self.currentReconnectDelay = self.options.maxReconnectDelay
+                }
             }
         }
 
@@ -161,7 +191,7 @@ public class PubSubConnectionHandle {
         }
     }
     
-    /// Creates connection with the websocket.
+    /// Starts connection with the websocket.
     ///
     /// - Parameter sessionUUID: When supplied client session will be restored if possible.
     public func connect(sessionUUID: String?, completion: (() -> ())? = nil) {
@@ -176,16 +206,27 @@ public class PubSubConnectionHandle {
         
         webSocket.connect()
     }
-    
-    ///  Disconnect from the websocket.
-    public func close() {
+
+    /// Drops connection.
+    public func dropConnection() {
         if webSocket.isConnected {
+
             webSocket.disconnect()
             handlerDispatcher.removeAllObjects()
         }
     }
     
-    /// Getting session UUID.
+    ///  Disconnects from the websocket.
+    public func close() {
+        if webSocket.isConnected {
+            self.autoReconnect = false
+
+            webSocket.disconnect()
+            handlerDispatcher.removeAllObjects()
+        }
+    }
+    
+    /// Getts session UUID.
     ///
     /// - Parameter completion: The closure called when the `getSessionUuid` is complete.
     public func getSessionUuid(completion: @escaping (PubSubOutcome) -> ()) {
@@ -194,10 +235,10 @@ public class PubSubConnectionHandle {
         
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
-                completion(PubSubOutcome.PubSubResponseError(err))
+                completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.PubSubSuccess(result))
+                    completion(PubSubOutcome.pubSubSuccess(result.uuid))
                 }
             }
         }
@@ -213,11 +254,13 @@ public class PubSubConnectionHandle {
     }
     
 
-    /// Subscribing to a channel
+    /// Subscribes to a channel.
+    ///
+    /// The successful result contains a list of the subscribed channels. The connection needs read permissions in order to subscribe to a channel.
     ///
     /// - Parameters:
     ///   - channelName: The chanel name.
-    ///   - messageHandler: The channel specific handler. It is called when a message on this channel comes.
+    ///   - messageHandler: The channel specific handler which will be called with each message received from this channel.    
     ///   - completion: The closure called when the `subscribe` is complete.
     public func subscribe(channelName: String, messageHandler: ((PubSubMessage) -> ())?, completion: @escaping (PubSubOutcome) -> ()) {
         
@@ -230,10 +273,10 @@ public class PubSubConnectionHandle {
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
                 channelHandlers.removeValue(forKey: channelName)
-                completion(PubSubOutcome.PubSubResponseError(err))
+                completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.PubSubSuccess(result))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels))
                 }
             }
         }
@@ -249,7 +292,9 @@ public class PubSubConnectionHandle {
         writeToSocket(params: params)
     }
     
-    /// Unsubscribing from a channel
+    /// Unsubscribes from a channel.
+    ///
+    /// The successful result contains an array with currently subscribed channels without the channel just unsubscribed from. The connection needs read permission in order to unsubscribe from the channel.
     ///
     /// - Parameters:
     ///   - channelName: The name of the channel to unsubscribe from.
@@ -260,11 +305,11 @@ public class PubSubConnectionHandle {
         
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
-                completion(PubSubOutcome.PubSubResponseError(err))
+                completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
                     channelHandlers.removeValue(forKey: channelName)
-                    completion(PubSubOutcome.PubSubSuccess(result))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels))
                 }
             }
         }
@@ -280,7 +325,9 @@ public class PubSubConnectionHandle {
         writeToSocket(params: params)
     }
     
-    /// Unsubscribing from all channels
+    /// Unsubscribes from all channels
+    ///
+    /// The successful result should be an empty array. The connection needs read permission in order to unsubscribe from all channels.
     ///
     /// - Parameter completion: The closure called when the `unsubscribeAll` is complete.
     public func unsubscribeAll(completion: @escaping (PubSubOutcome) -> ()) {
@@ -289,11 +336,11 @@ public class PubSubConnectionHandle {
         
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
-                completion(PubSubOutcome.PubSubResponseError(err))
+                completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
                     channelHandlers.removeAll()
-                    completion(PubSubOutcome.PubSubSuccess(result))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels))
                 }
             }
         }
@@ -310,6 +357,8 @@ public class PubSubConnectionHandle {
     
     /// Gets all subscriptions.
     ///
+    /// The successful result contains an array with currently subscribed channels.
+    ///
     /// - Parameter completion: The closure called when the `listSubscriptions` is complete.
     public func listSubscriptions(completion: @escaping (PubSubOutcome) -> ()) {
         
@@ -317,10 +366,10 @@ public class PubSubConnectionHandle {
         
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
-                completion(PubSubOutcome.PubSubResponseError(err))
+                completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.PubSubSuccess(result))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels))
                 }
             }
         }
@@ -335,7 +384,9 @@ public class PubSubConnectionHandle {
         writeToSocket(params: params)
     }
     
-    /// Publishing a message to a channel.
+    /// Publishes a message to a channel. 
+    /// 
+    /// The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
     ///
     /// - Parameters:
     ///   - channelName: The channel where message will be published.
@@ -356,7 +407,9 @@ public class PubSubConnectionHandle {
         writeToSocket(params: params)
     }
 
-    /// Publishing a message to a channel with acknowledgement
+    /// Publishes a message to a channel with acknowledgement. 
+    ///
+    /// The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
     ///
     /// - Parameters:
     ///   - channelName: The channel where message will be published.
@@ -368,10 +421,10 @@ public class PubSubConnectionHandle {
         
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
-                completion(PubSubOutcome.PubSubResponseError(err))
+                completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.PubSubSuccess(result))
+                    completion(PubSubOutcome.pubSubSuccess(result.messageUUID))
                 }
             }
         }
