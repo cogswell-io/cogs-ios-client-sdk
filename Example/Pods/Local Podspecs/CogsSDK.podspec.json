@@ -1,0 +1,30 @@
+{
+  "name": "CogsSDK",
+  "version": "0.1.0",
+  "summary": "CogsSDK is the Swift client SDK of Cogswell publish/subscribe platform.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/donika-ns/CogsSDK",
+  "license": {
+    "type": "Apache",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Aviata Inc.": "https://cogswell.io"
+  },
+  "source": {
+    "git": "https://github.com/donika-ns/CogsSDK.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "CogsSDK/Classes/**/*",
+  "dependencies": {
+    "CryptoSwift": [
+
+    ],
+    "Starscream": [
+      "~> 2.0.3"
+    ]
+  }
+}
