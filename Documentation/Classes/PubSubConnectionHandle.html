@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>PubSubConnectionHandle Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/PubSubConnectionHandle" class="dashAnchor"></a>
+    <a title="PubSubConnectionHandle Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CogsSDK Docs</a> (100% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CogsSDK Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        PubSubConnectionHandle Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/PubSubConnectionHandle.html">PubSubConnectionHandle</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PubSubMessage.html">PubSubMessage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PubSubOptions.html">PubSubOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PubSubResponse.html">PubSubResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PubSubService.html">PubSubService</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/PubSubAction.html">PubSubAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/PubSubOutcome.html">PubSubOutcome</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/PubSubResponseCode.html">PubSubResponseCode</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>PubSubConnectionHandle</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">PubSubConnectionHandle</span></code></pre>
+
+                </div>
+              </div>
+            <p>PubSub connection handler</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK22PubSubConnectionHandle12onNewSessionGSqFSST__"></a>
+                    <a name="//apple_ref/swift/Property/onNewSession" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK22PubSubConnectionHandle12onNewSessionGSqFSST__">onNewSession</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>New session event handler.</p>
+
+<p>Indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onNewSession</span><span class="p">:</span> <span class="p">((</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK22PubSubConnectionHandle11onReconnectGSqFT_T__"></a>
+                    <a name="//apple_ref/swift/Property/onReconnect" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK22PubSubConnectionHandle11onReconnectGSqFT_T__">onReconnect</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Reconnect event handler.</p>
+
+<p>The event is emitted on socket reconnection if it disconnected for any reason.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onReconnect</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK22PubSubConnectionHandle11onRawRecordGSqFSST__"></a>
+                    <a name="//apple_ref/swift/Property/onRawRecord" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK22PubSubConnectionHandle11onRawRecordGSqFSST__">onRawRecord</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Raw record event handler.</p>
+
+<p>The event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onRawRecord</span><span class="p">:</span> <span class="p">((</span><span class="kt">RawRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK22PubSubConnectionHandle9onMessageGSqFCS_13PubSubMessageT__"></a>
+                    <a name="//apple_ref/swift/Property/onMessage" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK22PubSubConnectionHandle9onMessageGSqFCS_13PubSubMessageT__">onMessage</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Message event handler.</p>
+
+<p>The event is emitted whenever the socket receives messages from any channel.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onMessage</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubMessage.html">PubSubMessage</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK22PubSubConnectionHandle7onCloseGSqFGSqPs5Error__T__"></a>
+                    <a name="//apple_ref/swift/Property/onClose" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK22PubSubConnectionHandle7onCloseGSqFGSqPs5Error__T__">onClose</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Close event handler</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onClose</span><span class="p">:</span> <span class="p">((</span><span class="kt">Error</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK22PubSubConnectionHandle7onErrorGSqFPs5Error_T__"></a>
+                    <a name="//apple_ref/swift/Property/onError" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK22PubSubConnectionHandle7onErrorGSqFPs5Error_T__">onError</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>General error event handler.</p>
+
+<p>The event is emitted on any connection errors, failed publishes, or when any exception is thrown.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onError</span><span class="p">:</span> <span class="p">((</span><span class="kt">Error</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK22PubSubConnectionHandle15onErrorResponseGSqFCS_19PubSubErrorResponseT__"></a>
+                    <a name="//apple_ref/swift/Property/onErrorResponse" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK22PubSubConnectionHandle15onErrorResponseGSqFCS_19PubSubErrorResponseT__">onErrorResponse</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Response error event handler.</p>
+
+<p>The event is emitted whenever a message is sent to the user with an error status code.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onErrorResponse</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandlecFT4keysGSaSS_7optionsGSqCS_13PubSubOptions__S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(keys:options:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandlecFT4keysGSaSS_7optionsGSqCS_13PubSubOptions__S0_">init(keys:options:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializes and returns a connection handler.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">keys</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">],</span> <span class="nv">options</span><span class="p">:</span> <span class="kt"><a href="../Classes/PubSubOptions.html">PubSubOptions</a></span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>keys</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The provided project keys</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>options</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The connection options.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle7connectFT11sessionUUIDGSqSS_10completionGSqFT_T___T_"></a>
+                    <a name="//apple_ref/swift/Method/connect(sessionUUID:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle7connectFT11sessionUUIDGSqSS_10completionGSqFT_T___T_">connect(sessionUUID:completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Starts connection with the websocket.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">connect</span><span class="p">(</span><span class="nv">sessionUUID</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="nv">completion</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>sessionUUID</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>When supplied client session will be restored if possible.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle14dropConnectionFT_T_"></a>
+                    <a name="//apple_ref/swift/Method/dropConnection()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle14dropConnectionFT_T_">dropConnection()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Drops connection.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">dropConnection</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle5closeFT_T_"></a>
+                    <a name="//apple_ref/swift/Method/close()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle5closeFT_T_">close()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Disconnects from the websocket.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">close</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle14getSessionUuidFT10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/getSessionUuid(completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle14getSessionUuidFT10completionFOS_13PubSubOutcomeT__T_">getSessionUuid(completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Getts session UUID.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">getSessionUuid</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure called when the <code>getSessionUuid</code> is complete.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle9subscribeFT11channelNameSS14messageHandlerGSqFCS_13PubSubMessageT__10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/subscribe(channelName:messageHandler:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle9subscribeFT11channelNameSS14messageHandlerGSqFCS_13PubSubMessageT__10completionFOS_13PubSubOutcomeT__T_">subscribe(channelName:messageHandler:completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Subscribes to a channel.</p>
+
+<p>The successful result contains a list of the subscribed channels. The connection needs read permissions in order to subscribe to a channel.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">subscribe</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">messageHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubMessage.html">PubSubMessage</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>channelName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The chanel name.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>messageHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The channel specific handler which will be called with each message received from this channel.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure called when the <code>subscribe</code> is complete.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle11unsubscribeFT11channelNameSS10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/unsubscribe(channelName:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle11unsubscribeFT11channelNameSS10completionFOS_13PubSubOutcomeT__T_">unsubscribe(channelName:completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Unsubscribes from a channel.</p>
+
+<p>The successful result contains an array with currently subscribed channels without the channel just unsubscribed from. The connection needs read permission in order to unsubscribe from the channel.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>channelName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The name of the channel to unsubscribe from.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure called when the <code>unsubscribe</code> is complete.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle14unsubscribeAllFT10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/unsubscribeAll(completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle14unsubscribeAllFT10completionFOS_13PubSubOutcomeT__T_">unsubscribeAll(completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Unsubscribes from all channels</p>
+
+<p>The successful result should be an empty array. The connection needs read permission in order to unsubscribe from all channels.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">unsubscribeAll</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure called when the <code>unsubscribeAll</code> is complete.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle17listSubscriptionsFT10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/listSubscriptions(completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle17listSubscriptionsFT10completionFOS_13PubSubOutcomeT__T_">listSubscriptions(completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Gets all subscriptions.</p>
+
+<p>The successful result contains an array with currently subscribed channels.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">listSubscriptions</span><span class="p">(</span><span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure called when the <code>listSubscriptions</code> is complete.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle7publishFT11channelNameSS7messageSS7failureFGSqCS_19PubSubErrorResponse_T__T_"></a>
+                    <a name="//apple_ref/swift/Method/publish(channelName:message:failure:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle7publishFT11channelNameSS7messageSS7failureFGSqCS_19PubSubErrorResponse_T__T_">publish(channelName:message:failure:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Publishes a message to a channel. </p>
+
+<p>The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">publish</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">failure</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>channelName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The channel where message will be published.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>message</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The message to publish.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>failure</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure called when an error occured.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle14publishWithAckFT11channelNameSS7messageSS10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/publishWithAck(channelName:message:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle14publishWithAckFT11channelNameSS7messageSS10completionFOS_13PubSubOutcomeT__T_">publishWithAck(channelName:message:completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Publishes a message to a channel with acknowledgement. </p>
+
+<p>The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">publishWithAck</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>channelName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The channel where message will be published.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>message</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The message to publish.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The closure called when the <code>publishWithAck</code> is complete.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell</a>. All rights reserved. (Last updated: 2017-03-09)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

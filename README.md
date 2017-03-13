@@ -1,282 +1,294 @@
-# Cogs iOS Swift Client SDK
+# CogsSDK
+
+<!-- toc -->
+- [Description](#description)
+- [Requirements](#requirements)
+- [Installation](#installation)
+    -[Manual](#manual)
+    -[CocoaPods](#cocoapods)
+- [Usage](#usage)
+    - [Cogs Pub/Sub Service](#cogs-pubsub-service)
+    - [Cogs Pub/Sub ConnectionHandle API](#cogs-pubsub-connectionhandle-api)
+        - [getSessionUuid(completion:)](#getsessionuuidcompletion)
+        - [subscribe(channelName:messageHandler:completion:)](#subscribechannelnamemessagehandlercompletion)
+        - [connection.unsubscribe(channelName:completion:)](#subscribechannelnamecompletion)
+        - [unsubscribeAll(completion:)](#unsubscribeallcompletion)
+        - [listSubscriptions(completion:)](#listsubscriptionscompletion)
+        - [publish(channelName:message:failure:)](#publishchannelnamemessagefailure)
+        - [publishWithAck(channelName:message:completion:)](#publishwithackchannelnamemessagecompletion)
+        - [dropConnection()](#dropconnection)
+        - [close()](#connectionclose)
+        - [Connection Events](#connection-events)
+            - [Event: onRawRecord](#event-onrawrecord)
+            - [Event: onMessage](#event-onmessage)
+            - [Event: onError](#event-onerror)
+            - [Event: onReconnect](#event-onreconnect)
+            - [Event: onClose](#event-onclose)
+            - [Event: onNewSession](#event-onnewsession)
+- [Author](#author)
+- [License](#license)
+
+<!-- tocstop -->
 
 ## Description
-The Swift Cogs client SDK for the Cogs real-time message brokering system.
+The Swift client SDK containing the Cogs Pub Sub API.
 
 ## Requirements
 
 * iOS 9.0+
-* Xcode 7.3+
-* Requires APNs enabled application. You can read more about APNs [here](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW2)
+* Xcode 8.0+
+* Swift 3.0+
 
 ## Installation
+
 ### Manual
-* Check out or download Cogs SDK
-* Open GambitSDK.xcodeproj in Xcode
-* Build the framework
-* Navigate to the derived data folder and copy GambitSDK.framework and add it to you project
+* Check out or download CogsSDK.
+* Open CogsSDK.xcworkspace in Xcode.
+* Build.
+* Navigate to the derived data folder and copy CogsSDK.framework and add it to you project.
 
-You can view a demo example app using the SDK here: https://github.com/cogswell-io/cogs-ios-example-app
+### CocoaPods
 
-### Submodule
+[CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
 
-* Open up Terminal, and cd into your top-level project directory. If your project is not initialized as a git repository then run the following command:
-```javascript
-$ git init
+```bash
+$ gem install cocoapods
 ```
-* Add Cogs SDK as a git submodule by running the following command:
-```javascript
-$ git submodule add https://github.com/cogswell-io/cogs-ios-client-sdk
+
+To integrate CogsSDK into your Xcode project using CocoaPods, specify it in your `Podfile`:
+
+```ruby
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+use_frameworks!
+
+target '<Your Target Name>' do
+pod 'CogsSDK'
+end
 ```
-* Open the new GambitSDK folder, and drag the GambitSDK.xcodeproj into the Project Navigator of your application's Xcode project.
-* Select the GambitSDK.xcodeproj in the Project Navigator and verify the deployment target matches that of your application target.
-* Select your application project in the Project Navigator (blue project icon) to navigate to the target configuration window and select the application target under the "Targets" heading in the sidebar.
-* In the tab bar at the top of that window, open the "General" panel.
-* Click on the + button under the "Embedded Binaries" section.
-* Select the GambitSDK.framework for iOS
 
-## [Code Samples](#code-samples)
-You will see the name Gambit throughout our code samples. This was the code name used for Cogs prior to release.
+Then, run the following command:
 
-### Preparation for using the Client SDK
-There is no service to setup as the Swift Cogs client SDK maintains a singleton 
-instance of the service internally. You simply need to make sure your client auth
-components (access-key, client-salt, and client-secret) are available for each of your requests.
+```bash
+$ pod install
+```
+
+## Usage
+
+## Cogs Pub/Sub Service
+Create a ```PubSubService``` object to obtain a connection handle. The created ```PubSubConnectionHandle``` object creates and initializes a web socket but doesn't establish a connection until its own ```connect``` method is called. The reason is that event handlers should be set before that.  
 
 ```swift
-import GambitSDK
-
-// Hex encoded access-key from one of your api keys in the Web UI.
-let accessKey: String = "0000"
-
-// Hex encoded client salt/secret pair acquired from /client_secret endpoint and 
-// associated with above access-key.
-let clientSalt: String = "0000"
-let clientSecret: String = "0000"
-
-// Acquire the Cogs SDK service singleton
-cogsService = GambitService.sharedGambitService
+let keys: [String] = ["read key", "write key", "admin key"]
+        
+let pubSubService = PubSubService()
+let connection = pubSubService.connnect(keys: keys,
+                                              options: PubSubOptions(url: url,
+                                                                     timeout: 30,
+                                                                     autoReconnect: true))
 ```
 
-### POST /event
-This API route is used send an event to Cogs.
+## Cogs Pub/Sub ConnectionHandle API
+This is a summary of all functions exposed by the ```PubSubConnectionHandle``` object, and examples of their usage.
+
+### connect(sessionUUID:completion:)
+Starts the connection with the websocket. If no ```sessionUUID``` is provided a new connection will be established else the previous session will be restored if possible.
+ 
+```swift
+connection.connect(sessionUUID: nil)
+or
+connectionHandler.connect(sessionUUID: "aeabb570-050a-11e7-8ee5-8ff1f5240fbb")
+```
+
+### getSessionUuid(completion:)
+Fetch the session UUID from the server. The successful result contains the UUID associated with this connection's session.
 
 ```swift
-// This will be sent along with messages so that you can identify the event which
-// "triggered" the message delivery.
-let eventName: String = "my-event"
+connection.getSessionUuid { outcome in
+    switch outcome {
+        case .pubSubSuccess(let uuid):
+            print("Session uuid \(uuid)")
 
-// The name of the namespace for which the event is destined.
-let namespace: String = "my-namespace"
-
-// The event attributes whose names and types should match the namespace schema.
-let attributes: [String: AnyObject] = [
-  "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
-]
-
-// Assemble the event
-let eventRequeset = GambitRequestEvent(
-  accessKey: accessKey,
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  eventName: eventName,
-  namespace: namespace,
-  attributes: attributes
-)
-
-// Send the event, and handle the response
-cogsService.requestEvent(eventRequeset) { dat, rsp, err in
-  if let error = err {
-    // Handle error
-  }
-  else if let response = rsp as? NSHTTPURLResponse {
-    if response.statusCode == 200 {
-      if let data = dat {
-        do {
-            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            let parsedResponse = try GambitResponseEvent(json: json)
-            // Handle message content
-        } catch {
-            // Handle JSON parse error
-        }
-      } else {
-        // Handle no response data
-      }
-    } else {
-      // Handle non-200 status code
+        case .pubSubResponseError(let error):
+            print(error)
     }
-  }
 }
 ```
 
-### POST /register_push
-This API route is used to register a device to receive push notifications for a particular topic within a namespace.
+### subscribe(channelName:messageHandler:completion:)
+Subscribes the connection to a channel, supplying a handler which will be called with each message received from this channel. The successful result contains a list of the subscribed channels.The connection needs read permissions in order to subscribe to a channel.
 
 ```swift
-// The iOS app identifier.
-let platformAppId: String = "com.example.app"
-
-// The app environment.
-let environment: String = "production"
-
-// The unique identifier for the device used to deliver APNS notifications.
-let udid: String = "0000"
-
-// The name of the namespace to which the device is registering for notifications
-// on the specified topic.
-let namespace: String = "my-namespace"
-
-// The primary key attributes which identify the topic, whose names and types 
-// must match the namespace schema.
-let pkAttributes: [String: AnyObject] = [
-  "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
-]
-
-let pushRequest = GambitRequestPush(
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  UDID: udid,
-  accessKey: accessKey,
-  attributes: pkAttributes,
-  environment: environment,
-  platformAppID: platformAppId,
-  namespace: namespace
-)
-
-// Send the push registration, and handle the response.
-cogsService.registerPush(pushRequest) { dat, rsp, err in
-  if let error = err {
-    // Handle error
-  }
-  else if let response = rsp as? NSHTTPURLResponse {
-    if response.statusCode == 200 {
-      if let data = dat {
-        do {
-            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            let parsedResponse = try GambitResponsePush(json: json)
-            // Handle message content
-        } catch {
-            // Handle JSON parse error
+connection.subscribe(channelName: channelName,
+                  messageHandler: { (message) in
+                    print("\(message.id) | \(message.message)")
+        }) { outcome in
+            switch outcome {
+            case .pubSubSuccess(let subscribedChannels):
+                print(subscribedChannels)
+                
+            case .pubSubResponseError(let error):
+                print(error)
+            }
         }
-      } else {
-        // Handle no response data
-      }
-    } else {
-      // Handle non-200 status code
+```
+
+### unsubscribe(channelName:completion:)
+Unsubscribes the connection from a particular channel. The successful result contains an array with currently subscribed channels without the channel just unsubscribed from. The connection needs read permission in order to unsubscribe from the channel.
+
+```swift
+connection.unsubscribe(channelName: channelName){ outcome in
+    switch outcome {
+    case .pubSubSuccess(let subscribedChannels):
+        print(subscribedChannels) //The list won't include the channel to unsubscribe from
+
+    case .pubSubResponseError(let error):
+        print(error)
     }
-  }
+}
+```
+### unsubscribeAll(completion:)
+Unsubscribes connection from all channels. The successful result should be an empty array. The connection needs read permission in order to unsubscribe from all channels.
+
+```swift
+connection.unsubscribeAll(){ outcome in
+    switch outcome {
+    case .pubSubSuccess(let subscribedChannels):
+        print(subscribedChannels)
+        // This is the list of channels to which we were subscribed prior to running this operation.
+
+    case .pubSubResponseError(let error):
+        print(error)
+    }
 }
 ```
 
-### DELETE /unregister_push
-This API route is used to unregister a device from a particular namespace/topic pair to which it was previously registered for push notifications.
+### listSubscriptions(completion:)
+Gets all subscriptions. The successful result contains an array with currently subscribed channels.
 
 ```swift
-// The iOS app identifier.
-let platformAppId: String = "com.example.app"
+connection.listSubscriptions(){ outcome in
+    switch outcome {
+    case .pubSubSuccess(let subscribedChannels):
+        print(subscribedChannels)
 
-// The app environment.
-let environment: String = "production"
-
-// The unique identifier for the device used to deliver APNS notifications.
-let udid: String = "0000"
-
-// The name of the namespace from which the device is unregistering for
-// notifications on the specified topic.
-let namespace: String = "my-namespace"
-
-// The primary key attributes which identify the topic, whose names and types 
-// must match the namespace schema.
-let pkAttributes: [String: AnyObject] = [
-  "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
-]
-
-// Assemble the push de-registration request
-let pushRequest = GambitRequestPush(
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  UDID: udid,
-  accessKey: accessKey,
-  attributes: pkAttributes,
-  environment: environment,
-  platformAppID: platformAppId,
-  namespace: namespace
-)
-
-// Send the push de-registration, and handle the response.
-cogsService.unregisterPush(pushRequest) { dat, rsp, err in
-  if let error = err {
-    // Handle error
-  }
-  else if let response = rsp as? NSHTTPURLResponse {
-    if response.statusCode == 200 {
-      if let data = dat {
-        do {
-            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            let parsedResponse = try GambitResponsePush(json: json)
-            // Handle message content
-        } catch {
-            // Handle JSON parse error
-        }
-      } else {
-        // Handle no response data
-      }
-    } else {
-      // Handle non-200 status code
+    case .pubSubResponseError(let error):
+        print(error)
     }
-  }
 }
 ```
 
-### GET /message
-This API route is used to fetch the full content of a message by its ID. This is necessary since push notifications don't deliver the entire message content, only the message's ID.
+### publish(channelName:message:failure:)
+Publishes a message to a channel. The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
 
 ```swift
-// The ID of the message to be fetched.
-let messageId: String = "00000000-0000-0000-0000-000000000000"
-
-// The namespace of the message to be fetched.
-let namespace: String = "my-namespace"
-
-// The attributes identifying the topic of the message.
-let pkAttributes: [String: AnyObject] = [
-  "uuid": "deadbeef-dead-beef-dead-beefdeadbeef"
-]
-
-// Assemble the message request.
-let messageRequest = GambitRequestPush(
-  accessKey: accessKey,
-  clientSalt: clientSalt,
-  clientSecret: clientSecret,
-  token: messageId,
-  namespace: namespace,
-  attributes: pkAttributes
-)
-
-// Send request the message, and handle the response.
-cogsService.message(messageRequest) { dat, rsp, err in
-  if let error = err {
-    // Handle error
-  }
-  else if let response = rsp as? NSHTTPURLResponse {
-    if response.statusCode == 200 {
-      if let data = dat {
-        do {
-            let json : JSON = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            let parsedResponse = try GambitResponseMessage(json: json)
-            // Handle message content
-        } catch {
-            // Handle JSON parse error
-        }
-      } else {
-        // Handle no response data
-      }
-    } else {
-      // Handle non-200 status code
-    }
-  }
+connection.publish(channelName: channel, message: messageText){ error in
+    print(error as Any)
 }
 ```
+
+### publishWithAck(channelName:message:completion:)
+Publishes a message to a channel. The successful result contains the UUID of the published message.
+
+```swift
+connection.publishWithAck(channelName: channel, message: messageText){ outcome in
+    switch outcome {
+    case .pubSubSuccess(let messadeUuid):
+        print(messadeUuid)
+
+    case .pubSubResponseError(let error):
+        print(error)
+    }
+}
+```
+
+### dropConnection()
+Drops connection.
+
+```swift
+connection.dropConnection()
+```
+
+### close()
+Closes the pub/sub connection handle by closing the WebSocket.
+
+```swift
+connection.close()
+```
+
+## Connection Events
+
+### Event: onRawRecord
+The ```onRawRecord``` event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.
+
+```swift
+connection.onRawRecord = { (record) in
+  print (record)
+}
+```
+
+### Event: onMessage
+The ```onMessage``` event is emitted whenever the socket receives messages from any channel.
+
+```swift
+connection.onMessage = { (receivedMessage) in
+    print (receivedMessage)
+}
+```
+
+### Event: onError
+The ```onError``` event is emitted on any connection errors, failed publishes, or when any exception is thrown.
+
+```swift
+connection.onError = { (error) in
+    print(error.localizedDescription)
+}
+```
+
+### Event: onErrorResponse
+The ```onErrorResponse``` event is emitted whenever a message is sent to the user with an error status code.
+
+```swift
+connection.onErrorResponse = { (responseError) in
+  print("\(responseError.message) \n \(responseError.code)")
+}
+```
+
+### Event: onReconnect
+The ```onReconnect``` event is emitted on socket reconnection if it disconnected for any reason.
+
+```swift
+connection.onReconnect = {
+    print("Session is restored")
+}
+```
+
+### Event: onClose
+The ```onClose``` event is emitted whenever the socket connection closes.
+
+```swift
+connection.onClose = { (error) in
+    if let err = error {
+        print(err.localizedDescription)
+    } else {
+        print("Session is closed")
+    }
+}
+```
+
+### Event: onNewSession
+The ```onNewSession``` event indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.
+
+```swift
+connection.onNewSession = { sessionUUID in
+    print("New session \(sessionUUID) is opened."
+}
+```
+
+
+## Author
+
+Aviata Inc.
 
 ## License
 
@@ -293,3 +305,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
