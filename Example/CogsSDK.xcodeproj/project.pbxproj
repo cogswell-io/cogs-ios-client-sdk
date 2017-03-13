@@ -13,6 +13,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		44ABBAE61E77354B007B35D1 /* CogsSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CogsSDK.h; sourceTree = "<group>"; };
+		44ABBAE71E77354B007B35D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		46269C81953658C274FC748F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		51758ACE7E8EB163482AD924 /* Pods_CogsSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CogsSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5287BA3F23035CAA2585200A /* Pods-CogsSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CogsSDK_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CogsSDK_Tests/Pods-CogsSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -45,11 +47,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		44ABBAE51E77354B007B35D1 /* CogsSDK */ = {
+			isa = PBXGroup;
+			children = (
+				44ABBAE61E77354B007B35D1 /* CogsSDK.h */,
+				44ABBAE71E77354B007B35D1 /* Info.plist */,
+			);
+			path = CogsSDK;
+			sourceTree = "<group>";
+		};
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACE81AFB9204008FA782 /* Tests */,
+				44ABBAE51E77354B007B35D1 /* CogsSDK */,
 				607FACD11AFB9204008FA782 /* Products */,
 				BA5019D7419B89CAE941AF38 /* Pods */,
 				3AFBDC27ABA9D11363D60F8E /* Frameworks */,
@@ -136,8 +148,8 @@
 				TargetAttributes = {
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 8LL4A89AQ4;
 						LastSwiftMigration = 0820;
-						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
 				};
 			};
@@ -322,6 +334,7 @@
 			baseConfigurationReference = E712812D7E7B031BA84DF705 /* Pods-CogsSDK_Tests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = 8LL4A89AQ4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -344,6 +357,7 @@
 			baseConfigurationReference = 5287BA3F23035CAA2585200A /* Pods-CogsSDK_Tests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = 8LL4A89AQ4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

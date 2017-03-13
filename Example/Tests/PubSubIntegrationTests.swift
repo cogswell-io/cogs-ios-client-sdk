@@ -11,6 +11,7 @@ class PubSubIntegrationTests: QuickSpec {
 
         var pubSubService: PubSubService!
 
+        var url: String!
         var readKey: String!
         var writeKey: String!
         var adminKey: String!
@@ -20,12 +21,12 @@ class PubSubIntegrationTests: QuickSpec {
         var noWriteKeys: [String]!
 
         let defaultTimeout: TimeInterval = 10
-        let defaultOptions = PubSubOptions.defaultOptions
 
-
-        if let path = Bundle.main.path(forResource: "Keys", ofType: "plist") {
+        let bundle = Bundle(for: type(of: self))
+        if let path = bundle.path(forResource: "Keys", ofType: "plist") {
 
             if let dict = NSDictionary(contentsOfFile: path) as? [String: Any] {
+                url      = dict["url"] as? String
                 readKey  = dict["readKey"] as? String
                 writeKey = dict["writeKey"] as? String
                 adminKey = dict["adminKey"] as? String
@@ -35,6 +36,9 @@ class PubSubIntegrationTests: QuickSpec {
             noReadKeys  = [writeKey, adminKey]
             noWriteKeys = [readKey, adminKey]
         }
+
+        let defaultOptions = PubSubOptions(url: url, connectionTimeout: 30, autoReconnect: true,
+                                           minReconnectDelay: 5, maxReconnectDelay: 300, maxReconnectAttempts: -1)
 
         pubSubService = PubSubService()
 
@@ -237,7 +241,7 @@ class PubSubIntegrationTests: QuickSpec {
                     }
                 }
 
-                waitUntil(timeout: 20) { done in
+                waitUntil(timeout: 22) { done in
                     clientTwoConnectionHandle.onMessage = { message in
                         expect(message.action) == PubSubAction.message.rawValue
                         expect(message.channel) == testChannelName
@@ -438,7 +442,7 @@ class PubSubIntegrationTests: QuickSpec {
                 var isEmitting: Bool = false
 
                 it("emits reconnect event") {
-                    waitUntil(timeout: defaultTimeout) { done in
+                    waitUntil(timeout: 15) { done in
                         connectionHandle.connect(sessionUUID: nil)
 
                         connectionHandle.onNewSession = { uuid in
@@ -452,7 +456,7 @@ class PubSubIntegrationTests: QuickSpec {
                         }
                     }
 
-                    waitUntil(timeout: 11) { done in
+                    waitUntil(timeout: 16) { done in
                         expect(isEmitting == true).to(beTruthy())
 
                         done()

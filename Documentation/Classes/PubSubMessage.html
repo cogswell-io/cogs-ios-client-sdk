@@ -84,7 +84,7 @@
 
                 </div>
               </div>
-            <p>Cogs pubsub message response class</p>
+            <p>Cogs pub/sub message wrapping class</p>
 
           </section>
           <section class="section task-group-section">
@@ -103,14 +103,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Message id.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubMessage</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -130,14 +130,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Message action.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubMessage</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -157,14 +157,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Message timestmp.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubMessage</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">time</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -184,14 +184,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The channel message is sent on.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubMessage</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">channel</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -211,14 +211,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The message itself.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubMessage</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -238,16 +238,42 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Initializes <code>PubSubMessage</code> object with JSON.</p>
+
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    The error thrown when occures.
+
+</div>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubMessage</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">required</span> <span class="nf">init</span><span class="p">(</span><span class="nv">json</span><span class="p">:</span> <span class="kt">JSON</span><span class="p">)</span> <span class="k">throws</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>json</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The received JSON.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -257,7 +283,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell</a>. All rights reserved. (Last updated: 2017-03-09)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -1,18 +1,36 @@
+//
+//  PubSubConnectionHandle.swift
+//  CogsSDK
+//
+
+/**
+ * Copyright (C) 2017 Aviata Inc. All Rights Reserved.
+ * This code is licensed under the Apache License 2.0
+ *
+ * This license can be found in the LICENSE.txt at or near the root of the
+ * project or repository. It can also be found here:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * You should have received a copy of the Apache License 2.0 license with this
+ * code or source file. If not, please contact support@cogswell.io
+ */
 
 import Foundation
 import Starscream
 
-/// The result of Pub/Sub operation
+/// The result of pub/pub operation
 ///
 /// - PubSubResponseError: The operation completed with error.
 /// - PubSubSuccess: The operation completed successfully with response object.
 public enum PubSubOutcome {
+    /// Returns the error occured as `PubSubErrorResponse` object.
     case pubSubResponseError(PubSubErrorResponse)
+    /// Returns the response object as `Any`.
     case pubSubSuccess(Any)
 }
 
 
-/// PubSub connection handler
+/// Pub/Sub connection handler
 public class PubSubConnectionHandle {
 
     private var currentReconnectDelay: Double
@@ -238,7 +256,7 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.uuid))
+                    completion(PubSubOutcome.pubSubSuccess(result.uuid as Any))
                 }
             }
         }
@@ -276,7 +294,7 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -309,7 +327,7 @@ public class PubSubConnectionHandle {
             } else {
                 if let result = response {
                     channelHandlers.removeValue(forKey: channelName)
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -340,7 +358,7 @@ public class PubSubConnectionHandle {
             } else {
                 if let result = response {
                     channelHandlers.removeAll()
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -369,7 +387,7 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -424,7 +442,7 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.messageUUID))
+                    completion(PubSubOutcome.pubSubSuccess(result.messageUUID as Any))
                 }
             }
         }

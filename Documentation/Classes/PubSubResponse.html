@@ -84,7 +84,7 @@
 
                 </div>
               </div>
-            <p>Base cogs pubsub response class</p>
+            <p>Base pub/sub response wrapping class</p>
 
           </section>
           <section class="section task-group-section">
@@ -103,14 +103,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Response sequence number.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubResponse</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">seq</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                         </div>
                       </div>
@@ -130,14 +130,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Response action.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubResponse</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">action</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -157,14 +157,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Response code.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubResponse</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">code</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                         </div>
                       </div>
@@ -184,14 +184,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Session uuid.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubResponse</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">uuid</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -211,14 +211,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Subscribed channels.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubResponse</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">channels</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?</span></code></pre>
 
                         </div>
                       </div>
@@ -238,14 +238,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Message uuid.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubResponse</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">messageUUID</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -265,16 +265,42 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Initializes <code>PubSubResponse</code> object with JSON.</p>
+
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    The error thrown when occures.
+
+</div>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubResponse</span><span class="p">:</span> <span class="kt"><a href="../Protocols/PubSubResponsible.html">PubSubResponsible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">required</span> <span class="nf">init</span><span class="p">(</span><span class="nv">json</span><span class="p">:</span> <span class="kt">JSON</span><span class="p">)</span> <span class="k">throws</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>json</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The received JSON.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -282,9 +308,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:vPs23CustomStringConvertible11descriptionSS"></a>
+                    <a name="/s:vC7CogsSDK14PubSubResponse11descriptionSS"></a>
                     <a name="//apple_ref/swift/Property/description" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vPs23CustomStringConvertible11descriptionSS">description</a>
+                    <a class="token" href="#/s:vC7CogsSDK14PubSubResponse11descriptionSS">description</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -292,7 +318,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Base cogs pubsub response class</p>
+                        <p>Response description string.</p>
 
                       </div>
                       <div class="declaration">
@@ -311,7 +337,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell</a>. All rights reserved. (Last updated: 2017-03-09)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

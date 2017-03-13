@@ -1,27 +1,48 @@
+//
+//  PubSubOptions.swift
+//  CogsSDK
+//
+
+/**
+ * Copyright (C) 2017 Aviata Inc. All Rights Reserved.
+ * This code is licensed under the Apache License 2.0
+ *
+ * This license can be found in the LICENSE.txt at or near the root of the
+ * project or repository. It can also be found here:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * You should have received a copy of the Apache License 2.0 license with this
+ * code or source file. If not, please contact support@cogswell.io
+ */
 
 import Foundation
 
-
-/// PubSub service options
+/// Pub/Sub service options
 open class PubSubOptions {
 
+    /// Cogs pub/sub service URL.
     open let url: String
+    /// The time before connection timeouts.
     open let connectionTimeout: Int
+    /// A boolean flag that shows should the connection try to reconnect when disconnected.
     open let autoReconnect: Bool
+    /// Initial amount of time the connection waits before attempting to reconnect.
     open let minReconnectDelay: TimeInterval
+    /// Maximum amount of time the connection waits before attempting to reconnect. Reconnection delay get increased with every attempt until reaching the maximum value.
     open let maxReconnectDelay: TimeInterval
+    /// Maximum number of reconnection attempts.  -1 signifies infinite tries.
     open let maxReconnectAttempts: Int
 
 
     /// PubSubOptions configuration
     ///
     /// - Parameters:
-    ///   - url: URL to which to connect
-    ///   - connectionTimeout: Time before connection should timeout
-    ///   - autoReconnect: true if connection should attempt to reconnect when disconnected
-    ///   - minReconnectDelay: The initial amount of time a reconnection attempt waits before attempting to reconnect.
-    ///   - maxReconnectDelay: The maximum amount of time a reconnection attempt should wait before attempting to reconnect
-    ///   - maxReconnectAttempts: The number of times to attempt a reconnection.  -1 signifies infinite tries
+    ///   - url: Cogs pub/sub service URL.
+    ///   - connectionTimeout: The time before connection timeouts.
+    ///   - autoReconnect: A boolean flag that shows should the connection try to reconnect when disconnected.
+    ///   - minReconnectDelay: The initial amount of time the connection waits before attempting to reconnect.
+    ///   - maxReconnectDelay: The maximum amount of time the connection waits before attempting to reconnect. Reconnection delay get increased with every attempt until reaching the maximum value.
+    ///   - maxReconnectAttempts: The maximum number of reconnection attempts.  -1 signifies infinite tries.
     public init(url: String, connectionTimeout: Int,
                 autoReconnect: Bool, minReconnectDelay: TimeInterval,
                 maxReconnectDelay: TimeInterval, maxReconnectAttempts: Int) {
@@ -34,18 +55,8 @@ open class PubSubOptions {
     }
 
     public static var defaultOptions: PubSubOptions {
-        var serviceURL: String = ""
 
-        if let path = Bundle.main.path(forResource: "Keys", ofType: "plist") {
-
-            if let dict = NSDictionary(contentsOfFile: path) as? [String: Any] {
-                if let url = dict["url"] as? String {
-                    serviceURL = url
-                }
-            }
-        }
-
-        return PubSubOptions(url: serviceURL,
+        return PubSubOptions(url: "",
                              connectionTimeout: 30,
                              autoReconnect: true,
                              minReconnectDelay: 5,

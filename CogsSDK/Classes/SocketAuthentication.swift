@@ -1,3 +1,19 @@
+//
+//  DialectValidator.swift
+//  CogsSDK
+//
+
+/**
+ * Copyright (C) 2017 Aviata Inc. All Rights Reserved.
+ * This code is licensed under the Apache License 2.0
+ *
+ * This license can be found in the LICENSE.txt at or near the root of the
+ * project or repository. It can also be found here:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * You should have received a copy of the Apache License 2.0 license with this
+ * code or source file. If not, please contact support@cogswell.io
+ */
 
 import Foundation
 import CryptoSwift
@@ -49,7 +65,7 @@ final class SocketAuthentication {
         for key in dict.values {
             let buffer = key.permKey.hexToByteArray()
             let hmac: [UInt8] = try! HMAC(key: buffer, variant: .sha256).authenticate(bodyBuffer)
-            let hmacHexString = hmac.toHexString()
+            let _ = hmac.toHexString()
 
             mutateXor(target: &hmacXored, source: hmac)
         }

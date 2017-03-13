@@ -8,6 +8,7 @@ class PubSubUnitTests: QuickSpec {
 
         var pubSubService: PubSubService!
 
+        var url: String!
         var readKey: String!
         var writeKey: String!
         var adminKey: String!
@@ -17,11 +18,12 @@ class PubSubUnitTests: QuickSpec {
         var noWriteKeys: [String]!
 
         let defaultTimeout: TimeInterval = 10
-        let defaultOptions = PubSubOptions.defaultOptions
 
-        if let path = Bundle.main.path(forResource: "Keys", ofType: "plist") {
+        let bundle = Bundle(for: type(of: self))
+        if let path = bundle.path(forResource: "Keys", ofType: "plist") {
 
             if let dict = NSDictionary(contentsOfFile: path) as? [String: Any] {
+                url      = dict["url"] as? String
                 readKey  = dict["readKey"] as? String
                 writeKey = dict["writeKey"] as? String
                 adminKey = dict["adminKey"] as? String
@@ -31,6 +33,9 @@ class PubSubUnitTests: QuickSpec {
             noReadKeys  = [writeKey, adminKey]
             noWriteKeys = [readKey, adminKey]
         }
+
+        let defaultOptions = PubSubOptions(url: url, connectionTimeout: 30, autoReconnect: true,
+                                           minReconnectDelay: 5, maxReconnectDelay: 300, maxReconnectAttempts: -1)
 
         pubSubService = PubSubService()
 
