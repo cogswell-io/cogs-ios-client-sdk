@@ -17,8 +17,15 @@
 
 import Foundation
 
+private let defaultURL: String                     = "wss://api.cogswell.io/pubsub"
+private let defaultConnectionTimeout: Int          = 30
+private let defaultAutoreconnect: Bool             = true
+private let defaultMinReconnectDelay: TimeInterval = 5
+private let defaultMaxReconnectDelay: TimeInterval = 300
+private let defaultMaxReconnectAttempts: Int       = -1
+
 /// Pub/Sub service options
-open class PubSubOptions {
+public final class PubSubOptions {
 
     /// Cogs pub/sub service URL.
     open let url: String
@@ -43,24 +50,26 @@ open class PubSubOptions {
     ///   - minReconnectDelay: The initial amount of time the connection waits before attempting to reconnect.
     ///   - maxReconnectDelay: The maximum amount of time the connection waits before attempting to reconnect. Reconnection delay get increased with every attempt until reaching the maximum value.
     ///   - maxReconnectAttempts: The maximum number of reconnection attempts.  -1 signifies infinite tries.
-    public init(url: String, connectionTimeout: Int,
-                autoReconnect: Bool, minReconnectDelay: TimeInterval,
-                maxReconnectDelay: TimeInterval, maxReconnectAttempts: Int) {
-        self.url                  = url
-        self.connectionTimeout    = connectionTimeout
-        self.autoReconnect        = autoReconnect
-        self.minReconnectDelay    = minReconnectDelay
-        self.maxReconnectDelay    = maxReconnectDelay
-        self.maxReconnectAttempts = maxReconnectAttempts
+    public init(url: String?, connectionTimeout: Int?,
+                autoReconnect: Bool?, minReconnectDelay: TimeInterval?,
+                maxReconnectDelay: TimeInterval?, maxReconnectAttempts: Int?) {
+        self.url                  = url ?? defaultURL
+        self.connectionTimeout    = connectionTimeout ?? defaultConnectionTimeout
+        self.autoReconnect        = autoReconnect ?? defaultAutoreconnect
+        self.minReconnectDelay    = minReconnectDelay ?? defaultMinReconnectDelay
+        self.maxReconnectDelay    = maxReconnectDelay ?? defaultMaxReconnectDelay
+        self.maxReconnectAttempts = maxReconnectAttempts ?? defaultMaxReconnectAttempts
     }
 
+
+    /// Default options configuration
     public static var defaultOptions: PubSubOptions {
 
-        return PubSubOptions(url: "",
-                             connectionTimeout: 30,
-                             autoReconnect: true,
-                             minReconnectDelay: 5,
-                             maxReconnectDelay: 300,
-                             maxReconnectAttempts: -1)
+        return PubSubOptions(url: defaultURL,
+                             connectionTimeout: defaultConnectionTimeout,
+                             autoReconnect: defaultAutoreconnect,
+                             minReconnectDelay: defaultMinReconnectDelay,
+                             maxReconnectDelay: defaultMaxReconnectDelay,
+                             maxReconnectAttempts: defaultMaxReconnectAttempts)
     }
 }

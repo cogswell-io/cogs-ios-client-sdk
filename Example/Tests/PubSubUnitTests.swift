@@ -6,8 +6,6 @@ import CogsSDK
 class PubSubUnitTests: QuickSpec {
     override func spec() {
 
-        var pubSubService: PubSubService!
-
         var url: String!
         var readKey: String!
         var writeKey: String!
@@ -37,14 +35,12 @@ class PubSubUnitTests: QuickSpec {
         let defaultOptions = PubSubOptions(url: url, connectionTimeout: 30, autoReconnect: true,
                                            minReconnectDelay: 5, maxReconnectDelay: 300, maxReconnectAttempts: -1)
 
-        pubSubService = PubSubService()
-
         describe("Cogs PubSub Service") {
 
             describe("get sessionUUID") {
                 it("returns sessionUUID") {
 
-                    let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+                    let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                     waitUntil(timeout: defaultTimeout) { done in
                         connectionHandle.connect(sessionUUID: nil) {
@@ -74,16 +70,16 @@ class PubSubUnitTests: QuickSpec {
             }
 
             describe("channel subcriptions") {
-                let testChannelName = "Test"
+                let testChannel = "Test"
 
                 describe("subscribe to a channel") {
                     context("when read key is supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { outcome in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { outcome in
                                         switch outcome {
                                         case .pubSubSuccess(let object):
                                             if let channels = object as? [String] {
@@ -106,12 +102,12 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: noReadKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { outcome in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.subscribe.rawValue
@@ -131,12 +127,12 @@ class PubSubUnitTests: QuickSpec {
 
                 describe("list subcriptions") {
                     context("when read key is supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.listSubscriptions() { outcome in
 
                                             switch outcome {
@@ -162,7 +158,7 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: noReadKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
@@ -187,13 +183,13 @@ class PubSubUnitTests: QuickSpec {
 
                 describe("unsubscribe from a channel") {
                     context("when read key is supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
-                                        connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
+                                        connectionHandle.unsubscribe(channel: testChannel) { outcome in
                                             switch outcome {
                                             case .pubSubSuccess(let object):
                                                 if let channels = object as? [String] {
@@ -216,7 +212,7 @@ class PubSubUnitTests: QuickSpec {
 
                         it("returns not found") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
+                                connectionHandle.unsubscribe(channel: testChannel) { outcome in
                                     switch outcome {
                                     case .pubSubResponseError(let errorResponse):
                                         expect(errorResponse.action) == PubSubAction.unsubscribe.rawValue
@@ -233,12 +229,12 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: noReadKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
+                                    connectionHandle.unsubscribe(channel: testChannel) { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.unsubscribe.rawValue
@@ -258,13 +254,13 @@ class PubSubUnitTests: QuickSpec {
 
                 describe("unsubscribe from all channels") {
                     context("when read key is supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns unsubscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: "Test", messageHandler: nil) { _ in
-                                        connectionHandle.subscribe(channelName: "Test2", messageHandler: nil) { _ in
+                                    connectionHandle.subscribe(channel: "Test", messageHandler: nil) { _ in
+                                        connectionHandle.subscribe(channel: "Test2", messageHandler: nil) { _ in
                                             connectionHandle.unsubscribeAll() { outcome in
                                                 switch outcome {
                                                 case.pubSubSuccess(let object):
@@ -290,7 +286,7 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: noReadKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
@@ -315,13 +311,13 @@ class PubSubUnitTests: QuickSpec {
             }
 
             describe("publish messages") {
-                let testChannelName = "Test channel"
+                let testChannel = "Test channel"
                 let testMessage = "Test message"
 
                 describe("publish") {
                     context("when write key is supplied") {
 
-                        let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         afterEach {
                             connectionHandle.close()
@@ -330,14 +326,14 @@ class PubSubUnitTests: QuickSpec {
                         it("returns published message") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
-                                        connectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
+                                        connectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
                                     }
                                 }
 
                                 connectionHandle.onMessage = { message in
                                     expect(message.action) == PubSubAction.message.rawValue
-                                    expect(message.channel) == testChannelName
+                                    expect(message.channel) == testChannel
                                     expect(message.message) == testMessage
 
                                     done()
@@ -346,10 +342,10 @@ class PubSubUnitTests: QuickSpec {
                         }
 
                         xit("returns not found") {
-                            let uniqueChannelName = UUID().uuidString
+                            let uniquechannel = UUID().uuidString
 
                             waitUntil { done in
-                                connectionHandle.publishWithAck(channelName: uniqueChannelName, message: testMessage) { outcome in
+                                connectionHandle.publishWithAck(channel: uniquechannel, message: testMessage) { outcome in
                                     switch outcome {
                                     case .pubSubResponseError(let errorResponse):
                                         expect(errorResponse.action) == PubSubAction.publish.rawValue
@@ -366,7 +362,7 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when write key in not supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: noWriteKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
 
                         afterEach {
                             connectionHandle.close()
@@ -375,8 +371,8 @@ class PubSubUnitTests: QuickSpec {
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
-                                        connectionHandle.publish(channelName: testChannelName, message: testMessage) { error in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
+                                        connectionHandle.publish(channel: testChannel, message: testMessage) { error in
 
                                             expect(error).toNot(beNil())
                                             expect(error!.action) == PubSubAction.publish.rawValue
@@ -393,7 +389,7 @@ class PubSubUnitTests: QuickSpec {
 
                 describe("publish with ack") {
                     context("when write key is supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         afterEach {
                             connectionHandle.close()
@@ -402,8 +398,8 @@ class PubSubUnitTests: QuickSpec {
                         it("returns success ack") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
-                                        connectionHandle.publishWithAck(channelName: testChannelName, message: testMessage) { outcome in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
+                                        connectionHandle.publishWithAck(channel: testChannel, message: testMessage) { outcome in
                                             switch outcome {
                                             case .pubSubSuccess(let object):
                                                 if let messageUuid = object as? String {
@@ -425,11 +421,11 @@ class PubSubUnitTests: QuickSpec {
                         }
 
                         xit("returns not found") {
-                            let uniqueChannelName = UUID().uuidString
+                            let uniquechannel = UUID().uuidString
 
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.publishWithAck(channelName: uniqueChannelName, message: testMessage) { outcome in
+                                    connectionHandle.publishWithAck(channel: uniquechannel, message: testMessage) { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.publish.rawValue
@@ -447,7 +443,7 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when write key is not supplied") {
-                        let connectionHandle = pubSubService.connnect(keys: noWriteKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
 
                         afterEach {
                             connectionHandle.close()
@@ -456,8 +452,8 @@ class PubSubUnitTests: QuickSpec {
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
                                 connectionHandle.connect(sessionUUID: nil) {
-                                    connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
-                                        connectionHandle.publishWithAck(channelName: testChannelName, message: testMessage) { outcome in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
+                                        connectionHandle.publishWithAck(channel: testChannel, message: testMessage) { outcome in
                                             switch outcome {
                                             case .pubSubResponseError(let errorResponse):
                                                 expect(errorResponse.action) == PubSubAction.publish.rawValue

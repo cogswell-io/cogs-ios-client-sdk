@@ -6,10 +6,8 @@ import CogsSDK
 
 class PubSubIntegrationTests: QuickSpec {
     override func spec() {
-        let testChannelName = "Test channel"
+        let testChannel = "Test channel"
         let testMessage = "Test message"
-
-        var pubSubService: PubSubService!
 
         var url: String!
         var readKey: String!
@@ -40,8 +38,6 @@ class PubSubIntegrationTests: QuickSpec {
         let defaultOptions = PubSubOptions(url: url, connectionTimeout: 30, autoReconnect: true,
                                            minReconnectDelay: 5, maxReconnectDelay: 300, maxReconnectAttempts: -1)
 
-        pubSubService = PubSubService()
-
         func getSessionUUID(_ connectionHandle: PubSubConnectionHandle, completion: @escaping (String) -> Void) {
             connectionHandle.getSessionUuid() { outcome in
                 switch outcome {
@@ -62,16 +58,16 @@ class PubSubIntegrationTests: QuickSpec {
         }
 
         describe("Full Sweep Test") {
-            let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+            let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
             afterEach {
                 connectionHandle.close()
             }
 
-            it("is successfull") {
+            it("pubsub successfully connects, subscribes, lists subscribtions, publishes and receives message, closes the connection") {
                 waitUntil(timeout: defaultTimeout) { done in
                     connectionHandle.connect(sessionUUID: nil) {
-                        connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { outcome in
+                        connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { outcome in
                             switch outcome {
                             case .pubSubSuccess(let object):
                                 if let channels = object as? [String] {
@@ -103,7 +99,7 @@ class PubSubIntegrationTests: QuickSpec {
                                         done()
                                     }
 
-                                    connectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                                    connectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
                                 }
 
                             default:
@@ -116,10 +112,10 @@ class PubSubIntegrationTests: QuickSpec {
 
                     connectionHandle.onMessage = { message in
                         expect(message.action) == PubSubAction.message.rawValue
-                        expect(message.channel) == testChannelName
+                        expect(message.channel) == testChannel
                         expect(message.message) == testMessage
 
-                        connectionHandle.unsubscribe(channelName: testChannelName) { outcome in
+                        connectionHandle.unsubscribe(channel: testChannel) { outcome in
                             switch outcome {
                             case .pubSubSuccess(let object):
                                 if let channels = object as? [String] {
@@ -151,23 +147,23 @@ class PubSubIntegrationTests: QuickSpec {
         }
 
         describe("Interaction Test") {
-            let clientOneConnectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+            let clientOneConnectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
-            let clientTwoConnectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+            let clientTwoConnectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
             afterEach {
                 clientOneConnectionHandle.close()
                 clientTwoConnectionHandle.close()
             }
 
-            it("is successfull") {
+            it("pubsub successfully interacts with two clients (each client connects, subscribes, publishes message, receives message)") {
                 waitUntil(timeout: defaultTimeout) { done in
                     clientOneConnectionHandle.connect(sessionUUID: nil) {
-                        clientOneConnectionHandle.subscribe(channelName: testChannelName, messageHandler: { message in
+                        clientOneConnectionHandle.subscribe(channel: testChannel, messageHandler: { message in
 
                             expect(message).toNot(beNil())
                             expect(message.action) == PubSubAction.message.rawValue
-                            expect(message.channel) == testChannelName
+                            expect(message.channel) == testChannel
                             expect(message.message) == testMessage
 
                         }, completion: { outcome in
@@ -189,7 +185,7 @@ class PubSubIntegrationTests: QuickSpec {
                                 done()
                             }
 
-                            clientOneConnectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                            clientOneConnectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
 
                             done()
                         })
@@ -198,11 +194,11 @@ class PubSubIntegrationTests: QuickSpec {
 
                 waitUntil(timeout: defaultTimeout) { done in
                     clientTwoConnectionHandle.connect(sessionUUID: nil) {
-                        clientTwoConnectionHandle.subscribe(channelName: testChannelName, messageHandler: { message in
+                        clientTwoConnectionHandle.subscribe(channel: testChannel, messageHandler: { message in
 
                             expect(message).toNot(beNil())
                             expect(message.action) == PubSubAction.message.rawValue
-                            expect(message.channel) == testChannelName
+                            expect(message.channel) == testChannel
                             expect(message.message) == testMessage
 
                         }, completion: { outcome in
@@ -224,7 +220,7 @@ class PubSubIntegrationTests: QuickSpec {
                                 done()
                             }
 
-                            clientTwoConnectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                            clientTwoConnectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
 
                             done()
                         })
@@ -234,17 +230,17 @@ class PubSubIntegrationTests: QuickSpec {
                 waitUntil(timeout: 20) { done in
                     clientOneConnectionHandle.onMessage = { message in
                         expect(message.action) == PubSubAction.message.rawValue
-                        expect(message.channel) == testChannelName
+                        expect(message.channel) == testChannel
                         expect(message.message) == testMessage
 
                         done()
                     }
                 }
 
-                waitUntil(timeout: 22) { done in
+                waitUntil(timeout: 25) { done in
                     clientTwoConnectionHandle.onMessage = { message in
                         expect(message.action) == PubSubAction.message.rawValue
-                        expect(message.channel) == testChannelName
+                        expect(message.channel) == testChannel
                         expect(message.message) == testMessage
 
                        done()
@@ -254,14 +250,14 @@ class PubSubIntegrationTests: QuickSpec {
         }
 
         describe("Reconnect Test") {
-            let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+            let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
             var sessionUUID: String!
 
             afterEach {
                 connectionHandle.close()
             }
 
-            it("successfully restores current session") {
+            it("successfully restores current session with supplied UUID") {
                 waitUntil(timeout: 15) { done in
                     connectionHandle.connect(sessionUUID: nil) {
                         getSessionUUID(connectionHandle) { uuid in
@@ -282,7 +278,7 @@ class PubSubIntegrationTests: QuickSpec {
                 }
             }
 
-            xit("successfully opens new session after session expire") {
+            xit("successfully opens new session after session expire (5 min)") {
                 var sessionUuid: String?
 
                 waitUntil(timeout: 310) { done in
@@ -310,7 +306,7 @@ class PubSubIntegrationTests: QuickSpec {
         }
 
         describe("Get Session Uuid Test") {
-            let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+            let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
             afterEach {
                 connectionHandle.close()
@@ -338,7 +334,7 @@ class PubSubIntegrationTests: QuickSpec {
         }
 
         describe("Event Handlers Tests") {
-            let connectionHandle = pubSubService.connnect(keys: allKeys, options: defaultOptions)
+            let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
             afterEach {
                 connectionHandle.close()
@@ -349,17 +345,17 @@ class PubSubIntegrationTests: QuickSpec {
             }
 
             describe("onMessage Test") {
-                it("receives only messages") {
+                it("receives only message records") {
                     waitUntil(timeout: defaultTimeout) { done in
                         connectionHandle.connect(sessionUUID: nil) {
-                            connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in
-                                connectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                            connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
+                                connectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
                             }
                         }
 
                         connectionHandle.onMessage = { message in
 
-                            expect (message.channel == testChannelName).to(beTruthy())
+                            expect (message.channel == testChannel).to(beTruthy())
                             expect(message.message == testMessage).to(beTruthy())
 
                             done()
@@ -370,7 +366,7 @@ class PubSubIntegrationTests: QuickSpec {
 
             describe("onErrorResponse Test") {
                 context("when read key is not supplied") {
-                    let connectionHandle = pubSubService.connnect(keys: noReadKeys, options: defaultOptions)
+                    let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
                     var isEmitting: Bool = false
                     var error: PubSubErrorResponse?
 
@@ -378,10 +374,10 @@ class PubSubIntegrationTests: QuickSpec {
                         connectionHandle.close()
                     }
 
-                    it("emits error response") {
+                    it("emits error response record") {
                         waitUntil(timeout: defaultTimeout) { done in
                             connectionHandle.connect(sessionUUID: nil) {
-                                connectionHandle.subscribe(channelName: testChannelName, messageHandler: nil) { _ in }
+                                connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in }
                             }
 
                             connectionHandle.onErrorResponse = { responseError in
@@ -404,7 +400,7 @@ class PubSubIntegrationTests: QuickSpec {
                 }
                 
                 context("when write key is not supplied") {
-                    let connectionHandle = pubSubService.connnect(keys: noWriteKeys, options: defaultOptions)
+                    let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
                     var isEmitting: Bool = false
                     var error: PubSubErrorResponse?
 
@@ -412,10 +408,10 @@ class PubSubIntegrationTests: QuickSpec {
                         connectionHandle.close()
                     }
 
-                    it("emits error response") {
+                    it("emits error response record") {
                         waitUntil(timeout: 10) { done in
                             connectionHandle.connect(sessionUUID: nil) {
-                                connectionHandle.publish(channelName: testChannelName, message: testMessage) { _ in }
+                                connectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
                             }
                             
                             connectionHandle.onErrorResponse = { responseError in

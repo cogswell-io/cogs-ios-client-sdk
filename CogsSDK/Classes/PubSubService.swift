@@ -19,10 +19,7 @@ import Foundation
 import CryptoSwift
 
 /// Opens a connection to Cogswell pub/pub system.
-public class PubSubService {
-
-    /// Initializes and returns a pub/pub service.
-    public init(){}
+public final class PubSubService {
     
     /// Creates and configures a pub/sub connection.
     ///
@@ -30,7 +27,7 @@ public class PubSubService {
     ///   - keys: The provided project keys.
     ///   - options: The connection options.
     /// - Returns: Returns a configured pub/sub connection handler to manage the connection.
-    public func connnect(keys: [String], options: PubSubOptions?) -> PubSubConnectionHandle {
+    public static func connect(keys: [String], options: PubSubOptions?) -> PubSubConnectionHandle {
         return PubSubConnectionHandle(keys: keys, options: options)
     }
 }

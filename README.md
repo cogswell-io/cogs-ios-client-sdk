@@ -10,12 +10,12 @@
     - [Cogs Pub/Sub Service](#cogs-pubsub-service)
     - [Cogs Pub/Sub ConnectionHandle API](#cogs-pubsub-connectionhandle-api)
         - [getSessionUuid(completion:)](#getsessionuuidcompletion)
-        - [subscribe(channelName:messageHandler:completion:)](#subscribechannelnamemessagehandlercompletion)
-        - [connection.unsubscribe(channelName:completion:)](#subscribechannelnamecompletion)
+        - [subscribe(channel:messageHandler:completion:)](#subscribechannelmessagehandlercompletion)
+        - [connection.unsubscribe(channel:completion:)](#subscribechannelcompletion)
         - [unsubscribeAll(completion:)](#unsubscribeallcompletion)
         - [listSubscriptions(completion:)](#listsubscriptionscompletion)
-        - [publish(channelName:message:failure:)](#publishchannelnamemessagefailure)
-        - [publishWithAck(channelName:message:completion:)](#publishwithackchannelnamemessagecompletion)
+        - [publish(channel:message:errorHandler:)](#publishchannelmessageerrorHandler)
+        - [publishWithAck(channel:message:completion:)](#publishwithackchannelmessagecompletion)
         - [dropConnection()](#dropconnection)
         - [close()](#connectionclose)
         - [Connection Events](#connection-events)
@@ -121,11 +121,11 @@ connection.getSessionUuid { outcome in
 }
 ```
 
-### subscribe(channelName:messageHandler:completion:)
+### subscribe(channel:messageHandler:completion:)
 Subscribes the connection to a channel, supplying a handler which will be called with each message received from this channel. The successful result contains a list of the subscribed channels.The connection needs read permissions in order to subscribe to a channel.
 
 ```swift
-connection.subscribe(channelName: channelName,
+connection.subscribe(channel: channel,
                   messageHandler: { (message) in
                     print("\(message.id) | \(message.message)")
         }) { outcome in
@@ -139,11 +139,11 @@ connection.subscribe(channelName: channelName,
         }
 ```
 
-### unsubscribe(channelName:completion:)
+### unsubscribe(channel:completion:)
 Unsubscribes the connection from a particular channel. The successful result contains an array with currently subscribed channels without the channel just unsubscribed from. The connection needs read permission in order to unsubscribe from the channel.
 
 ```swift
-connection.unsubscribe(channelName: channelName){ outcome in
+connection.unsubscribe(channel: channel){ outcome in
     switch outcome {
     case .pubSubSuccess(let subscribedChannels):
         print(subscribedChannels) //The list won't include the channel to unsubscribe from
@@ -184,20 +184,20 @@ connection.listSubscriptions(){ outcome in
 }
 ```
 
-### publish(channelName:message:failure:)
+### publish(channel:message:errorHandler:)
 Publishes a message to a channel. The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
 
 ```swift
-connection.publish(channelName: channel, message: messageText){ error in
+connection.publish(channel: channel, message: messageText){ error in
     print(error as Any)
 }
 ```
 
-### publishWithAck(channelName:message:completion:)
+### publishWithAck(channel:message:completion:)
 Publishes a message to a channel. The successful result contains the UUID of the published message.
 
 ```swift
-connection.publishWithAck(channelName: channel, message: messageText){ outcome in
+connection.publishWithAck(channel: channel, message: messageText){ outcome in
     switch outcome {
     case .pubSubSuccess(let messadeUuid):
         print(messadeUuid)
