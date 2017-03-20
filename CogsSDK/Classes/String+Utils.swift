@@ -1,6 +1,6 @@
 //
 //  String+Utils.swift
-//  GambitSDK
+//  CogsSDK
 //
 
 /**
@@ -43,7 +43,7 @@ extension String {
         do {
             let regex = try NSRegularExpression(pattern: regex)
             let nsString = self as NSString
-            let results = regex.matches(in: self, range: NSRange(location: 0, length: nsString.length))
+            let _ = regex.matches(in: self, range: NSRange(location: 0, length: nsString.length))
 
             return true
         } catch let error {

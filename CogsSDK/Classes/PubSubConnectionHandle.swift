@@ -1,19 +1,37 @@
+//
+//  PubSubConnectionHandle.swift
+//  CogsSDK
+//
+
+/**
+ * Copyright (C) 2017 Aviata Inc. All Rights Reserved.
+ * This code is licensed under the Apache License 2.0
+ *
+ * This license can be found in the LICENSE.txt at or near the root of the
+ * project or repository. It can also be found here:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * You should have received a copy of the Apache License 2.0 license with this
+ * code or source file. If not, please contact support@cogswell.io
+ */
 
 import Foundation
 import Starscream
 
-/// The result of Pub/Sub operation
+/// The result of pub/pub operation
 ///
 /// - PubSubResponseError: The operation completed with error.
 /// - PubSubSuccess: The operation completed successfully with response object.
 public enum PubSubOutcome {
+    /// Returns the error occured as `PubSubErrorResponse` object.
     case pubSubResponseError(PubSubErrorResponse)
+    /// Returns the response object as `Any`.
     case pubSubSuccess(Any)
 }
 
 
-/// PubSub connection handler
-public class PubSubConnectionHandle {
+/// Pub/Sub connection handler
+public final class PubSubConnectionHandle {
 
     private var currentReconnectDelay: Double
     private var currentReconnectAtempts: Int = 0
@@ -101,7 +119,7 @@ public class PubSubConnectionHandle {
                 self.onClose?(nil)
             }
 
-            func execute() {
+            func scheduleReconnect() {
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.currentReconnectDelay) {
                     self.reconnect()
                 }
@@ -111,10 +129,10 @@ public class PubSubConnectionHandle {
                 if self.options.maxReconnectAttempts > -1 {
                     guard self.currentReconnectAtempts < self.options.maxReconnectAttempts else { return }
 
-                    execute()
+                    scheduleReconnect()
                     self.currentReconnectAtempts += 1
                 } else {
-                    execute()
+                    scheduleReconnect()
                 }
 
                 print(self.currentReconnectDelay)
@@ -238,7 +256,7 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.uuid))
+                    completion(PubSubOutcome.pubSubSuccess(result.uuid as Any))
                 }
             }
         }
@@ -259,24 +277,24 @@ public class PubSubConnectionHandle {
     /// The successful result contains a list of the subscribed channels. The connection needs read permissions in order to subscribe to a channel.
     ///
     /// - Parameters:
-    ///   - channelName: The chanel name.
+    ///   - channel: The chanel name.
     ///   - messageHandler: The channel specific handler which will be called with each message received from this channel.    
     ///   - completion: The closure called when the `subscribe` is complete.
-    public func subscribe(channelName: String, messageHandler: ((PubSubMessage) -> ())?, completion: @escaping (PubSubOutcome) -> ()) {
+    public func subscribe(channel: String, messageHandler: ((PubSubMessage) -> ())?, completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
         
         if let msgHandler = messageHandler {
-            channelHandlers[channelName] = msgHandler
+            channelHandlers[channel] = msgHandler
         }
         
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
-                channelHandlers.removeValue(forKey: channelName)
+                channelHandlers.removeValue(forKey: channel)
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -286,7 +304,7 @@ public class PubSubConnectionHandle {
         let params: [String: Any] = [
             "seq": sequence,
             "action": "subscribe",
-            "channel": channelName
+            "channel": channel
         ]
 
         writeToSocket(params: params)
@@ -297,9 +315,9 @@ public class PubSubConnectionHandle {
     /// The successful result contains an array with currently subscribed channels without the channel just unsubscribed from. The connection needs read permission in order to unsubscribe from the channel.
     ///
     /// - Parameters:
-    ///   - channelName: The name of the channel to unsubscribe from.
+    ///   - channel: The name of the channel to unsubscribe from.
     ///   - completion: The closure called when the `unsubscribe` is complete.
-    public func unsubscribe(channelName: String, completion: @escaping (PubSubOutcome) -> ()) {
+    public func unsubscribe(channel: String, completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
         
@@ -308,8 +326,8 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    channelHandlers.removeValue(forKey: channelName)
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    channelHandlers.removeValue(forKey: channel)
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -319,7 +337,7 @@ public class PubSubConnectionHandle {
         let params: [String: Any] = [
             "seq": sequence,
             "action": "unsubscribe",
-            "channel": channelName
+            "channel": channel
         ]
 
         writeToSocket(params: params)
@@ -340,7 +358,7 @@ public class PubSubConnectionHandle {
             } else {
                 if let result = response {
                     channelHandlers.removeAll()
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -369,7 +387,7 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.channels))
+                    completion(PubSubOutcome.pubSubSuccess(result.channels as Any))
                 }
             }
         }
@@ -389,18 +407,18 @@ public class PubSubConnectionHandle {
     /// The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
     ///
     /// - Parameters:
-    ///   - channelName: The channel where message will be published.
+    ///   - channel: The channel where message will be published.
     ///   - message: The message to publish.
-    ///   - failure: The closure called when an error occured.
-    public func publish(channelName: String, message: String, failure: @escaping (PubSubErrorResponse?) -> ()) {
+    ///   - errorHandler: The closure called when an error occured.
+    public func publish(channel: String, message: String, errorHandler: @escaping (PubSubErrorResponse?) -> ()) {
 
         let seq = incrementSequence()
-        handlerDispatcher.setObject(Handler(failure), forKey: seq)
+        handlerDispatcher.setObject(Handler(errorHandler), forKey: seq)
         
         let params: [String: Any] = [
             "seq": sequence,
             "action": "pub",
-            "chan": channelName,
+            "chan": channel,
             "msg": message
         ]
 
@@ -412,10 +430,10 @@ public class PubSubConnectionHandle {
     /// The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
     ///
     /// - Parameters:
-    ///   - channelName: The channel where message will be published.
+    ///   - channel: The channel where message will be published.
     ///   - message: The message to publish.
     ///   - completion: The closure called when the `publishWithAck` is complete.
-    public func publishWithAck(channelName: String, message: String, completion: @escaping (PubSubOutcome) -> ()) {
+    public func publishWithAck(channel: String, message: String, completion: @escaping (PubSubOutcome) -> ()) {
         
         let seq = incrementSequence()
         
@@ -424,7 +442,7 @@ public class PubSubConnectionHandle {
                 completion(PubSubOutcome.pubSubResponseError(err))
             } else {
                 if let result = response {
-                    completion(PubSubOutcome.pubSubSuccess(result.messageUUID))
+                    completion(PubSubOutcome.pubSubSuccess(result.messageUUID as Any))
                 }
             }
         }
@@ -434,7 +452,7 @@ public class PubSubConnectionHandle {
         let params: [String: Any] = [
             "seq": sequence,
             "action": "pub",
-            "chan": channelName,
+            "chan": channel,
             "msg": message,
             "ack": true
         ]

@@ -14,24 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-               BuildableName = "CogsSDK_Example.app"
-               BlueprintName = "CogsSDK_Example"
-               ReferencedContainer = "container:CogsSDK.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "607FACE41AFB9204008FA782"
-               BuildableName = "CogsSDK_Tests.xctest"
-               BlueprintName = "CogsSDK_Tests"
-               ReferencedContainer = "container:CogsSDK.xcodeproj">
+               BlueprintIdentifier = "5F81057CB399BA38C4479CCFD6349673"
+               BuildableName = "CogsSDK.framework"
+               BlueprintName = "CogsSDK"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -40,7 +26,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -56,10 +43,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "CogsSDK_Example.app"
-            BlueprintName = "CogsSDK_Example"
-            ReferencedContainer = "container:CogsSDK.xcodeproj">
+            BlueprintIdentifier = "5F81057CB399BA38C4479CCFD6349673"
+            BuildableName = "CogsSDK.framework"
+            BlueprintName = "CogsSDK"
+            ReferencedContainer = "container:Pods/Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -75,16 +62,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "CogsSDK_Example.app"
-            BlueprintName = "CogsSDK_Example"
-            ReferencedContainer = "container:CogsSDK.xcodeproj">
+            BlueprintIdentifier = "5F81057CB399BA38C4479CCFD6349673"
+            BuildableName = "CogsSDK.framework"
+            BlueprintName = "CogsSDK"
+            ReferencedContainer = "container:Pods/Pods.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -94,16 +80,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "CogsSDK_Example.app"
-            BlueprintName = "CogsSDK_Example"
-            ReferencedContainer = "container:CogsSDK.xcodeproj">
+            BlueprintIdentifier = "5F81057CB399BA38C4479CCFD6349673"
+            BuildableName = "CogsSDK.framework"
+            BlueprintName = "CogsSDK"
+            ReferencedContainer = "container:Pods/Pods.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

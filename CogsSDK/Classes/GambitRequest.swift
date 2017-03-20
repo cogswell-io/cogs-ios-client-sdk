@@ -1,6 +1,6 @@
 //
 //  GambitRequest.swift
-//  GambitSDK
+//  CogsSDK
 //
 
 /**

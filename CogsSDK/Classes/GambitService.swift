@@ -1,6 +1,6 @@
 //
 //  GambitService.swift
-//  GambitSDK
+//  CogsSDK
 //
 
 /**
@@ -89,7 +89,7 @@ public class GambitService {
     
     request.setPayloadHmac(hmac.toHexString())
     
-    print(NSString(data: request.urlRequest.httpBody!, encoding: String.Encoding.utf8.rawValue))
+    print(NSString(data: request.urlRequest.httpBody!, encoding: String.Encoding.utf8.rawValue) as Any)
     
     let task = sharedSession.dataTask(with: request.urlRequest, completionHandler: completionHandler)
 

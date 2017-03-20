@@ -1,6 +1,6 @@
 //
 //  GambitResponse.swift
-//  GambitSDK
+//  CogsSDK
 //
 
 /**
@@ -74,7 +74,7 @@ open class GambitMessageResponse: GambitResponse, CustomStringConvertible {
       throw NSError(domain: "CogsSDKError - ResponseMessage", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
     }
 
-    let messageJSON: JSON? = try! JSONSerialization.jsonObject(with: msg.data(using: String.Encoding.utf8)!, options: .allowFragments) as? JSON
+    let messageJSON: JSON? = try! JSONSerialization.jsonObject(with: msg.data(using: String.Encoding.utf8)!, options: .allowFragments) as JSON
 
     guard let j = messageJSON else {
          throw NSError(domain: "CogsSDKError - ResponseMessage", code: 1, userInfo: [NSLocalizedDescriptionKey: "Message data is NULL"])
@@ -117,7 +117,7 @@ open class GambitMessageResponse: GambitResponse, CustomStringConvertible {
         throw NSError(domain: "CogsSDKError - ResponseMessage", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])
     }
 
-    let dataJSON: JSON? = try JSONSerialization.jsonObject(with: data.data(using: String.Encoding.utf8)!, options: .allowFragments) as? JSON
+    let dataJSON: JSON? = try JSONSerialization.jsonObject(with: data.data(using: String.Encoding.utf8)!, options: .allowFragments) as JSON
 
     guard let d = dataJSON else {
         throw NSError(domain: "CogsSDKError - ResponseMessage", code: 1, userInfo: [NSLocalizedDescriptionKey: "Bad JSON"])

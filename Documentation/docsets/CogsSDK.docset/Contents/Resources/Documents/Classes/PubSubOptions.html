@@ -84,7 +84,7 @@
 
                 </div>
               </div>
-            <p>PubSub service options</p>
+            <p>Pub/Sub service options</p>
 
           </section>
           <section class="section task-group-section">
@@ -103,14 +103,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Cogs pub/sub service URL.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubOptions</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -130,14 +130,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The time before connection timeouts.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubOptions</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">connectionTimeout</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                         </div>
                       </div>
@@ -157,14 +157,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>A boolean flag that shows should the connection try to reconnect when disconnected.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubOptions</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">autoReconnect</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
                       </div>
@@ -184,14 +184,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Initial amount of time the connection waits before attempting to reconnect.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubOptions</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">minReconnectDelay</span><span class="p">:</span> <span class="kt">TimeInterval</span></code></pre>
 
                         </div>
                       </div>
@@ -211,14 +211,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Maximum amount of time the connection waits before attempting to reconnect. Reconnection delay get increased with every attempt until reaching the maximum value.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubOptions</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">maxReconnectDelay</span><span class="p">:</span> <span class="kt">TimeInterval</span></code></pre>
 
                         </div>
                       </div>
@@ -238,14 +238,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Maximum number of reconnection attempts.  -1 signifies infinite tries.</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">PubSubOptions</span></code></pre>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">let</span> <span class="nv">maxReconnectAttempts</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                         </div>
                       </div>
@@ -290,7 +290,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>URL to which to connect</p>
+                                  <p>Cogs pub/sub service URL.</p>
 
                                 </div>
                               </td>
@@ -303,7 +303,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>Time before connection should timeout</p>
+                                  <p>The time before connection timeouts.</p>
 
                                 </div>
                               </td>
@@ -316,7 +316,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>true if connection should attempt to reconnect when disconnected</p>
+                                  <p>A boolean flag that shows should the connection try to reconnect when disconnected.</p>
 
                                 </div>
                               </td>
@@ -329,7 +329,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>The initial amount of time a reconnection attempt waits before attempting to reconnect.</p>
+                                  <p>The initial amount of time the connection waits before attempting to reconnect.</p>
 
                                 </div>
                               </td>
@@ -342,7 +342,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>The maximum amount of time a reconnection attempt should wait before attempting to reconnect</p>
+                                  <p>The maximum amount of time the connection waits before attempting to reconnect. Reconnection delay get increased with every attempt until reaching the maximum value.</p>
 
                                 </div>
                               </td>
@@ -355,7 +355,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>The number of times to attempt a reconnection.  -1 signifies infinite tries</p>
+                                  <p>The maximum number of reconnection attempts.  -1 signifies infinite tries.</p>
 
                                 </div>
                               </td>
@@ -398,7 +398,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell</a>. All rights reserved. (Last updated: 2017-03-09)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

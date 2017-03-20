@@ -78,7 +78,21 @@
         <section>
           <section class="section">
             <h1>PubSubResponseCode</h1>
-            <p>Undocumented</p>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PubSubResponseCode</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                </div>
+              </div>
+            <p>An enum representing the possible server response codes</p>
+
+<ul>
+<li>success: Request completed successfully.</li>
+<li>generalError: General error occured.</li>
+<li>invalidRequest: Invalid request has been sent(malformed JSON, bad attributes or types, etc.)</li>
+<li>unauthorised: There isn&rsquo;t permissions for requested action.</li>
+<li>notFound: Subscription not found.</li>
+</ul>
 
           </section>
           <section class="section task-group-section">
@@ -97,8 +111,16 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>The request completed successfully.</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">case</span> <span class="n">success</span> <span class="o">=</span> <span class="mi">200</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -120,8 +142,16 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>General error occured.</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">case</span> <span class="n">generalError</span> <span class="o">=</span> <span class="mi">500</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -143,8 +173,16 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Invalid request has been sent(malformed JSON, bad attributes or types, etc.).</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">case</span> <span class="n">invalidRequest</span> <span class="o">=</span> <span class="mi">400</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -166,8 +204,16 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>There isn&rsquo;t permissions for requested action.</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">case</span> <span class="n">unauthorised</span> <span class="o">=</span> <span class="mi">401</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -189,8 +235,16 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Subscription not found.</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">case</span> <span class="n">notFound</span> <span class="o">=</span> <span class="mi">404</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -200,7 +254,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell</a>. All rights reserved. (Last updated: 2017-03-09)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-13)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
