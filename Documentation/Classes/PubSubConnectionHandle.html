@@ -80,7 +80,7 @@
             <h1>PubSubConnectionHandle</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">PubSubConnectionHandle</span></code></pre>
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">PubSubConnectionHandle</span></code></pre>
 
                 </div>
               </div>
@@ -465,7 +465,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Getts session UUID.</p>
+                        <p>Get session UUID.</p>
 
                       </div>
                       <div class="declaration">
@@ -502,9 +502,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle9subscribeFT11channelNameSS14messageHandlerGSqFCS_13PubSubMessageT__10completionFOS_13PubSubOutcomeT__T_"></a>
-                    <a name="//apple_ref/swift/Method/subscribe(channelName:messageHandler:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle9subscribeFT11channelNameSS14messageHandlerGSqFCS_13PubSubMessageT__10completionFOS_13PubSubOutcomeT__T_">subscribe(channelName:messageHandler:completion:)</a>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle9subscribeFT7channelSS14messageHandlerGSqFCS_13PubSubMessageT__10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/subscribe(channel:messageHandler:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle9subscribeFT7channelSS14messageHandlerGSqFCS_13PubSubMessageT__10completionFOS_13PubSubOutcomeT__T_">subscribe(channel:messageHandler:completion:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -521,7 +521,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">subscribe</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">messageHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubMessage.html">PubSubMessage</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">subscribe</span><span class="p">(</span><span class="nv">channel</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">messageHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubMessage.html">PubSubMessage</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
 
                         </div>
                       </div>
@@ -532,7 +532,7 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>channelName</em>
+                                <em>channel</em>
                                 </code>
                               </td>
                               <td>
@@ -577,9 +577,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle11unsubscribeFT11channelNameSS10completionFOS_13PubSubOutcomeT__T_"></a>
-                    <a name="//apple_ref/swift/Method/unsubscribe(channelName:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle11unsubscribeFT11channelNameSS10completionFOS_13PubSubOutcomeT__T_">unsubscribe(channelName:completion:)</a>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle11unsubscribeFT7channelSS10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/unsubscribe(channel:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle11unsubscribeFT7channelSS10completionFOS_13PubSubOutcomeT__T_">unsubscribe(channel:completion:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -596,7 +596,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="nv">channel</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
 
                         </div>
                       </div>
@@ -607,7 +607,7 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>channelName</em>
+                                <em>channel</em>
                                 </code>
                               </td>
                               <td>
@@ -737,9 +737,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle7publishFT11channelNameSS7messageSS7failureFGSqCS_19PubSubErrorResponse_T__T_"></a>
-                    <a name="//apple_ref/swift/Method/publish(channelName:message:failure:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle7publishFT11channelNameSS7messageSS7failureFGSqCS_19PubSubErrorResponse_T__T_">publish(channelName:message:failure:)</a>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle7publishFT7channelSS7messageSS12errorHandlerFGSqCS_19PubSubErrorResponse_T__T_"></a>
+                    <a name="//apple_ref/swift/Method/publish(channel:message:errorHandler:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle7publishFT7channelSS7messageSS12errorHandlerFGSqCS_19PubSubErrorResponse_T__T_">publish(channel:message:errorHandler:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -756,7 +756,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">publish</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">failure</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">publish</span><span class="p">(</span><span class="nv">channel</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">errorHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
 
                         </div>
                       </div>
@@ -767,7 +767,7 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>channelName</em>
+                                <em>channel</em>
                                 </code>
                               </td>
                               <td>
@@ -793,7 +793,7 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>failure</em>
+                                <em>errorHandler</em>
                                 </code>
                               </td>
                               <td>
@@ -812,9 +812,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle14publishWithAckFT11channelNameSS7messageSS10completionFOS_13PubSubOutcomeT__T_"></a>
-                    <a name="//apple_ref/swift/Method/publishWithAck(channelName:message:completion:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle14publishWithAckFT11channelNameSS7messageSS10completionFOS_13PubSubOutcomeT__T_">publishWithAck(channelName:message:completion:)</a>
+                    <a name="/s:FC7CogsSDK22PubSubConnectionHandle14publishWithAckFT7channelSS7messageSS10completionFOS_13PubSubOutcomeT__T_"></a>
+                    <a name="//apple_ref/swift/Method/publishWithAck(channel:message:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK22PubSubConnectionHandle14publishWithAckFT7channelSS7messageSS10completionFOS_13PubSubOutcomeT__T_">publishWithAck(channel:message:completion:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -831,7 +831,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">publishWithAck</span><span class="p">(</span><span class="nv">channelName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">publishWithAck</span><span class="p">(</span><span class="nv">channel</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Enums/PubSubOutcome.html">PubSubOutcome</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
 
                         </div>
                       </div>
@@ -842,7 +842,7 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>channelName</em>
+                                <em>channel</em>
                                 </code>
                               </td>
                               <td>
@@ -889,7 +889,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-13)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-21)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

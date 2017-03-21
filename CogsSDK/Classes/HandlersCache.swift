@@ -23,7 +23,9 @@ class Handler {
     
     public var closure: OperationHandler?
     
-    public var timer: (() -> ())?
+    public var onDispose: (() -> ())?
+    
+    public var timer = Timer()
 
     public var completed: Bool = false
     
@@ -41,13 +43,28 @@ class Handler {
             failure(error)
         }
     }
+    
+    public func startTimer(interval: Double) {
+        self.timer = Timer.scheduledTimer(timeInterval: interval,
+                             target: self,
+                             selector: #selector(dispose),
+                             userInfo: nil,
+                             repeats: false)
+    }
+    
+    public func stopTimer() {
+        self.timer.invalidate()
+    }
+    
+    @objc public func dispose() {
+        self.stopTimer()
+        self.onDispose?()
+    }
 }
 
 class HandlersCache {
     
     private var cache:[String : Handler] = [String : Handler]()
-    
-    private var timerQueue = DispatchQueue(label: "TimerQueue")
     
     public var countLimit: Int = 10000
     
@@ -76,21 +93,25 @@ class HandlersCache {
         guard cache.count < countLimit  else { return }
         
         //set handler's live timer
-        obj.timer = {
-            let deadlineTime = DispatchTime.now() + .seconds(self.objectAge)
-            self.timerQueue.asyncAfter(deadline: deadlineTime, execute: {
-                obj.isAlive = false
-                self.dispose?(obj, String(key))
-                _ = self.removeObject(forKey: key)
+
+        cache[String(key)] = obj
+        obj.onDispose = { [weak self] in
+            guard let weakSelf = self else {return}
+            
+            if let handler = weakSelf.cache[String(key)] {
+                handler.isAlive = false
+                weakSelf.dispose?(handler, String(key))
+                _ = weakSelf.removeObject(forKey: key)
                 print("\(key) OBJECT LIVE EXPIRED.")
-            })
+            }
         }
         
-        cache[String(key)] = obj
-        obj.timer?()
+        obj.startTimer(interval: Double(objectAge))
     }
     
     public func removeObject(forKey key: Int) -> Handler? {
+        let object = cache[String(key)]
+        object?.stopTimer()
         return cache.removeValue(forKey: String(key))
     }
     
