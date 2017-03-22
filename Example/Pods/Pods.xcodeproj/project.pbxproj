@@ -66,9 +66,6 @@
 		4DE0D0C1794AD6DDEDA43DC1E6ABB4A8 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079B1612B8AF5728A176962DC1344C31 /* Utils.swift */; };
 		4F3F103945CC52D0A3B8A891BB0E21C4 /* RaisesException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51340AAA23BB9C8CA19EC4451374B02B /* RaisesException.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		50B80F12A9BAE302F07F6CF94752F462 /* mach_excServer.c in Sources */ = {isa = PBXBuildFile; fileRef = 72AA75FDBA0809EB98CB51E785EE29FB /* mach_excServer.c */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
-		52074A771E7711FC0053CAD6 /* GambitRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52074A741E7711FC0053CAD6 /* GambitRequest.swift */; };
-		52074A781E7711FC0053CAD6 /* GambitResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52074A751E7711FC0053CAD6 /* GambitResponse.swift */; };
-		52074A791E7711FC0053CAD6 /* GambitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52074A761E7711FC0053CAD6 /* GambitService.swift */; };
 		5217D72D4B6197446A8B84532C92F7B5 /* Quick-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAA42C4C085835D52FEB3551ACD4449 /* Quick-dummy.m */; };
 		548433B4BB3FB58C2F4744A4E825F3D0 /* BlockModeWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840C506CDAC61AD60A9DADC222A8DC7A /* BlockModeWorker.swift */; };
 		551440A0F92574039C1D2EB39227D6B8 /* AsyncMatcherWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D13B00E4F0E5AAB86084B235AA88A4 /* AsyncMatcherWrapper.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
@@ -324,9 +321,6 @@
 		4F79CAC8DEF64E16E56989C0A70E27CA /* Pods-CogsSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-CogsSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		4FB1FAC969541AB85D45ED955DE286B5 /* Collection+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Collection+Extension.swift"; path = "Sources/CryptoSwift/Collection+Extension.swift"; sourceTree = "<group>"; };
 		51340AAA23BB9C8CA19EC4451374B02B /* RaisesException.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RaisesException.swift; path = Sources/Nimble/Matchers/RaisesException.swift; sourceTree = "<group>"; };
-		52074A741E7711FC0053CAD6 /* GambitRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitRequest.swift; sourceTree = "<group>"; };
-		52074A751E7711FC0053CAD6 /* GambitResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitResponse.swift; sourceTree = "<group>"; };
-		52074A761E7711FC0053CAD6 /* GambitService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitService.swift; sourceTree = "<group>"; };
 		521BA1A79B845D5B7A453BAF789AF13D /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		53F41C1EA78AF074F6BCCC82A062441C /* CogsSDK.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = CogsSDK.xcconfig; sourceTree = "<group>"; };
 		54A015532A95B3AB8F56E351BB080D5B /* CwlCatchBadInstruction.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CwlCatchBadInstruction.h; path = Sources/Lib/CwlPreconditionTesting/CwlPreconditionTesting/CwlCatchBadInstruction.h; sourceTree = "<group>"; };
@@ -613,9 +607,6 @@
 			children = (
 				A88DAD1690CFB9B677A25BC10455878D /* AuthKey.swift */,
 				D438CEF4731D6BBEE01A664E442B10F9 /* Date+Utils.swift */,
-				52074A741E7711FC0053CAD6 /* GambitRequest.swift */,
-				52074A751E7711FC0053CAD6 /* GambitResponse.swift */,
-				52074A761E7711FC0053CAD6 /* GambitService.swift */,
 				37B1627FC2ECAEFF78C98E647CF8DF16 /* DialectValidator.swift */,
 				3D11549A9B951C355DA94386DFCC21C1 /* HandlersCache.swift */,
 				26775692A936A292D5A3EE364927485F /* PubSubConnectionHandle.swift */,
@@ -1110,7 +1101,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0820;
 			};
 			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1307,14 +1298,11 @@
 				365C8D5FA0F3073C681B825EF75D302D /* AuthKey.swift in Sources */,
 				F6C552275C5578571E817258B14A69A9 /* CogsSDK-dummy.m in Sources */,
 				7CDB531FA58F47FFF1FD75DC3AD0009A /* Date+Utils.swift in Sources */,
-				52074A771E7711FC0053CAD6 /* GambitRequest.swift in Sources */,
-				52074A781E7711FC0053CAD6 /* GambitResponse.swift in Sources */,
 				9C5FA2684D9FDB0FC3CF07366ECED075 /* DialectValidator.swift in Sources */,
 				FDB85507B04D28034FD074C9167B6276 /* HandlersCache.swift in Sources */,
 				418AC660618D87E5E360057EF32F4CFB /* PubSubConnectionHandle.swift in Sources */,
 				A4434C84FA2CB20A273DA073DE17002A /* PubSubOptions.swift in Sources */,
 				D3F40A3E4BB4384AF7A127DDCD985EE8 /* PubSubResponse.swift in Sources */,
-				52074A791E7711FC0053CAD6 /* GambitService.swift in Sources */,
 				681BE492616D9241F948D110F50E3F01 /* PubSubService.swift in Sources */,
 				FF4BB4F66415652535A183EF7F31ADE6 /* Request.swift in Sources */,
 				9A45D7BA07F43675A0890BA694882A7C /* SocketAuthentication.swift in Sources */,
@@ -1567,15 +1555,19 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGNING_REQUIRED = NO;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"POD_CONFIGURATION_DEBUG=1",
@@ -1709,14 +1701,18 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGNING_REQUIRED = NO;
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"POD_CONFIGURATION_RELEASE=1",
 					"$(inherited)",
@@ -1730,6 +1726,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
 				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SYMROOT = "${SRCROOT}/../build";
 				VALIDATE_PRODUCT = YES;
 			};

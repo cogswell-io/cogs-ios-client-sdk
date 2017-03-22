@@ -104,87 +104,93 @@ public final class PubSubConnectionHandle {
         webSocket = WebSocket(url: URL(string: self.options.url)!)
         webSocket.timeout = self.options.connectionTimeout
         
-        webSocket.onConnect = {
-            self.connectHandler?()
-            self.autoReconnect         = self.options.autoReconnect
-            self.currentReconnectDelay = self.options.minReconnectDelay
-            self.currentReconnectAtempts = 0
-            self.getSessionUuid{ _ in }
+        webSocket.onConnect = { [weak self] in
+            guard let weakSelf = self else {return}
+            
+            weakSelf.connectHandler?()
+            weakSelf.autoReconnect         = weakSelf.options.autoReconnect
+            weakSelf.currentReconnectDelay = weakSelf.options.minReconnectDelay
+            weakSelf.currentReconnectAtempts = 0
+            weakSelf.getSessionUuid{ _ in }
         }
         
-        webSocket.onDisconnect = { (error: NSError?) in
+        webSocket.onDisconnect = {[weak self] (error: NSError?) in
+            guard let weakSelf = self else {return}
+            
             if let err = error, err.code != 1000 {
-                self.onClose?(error)
+                weakSelf.onClose?(error)
             } else {
-                self.onClose?(nil)
+                weakSelf.onClose?(nil)
             }
 
             func scheduleReconnect() {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.currentReconnectDelay) {
-                    self.reconnect()
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + weakSelf.currentReconnectDelay) {
+                    weakSelf.reconnect()
                 }
             }
 
-            if self.autoReconnect {
-                if self.options.maxReconnectAttempts > -1 {
-                    guard self.currentReconnectAtempts < self.options.maxReconnectAttempts else { return }
+            if weakSelf.autoReconnect {
+                if weakSelf.options.maxReconnectAttempts > -1 {
+                    guard weakSelf.currentReconnectAtempts < weakSelf.options.maxReconnectAttempts else { return }
 
                     scheduleReconnect()
-                    self.currentReconnectAtempts += 1
+                    weakSelf.currentReconnectAtempts += 1
                 } else {
                     scheduleReconnect()
                 }
 
-                print(self.currentReconnectDelay)
-                print(self.currentReconnectAtempts)
+                print(weakSelf.currentReconnectDelay)
+                print(weakSelf.currentReconnectAtempts)
 
-                self.currentReconnectDelay *= 2.0
+                weakSelf.currentReconnectDelay *= 2.0
 
-                if self.currentReconnectDelay > self.options.maxReconnectDelay {
-                    self.currentReconnectDelay = self.options.maxReconnectDelay
+                if weakSelf.currentReconnectDelay > weakSelf.options.maxReconnectDelay {
+                    weakSelf.currentReconnectDelay = weakSelf.options.maxReconnectDelay
                 }
             }
         }
 
-        webSocket.onText = { (text: String) in
-            self.onRawRecord?(text)
+        webSocket.onText = {[weak self] (text: String)  in
+            guard let weakSelf = self else {return}
+            
+            weakSelf.onRawRecord?(text)
             
             DialectValidator.parseAndAutoValidate(record: text) { json, error, responseError in
                 var seq: Int?
                 var response: PubSubResponse?
                 
                 if let error = error {
-                    self.onError?(error)
+                    weakSelf.onError?(error)
                 } else if let respError = responseError {
                     seq = respError.sequence
-                    self.onErrorResponse?(respError)
+                    weakSelf.onErrorResponse?(respError)
                 } else if let j = json {
                     do {
                         response = try PubSubResponse(json: j)
                         seq = response?.seq
    
                         if let sessionUUID = response?.uuid {
-                            if sessionUUID == self.sessionUUID {
-                                self.onReconnect?()
+                            if sessionUUID == weakSelf.sessionUUID {
+                                weakSelf.onReconnect?()
                             } else {
-                                self.onNewSession?(sessionUUID)
+                                weakSelf.onNewSession?(sessionUUID)
                             }
 
-                            self.sessionUUID = sessionUUID
+                            weakSelf.sessionUUID = sessionUUID
                         }
                     } catch {
                         do {
                             let message = try PubSubMessage(json: j)
-                            self.channelHandlers[message.channel]?(message)
-                            self.onMessage?(message)
+                            weakSelf.channelHandlers[message.channel]?(message)
+                            weakSelf.onMessage?(message)
                         } catch {
-                            self.onError?(error)
+                            weakSelf.onError?(error)
                         }
                     }
                 }
                 
                 // call method's completion handler
-                self.callbackQueue.async { [weak self] in
+                weakSelf.callbackQueue.async { [weak self] in
                     guard let weakSelf = self else { return }
                     
                     if let sequence = seq, let completion = weakSelf.handlerDispatcher.object(forKey: sequence),
@@ -197,14 +203,16 @@ public final class PubSubConnectionHandle {
             }
         }
         
-        handlerDispatcher.dispose = { handler, sequence in
+        handlerDispatcher.dispose = {[weak self] handler, sequence in
+            guard let weakSelf = self else { return }
+
             if (handler.completed != true && handler.disposable){
                 if let closure = handler.closure {
                     closure(nil, PubSubErrorResponse(code: Int(101), message: "Timeout awaiting response to sequence \(sequence)"))
                 }
                 
                 let error = NSError(domain: "CogsSDKError - Timeout", code: Int(101), userInfo: [NSLocalizedDescriptionKey: "Timeout awaiting response to sequence \(sequence)"])
-                self.onError?(error)
+                weakSelf.onError?(error)
             }
         }
     }
@@ -244,7 +252,7 @@ public final class PubSubConnectionHandle {
         }
     }
     
-    /// Getts session UUID.
+    /// Get session UUID.
     ///
     /// - Parameter completion: The closure called when the `getSessionUuid` is complete.
     public func getSessionUuid(completion: @escaping (PubSubOutcome) -> ()) {
