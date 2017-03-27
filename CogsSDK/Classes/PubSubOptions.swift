@@ -39,7 +39,39 @@ public final class PubSubOptions {
     open let maxReconnectDelay: TimeInterval
     /// Maximum number of reconnection attempts.  -1 signifies infinite tries.
     open let maxReconnectAttempts: Int
+    
+    /// New session event handler.
+    ///
+    /// Indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.
+    public var onNewSessionHandler: ((String) -> ())?
 
+    /// Reconnect event handler.
+    ///
+    /// The event is emitted on socket reconnection if it disconnects for any reason.
+    public var onReconnectHandler: (() -> ())?
+
+    /// Raw record event handler.
+    ///
+    /// The event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.
+    public var onRawRecordHandler: ((RawRecord) -> ())?
+
+    /// Message event handler.
+    ///
+    /// The event is emitted whenever the socket receives messages from any channel.
+    public var onMessageHandler: ((PubSubMessage) -> ())?
+
+    /// Close event handler
+    public var onCloseHandler: ((Error?) -> ())?
+
+    /// General error event handler.
+    ///
+    /// The event is emitted on any connection errors, failed publishing, or when any exception is thrown.
+    public var onErrorHandler: ((Error) -> ())?
+
+    /// Response error event handler.
+    ///
+    /// The event is emitted whenever a message is sent to the user with an error status code.
+    public var onErrorResponseHandler: ((PubSubErrorResponse) -> ())?
 
     /// PubSubOptions configuration
     ///
@@ -60,7 +92,6 @@ public final class PubSubOptions {
         self.maxReconnectDelay    = maxReconnectDelay ?? defaultMaxReconnectDelay
         self.maxReconnectAttempts = maxReconnectAttempts ?? defaultMaxReconnectAttempts
     }
-
 
     /// Default options configuration
     public static var defaultOptions: PubSubOptions {

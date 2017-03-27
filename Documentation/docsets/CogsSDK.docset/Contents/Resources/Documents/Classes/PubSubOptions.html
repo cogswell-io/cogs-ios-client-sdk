@@ -255,6 +255,207 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:vC7CogsSDK13PubSubOptions19onNewSessionHandlerGSqFSST__"></a>
+                    <a name="//apple_ref/swift/Property/onNewSessionHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK13PubSubOptions19onNewSessionHandlerGSqFSST__">onNewSessionHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>New session event handler.</p>
+
+<p>Indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onNewSessionHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK13PubSubOptions18onReconnectHandlerGSqFT_T__"></a>
+                    <a name="//apple_ref/swift/Property/onReconnectHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK13PubSubOptions18onReconnectHandlerGSqFT_T__">onReconnectHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Reconnect event handler.</p>
+
+<p>The event is emitted on socket reconnection if it disconnects for any reason.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onReconnectHandler</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK13PubSubOptions18onRawRecordHandlerGSqFSST__"></a>
+                    <a name="//apple_ref/swift/Property/onRawRecordHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK13PubSubOptions18onRawRecordHandlerGSqFSST__">onRawRecordHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Raw record event handler.</p>
+
+<p>The event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onRawRecordHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">RawRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK13PubSubOptions16onMessageHandlerGSqFCS_13PubSubMessageT__"></a>
+                    <a name="//apple_ref/swift/Property/onMessageHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK13PubSubOptions16onMessageHandlerGSqFCS_13PubSubMessageT__">onMessageHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Message event handler.</p>
+
+<p>The event is emitted whenever the socket receives messages from any channel.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onMessageHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubMessage.html">PubSubMessage</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK13PubSubOptions14onCloseHandlerGSqFGSqPs5Error__T__"></a>
+                    <a name="//apple_ref/swift/Property/onCloseHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK13PubSubOptions14onCloseHandlerGSqFGSqPs5Error__T__">onCloseHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Close event handler</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onCloseHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">Error</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK13PubSubOptions14onErrorHandlerGSqFPs5Error_T__"></a>
+                    <a name="//apple_ref/swift/Property/onErrorHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK13PubSubOptions14onErrorHandlerGSqFPs5Error_T__">onErrorHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>General error event handler.</p>
+
+<p>The event is emitted on any connection errors, failed publishing, or when any exception is thrown.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onErrorHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">Error</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC7CogsSDK13PubSubOptions22onErrorResponseHandlerGSqFCS_19PubSubErrorResponseT__"></a>
+                    <a name="//apple_ref/swift/Property/onErrorResponseHandler" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC7CogsSDK13PubSubOptions22onErrorResponseHandlerGSqFCS_19PubSubErrorResponseT__">onErrorResponseHandler</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Response error event handler.</p>
+
+<p>The event is emitted whenever a message is sent to the user with an error status code.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">onErrorResponseHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:FC7CogsSDK13PubSubOptionscFT3urlGSqSS_17connectionTimeoutGSqSi_13autoReconnectGSqSb_17minReconnectDelayGSqSd_17maxReconnectDelayGSqSd_20maxReconnectAttemptsGSqSi__S0_"></a>
                     <a name="//apple_ref/swift/Method/init(url:connectionTimeout:autoReconnect:minReconnectDelay:maxReconnectDelay:maxReconnectAttempts:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:FC7CogsSDK13PubSubOptionscFT3urlGSqSS_17connectionTimeoutGSqSi_13autoReconnectGSqSb_17minReconnectDelayGSqSd_17maxReconnectDelayGSqSd_20maxReconnectAttemptsGSqSi__S0_">init(url:connectionTimeout:autoReconnect:minReconnectDelay:maxReconnectDelay:maxReconnectAttempts:)</a>
@@ -398,7 +599,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-21)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-27)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

@@ -57,7 +57,7 @@ public final class PubSubConnectionHandle {
     
     /// Reconnect event handler.
     ///
-    /// The event is emitted on socket reconnection if it disconnected for any reason.
+    /// The event is emitted on socket reconnection if it is disconnected for any reason.
     public var onReconnect: (() -> ())?
     
     /// Raw record event handler.
@@ -82,8 +82,7 @@ public final class PubSubConnectionHandle {
     ///
     /// The event is emitted whenever a message is sent to the user with an error status code.
     public var onErrorResponse: ((PubSubErrorResponse) -> ())?
-    
-    
+
     /// Initializes and returns a connection handler.
     ///
     /// - Parameters:
@@ -92,17 +91,25 @@ public final class PubSubConnectionHandle {
     public init(keys: [String], options: PubSubOptions?) {
 
         if let ops = options {
-            self.options = ops
+            self.options           = ops
         } else {
-            self.options = PubSubOptions.defaultOptions
+            self.options           = PubSubOptions.defaultOptions
         }
-        
-        self.keys                    = keys
-        self.currentReconnectDelay   = self.options.minReconnectDelay
-        self.autoReconnect           = self.options.autoReconnect
 
-        webSocket = WebSocket(url: URL(string: self.options.url)!)
-        webSocket.timeout = self.options.connectionTimeout
+        self.onNewSession      = options?.onNewSessionHandler
+        self.onReconnect       = options?.onReconnectHandler
+        self.onRawRecord       = options?.onRawRecordHandler
+        self.onMessage         = options?.onMessageHandler
+        self.onClose           = options?.onCloseHandler
+        self.onError           = options?.onErrorHandler
+        self.onErrorResponse   = options?.onErrorResponseHandler
+
+        self.keys                  = keys
+        self.currentReconnectDelay = self.options.minReconnectDelay
+        self.autoReconnect         = self.options.autoReconnect
+
+        webSocket                  = WebSocket(url: URL(string: self.options.url)!)
+        webSocket.timeout          = self.options.connectionTimeout
         
         webSocket.onConnect = { [weak self] in
             guard let weakSelf = self else {return}
