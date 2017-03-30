@@ -7,24 +7,26 @@
     -[Manual](#manual)
     -[CocoaPods](#cocoapods)
 - [Usage](#usage)
+    - [Cogs Pub/Sub Options](#cogs-pubsub-options)
+        - [Connection Events](#connection-events)
+            - [Event: onNewSession](#event-onnewsession)
+            - [Event: onReconnect](#event-onreconnect)
+            - [Event: onRawRecord](#event-onrawrecord)
+            - [Event: onMessage](#event-onmessage)
+            - [Event: onError](#event-onerror)
+            - [Event: onErrorResponse](#event-onerrorresponse)
+            - [Event: onClose](#event-onclose)
     - [Cogs Pub/Sub Service](#cogs-pubsub-service)
     - [Cogs Pub/Sub ConnectionHandle API](#cogs-pubsub-connectionhandle-api)
         - [getSessionUuid(completion:)](#getsessionuuidcompletion)
         - [subscribe(channel:messageHandler:completion:)](#subscribechannelmessagehandlercompletion)
-        - [connection.unsubscribe(channel:completion:)](#subscribechannelcompletion)
+        - [unsubscribe(channel:completion:)](#subscribechannelcompletion)
         - [unsubscribeAll(completion:)](#unsubscribeallcompletion)
         - [listSubscriptions(completion:)](#listsubscriptionscompletion)
         - [publish(channel:message:errorHandler:)](#publishchannelmessageerrorHandler)
         - [publishWithAck(channel:message:completion:)](#publishwithackchannelmessagecompletion)
         - [dropConnection()](#dropconnection)
         - [close()](#connectionclose)
-        - [Connection Events](#connection-events)
-            - [Event: onRawRecord](#event-onrawrecord)
-            - [Event: onMessage](#event-onmessage)
-            - [Event: onError](#event-onerror)
-            - [Event: onReconnect](#event-onreconnect)
-            - [Event: onClose](#event-onclose)
-            - [Event: onNewSession](#event-onnewsession)
     - [Gambit Service](#gambit-service)
         - [requestEvent(_ gambitRequest:completionHandler:)](#requestevent_-gambitrequestcompletionhandler)
         - [registerPush(_ gambitRequest:completionHandler:)](#registerpush_-gambitrequestcompletionhandler)
@@ -81,30 +83,159 @@ $ pod install
 
 ## Usage
 
+## Cogs Pub/Sub Options
+Create a ```PubSubOptions``` and set connection's options and event handlers. If no options are provided the default ones would be set.
+
+```swift
+let options = PubSubOptions.defaultOptions 
+or 
+let options = PubSubOptions(url: url,
+                            connectionTimeout: 30,
+                            autoReconnect: true,
+                            minReconnectDelay: 5,
+                            maxReconnectDelay: 300,
+                            maxReconnectAttempts: -1,
+                            onNewSessionHandler: { (sessionUUID) in
+                                print(sessionUUID)
+                            },
+                            onReconnectHandler: {
+                                print("Session is restored")
+                            },
+                            onRawRecordHandler: { (record) in
+                                print (record)
+                            },
+                            onMessageHandler: { (receivedMessage) in
+                                print (receivedMessage)
+                            },
+                            onCloseHandler: { (error) in
+                                if let err = error {
+                                    print(err.localizedDescription)
+                                } else {
+                                    print("Session is closed")
+                                }
+                            },
+                            onErrorHandler: { (error) in
+                                print(error.localizedDescription)
+                            },
+                            onErrorResponseHandler: { (responseError) in
+                                print("\(responseError.message) \n \(responseError.code)")
+                            })
+```
+
+## Connection Events
+
+### Event: onNewSession
+The ```onNewSession``` event indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.
+
+```swift
+options.onNewSession = { sessionUUID in
+    print("New session \(sessionUUID) is opened."
+}
+```
+### Event: onReconnect
+The ```onReconnect``` event is emitted on socket reconnection if it disconnected for any reason.
+
+```swift
+options.onReconnect = {
+    print("Session is restored")
+}
+```
+
+### Event: onRawRecord
+The ```onRawRecord``` event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.
+
+```swift
+options.onRawRecord = { (record) in
+  print (record)
+}
+```
+
+### Event: onMessage
+The ```onMessage``` event is emitted whenever the socket receives messages from any channel.
+
+```swift
+options.onMessage = { (receivedMessage) in
+    print (receivedMessage)
+}
+```
+
+### Event: onError
+The ```onError``` event is emitted on any connection errors, failed publishes, or when any exception is thrown.
+
+```swift
+options.onError = { (error) in
+    print(error.localizedDescription)
+}
+```
+
+### Event: onErrorResponse
+The ```onErrorResponse``` event is emitted whenever a message is sent to the user with an error status code.
+
+```swift
+options.onErrorResponse = { (responseError) in
+  print("\(responseError.message) \n \(responseError.code)")
+}
+```
+
+### Event: onClose
+The ```onClose``` event is emitted whenever the socket connection closes.
+
+```swift
+options.onClose = { (error) in
+    if let err = error {
+        print(err.localizedDescription)
+    } else {
+        print("Session is closed")
+    }
+}
+```
+
 ## Cogs Pub/Sub Service
-Create a ```PubSubService``` object to obtain a connection handle. The created ```PubSubConnectionHandle``` object creates and initializes a web socket but doesn't establish a connection until its own ```connect``` method is called. The reason is that event handlers should be set before that.  
+
+Create a ```PubSubService``` object to obtain a connection handle. The created ```PubSubConnectionHandle``` object initializes and establishes a web socket connection.
 
 ```swift
 let keys: [String] = ["read key", "write key", "admin key"]
         
+let options = PubSubOptions(url: url,
+                            connectionTimeout: 30,
+                            autoReconnect: true,
+                            minReconnectDelay: 5,
+                            maxReconnectDelay: 300,
+                            maxReconnectAttempts: -1,
+                            onNewSessionHandler: { (sessionUUID) in
+                                print(sessionUUID)
+                            },
+                            onReconnectHandler: {
+                                print("Session is restored")
+                            },
+                            onRawRecordHandler: { (record) in
+                                print (record)
+                            },
+                            onMessageHandler: { (receivedMessage) in
+                                print (receivedMessage)
+                            },
+                            onCloseHandler: { (error) in
+                                if let err = error {
+                                    print(err.localizedDescription)
+                                } else {
+                                    print("Session is closed")
+                                }
+                            },
+                            onErrorHandler: { (error) in
+                                print(error.localizedDescription)
+                            },
+                            onErrorResponseHandler: { (responseError) in
+                                print("\(responseError.message) \n \(responseError.code)")
+                            })
+        
 let pubSubService = PubSubService()
 let connection = pubSubService.connnect(keys: keys,
-                                              options: PubSubOptions(url: url,
-                                                                     timeout: 30,
-                                                                     autoReconnect: true))
+                                     options: options)
 ```
 
 ## Cogs Pub/Sub ConnectionHandle API
 This is a summary of all functions exposed by the ```PubSubConnectionHandle``` object, and examples of their usage.
-
-### connect(sessionUUID:completion:)
-Starts the connection with the websocket. If no ```sessionUUID``` is provided a new connection will be established else the previous session will be restored if possible.
- 
-```swift
-connection.connect(sessionUUID: nil)
-or
-connectionHandler.connect(sessionUUID: "aeabb570-050a-11e7-8ee5-8ff1f5240fbb")
-```
 
 ### getSessionUuid(completion:)
 Fetch the session UUID from the server. The successful result contains the UUID associated with this connection's session.
@@ -220,75 +351,6 @@ Closes the pub/sub connection handle by closing the WebSocket.
 
 ```swift
 connection.close()
-```
-
-## Connection Events
-
-### Event: onRawRecord
-The ```onRawRecord``` event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.
-
-```swift
-connection.onRawRecord = { (record) in
-  print (record)
-}
-```
-
-### Event: onMessage
-The ```onMessage``` event is emitted whenever the socket receives messages from any channel.
-
-```swift
-connection.onMessage = { (receivedMessage) in
-    print (receivedMessage)
-}
-```
-
-### Event: onError
-The ```onError``` event is emitted on any connection errors, failed publishes, or when any exception is thrown.
-
-```swift
-connection.onError = { (error) in
-    print(error.localizedDescription)
-}
-```
-
-### Event: onErrorResponse
-The ```onErrorResponse``` event is emitted whenever a message is sent to the user with an error status code.
-
-```swift
-connection.onErrorResponse = { (responseError) in
-  print("\(responseError.message) \n \(responseError.code)")
-}
-```
-
-### Event: onReconnect
-The ```onReconnect``` event is emitted on socket reconnection if it disconnected for any reason.
-
-```swift
-connection.onReconnect = {
-    print("Session is restored")
-}
-```
-
-### Event: onClose
-The ```onClose``` event is emitted whenever the socket connection closes.
-
-```swift
-connection.onClose = { (error) in
-    if let err = error {
-        print(err.localizedDescription)
-    } else {
-        print("Session is closed")
-    }
-}
-```
-
-### Event: onNewSession
-The ```onNewSession``` event indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.
-
-```swift
-connection.onNewSession = { sessionUUID in
-    print("New session \(sessionUUID) is opened."
-}
 ```
 
 ## Gambit Service

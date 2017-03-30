@@ -82,15 +82,32 @@ public final class PubSubOptions {
     ///   - minReconnectDelay: The initial amount of time the connection waits before attempting to reconnect.
     ///   - maxReconnectDelay: The maximum amount of time the connection waits before attempting to reconnect. Reconnection delay get increased with every attempt until reaching the maximum value.
     ///   - maxReconnectAttempts: The maximum number of reconnection attempts.  -1 signifies infinite tries.
-    public init(url: String?, connectionTimeout: Int?,
-                autoReconnect: Bool?, minReconnectDelay: TimeInterval?,
-                maxReconnectDelay: TimeInterval?, maxReconnectAttempts: Int?) {
-        self.url                  = url ?? defaultURL
-        self.connectionTimeout    = connectionTimeout ?? defaultConnectionTimeout
-        self.autoReconnect        = autoReconnect ?? defaultAutoreconnect
-        self.minReconnectDelay    = minReconnectDelay ?? defaultMinReconnectDelay
-        self.maxReconnectDelay    = maxReconnectDelay ?? defaultMaxReconnectDelay
-        self.maxReconnectAttempts = maxReconnectAttempts ?? defaultMaxReconnectAttempts
+    public init(url: String?,
+                connectionTimeout: Int?,
+                autoReconnect: Bool?,
+                minReconnectDelay: TimeInterval?,
+                maxReconnectDelay: TimeInterval?,
+                maxReconnectAttempts: Int?,
+                onNewSessionHandler: ((String) -> ())? = nil,
+                onReconnectHandler: (() -> ())? = nil,
+                onRawRecordHandler: ((RawRecord) -> ())? = nil,
+                onMessageHandler: ((PubSubMessage) -> ())? = nil,
+                onCloseHandler: ((Error?) -> ())? = nil,
+                onErrorHandler: ((Error) -> ())? = nil,
+                onErrorResponseHandler: ((PubSubErrorResponse) -> ())? = nil) {
+        self.url                    = url ?? defaultURL
+        self.connectionTimeout      = connectionTimeout ?? defaultConnectionTimeout
+        self.autoReconnect          = autoReconnect ?? defaultAutoreconnect
+        self.minReconnectDelay      = minReconnectDelay ?? defaultMinReconnectDelay
+        self.maxReconnectDelay      = maxReconnectDelay ?? defaultMaxReconnectDelay
+        self.maxReconnectAttempts   = maxReconnectAttempts ?? defaultMaxReconnectAttempts
+        self.onNewSessionHandler    = onNewSessionHandler
+        self.onReconnectHandler     = onReconnectHandler
+        self.onRawRecordHandler     = onRawRecordHandler
+        self.onMessageHandler       = onMessageHandler
+        self.onCloseHandler         = onCloseHandler
+        self.onErrorHandler         = onErrorHandler
+        self.onErrorResponseHandler = onErrorResponseHandler
     }
 
     /// Default options configuration
