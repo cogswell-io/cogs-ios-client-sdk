@@ -456,9 +456,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC7CogsSDK13PubSubOptionscFT3urlGSqSS_17connectionTimeoutGSqSi_13autoReconnectGSqSb_17minReconnectDelayGSqSd_17maxReconnectDelayGSqSd_20maxReconnectAttemptsGSqSi__S0_"></a>
-                    <a name="//apple_ref/swift/Method/init(url:connectionTimeout:autoReconnect:minReconnectDelay:maxReconnectDelay:maxReconnectAttempts:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC7CogsSDK13PubSubOptionscFT3urlGSqSS_17connectionTimeoutGSqSi_13autoReconnectGSqSb_17minReconnectDelayGSqSd_17maxReconnectDelayGSqSd_20maxReconnectAttemptsGSqSi__S0_">init(url:connectionTimeout:autoReconnect:minReconnectDelay:maxReconnectDelay:maxReconnectAttempts:)</a>
+                    <a name="/s:FC7CogsSDK13PubSubOptionscFT3urlGSqSS_17connectionTimeoutGSqSi_13autoReconnectGSqSb_17minReconnectDelayGSqSd_17maxReconnectDelayGSqSd_20maxReconnectAttemptsGSqSi_19onNewSessionHandlerGSqFSST__18onReconnectHandlerGSqFT_T__18onRawRecordHandlerGSqFSST__16onMessageHandlerGSqFCS_13PubSubMessageT__14onCloseHandlerGSqFGSqPs5Error__T__14onErrorHandlerGSqFPS2__T__22onErrorResponseHandlerGSqFCS_19PubSubErrorResponseT___S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(url:connectionTimeout:autoReconnect:minReconnectDelay:maxReconnectDelay:maxReconnectAttempts:onNewSessionHandler:onReconnectHandler:onRawRecordHandler:onMessageHandler:onCloseHandler:onErrorHandler:onErrorResponseHandler:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC7CogsSDK13PubSubOptionscFT3urlGSqSS_17connectionTimeoutGSqSi_13autoReconnectGSqSb_17minReconnectDelayGSqSd_17maxReconnectDelayGSqSd_20maxReconnectAttemptsGSqSi_19onNewSessionHandlerGSqFSST__18onReconnectHandlerGSqFT_T__18onRawRecordHandlerGSqFSST__16onMessageHandlerGSqFCS_13PubSubMessageT__14onCloseHandlerGSqFGSqPs5Error__T__14onErrorHandlerGSqFPS2__T__22onErrorResponseHandlerGSqFCS_19PubSubErrorResponseT___S0_">init(url:connectionTimeout:autoReconnect:minReconnectDelay:maxReconnectDelay:maxReconnectAttempts:onNewSessionHandler:onReconnectHandler:onRawRecordHandler:onMessageHandler:onCloseHandler:onErrorHandler:onErrorResponseHandler:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -473,9 +473,19 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="nv">connectionTimeout</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?,</span>
-                <span class="nv">autoReconnect</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">?,</span> <span class="nv">minReconnectDelay</span><span class="p">:</span> <span class="kt">TimeInterval</span><span class="p">?,</span>
-                <span class="nv">maxReconnectDelay</span><span class="p">:</span> <span class="kt">TimeInterval</span><span class="p">?,</span> <span class="nv">maxReconnectAttempts</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span>
+                <span class="nv">connectionTimeout</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?,</span>
+                <span class="nv">autoReconnect</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">?,</span>
+                <span class="nv">minReconnectDelay</span><span class="p">:</span> <span class="kt">TimeInterval</span><span class="p">?,</span>
+                <span class="nv">maxReconnectDelay</span><span class="p">:</span> <span class="kt">TimeInterval</span><span class="p">?,</span>
+                <span class="nv">maxReconnectAttempts</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?,</span>
+                <span class="nv">onNewSessionHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                <span class="nv">onReconnectHandler</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                <span class="nv">onRawRecordHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">RawRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                <span class="nv">onMessageHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubMessage.html">PubSubMessage</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                <span class="nv">onCloseHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">Error</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                <span class="nv">onErrorHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt">Error</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                <span class="nv">onErrorResponseHandler</span><span class="p">:</span> <span class="p">((</span><span class="kt"><a href="../Classes/PubSubErrorResponse.html">PubSubErrorResponse</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -599,7 +609,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-27)</p>
+          <p>&copy; 2017 <a class="link" href="https://cogswell.io" target="_blank" rel="external">Cogswell Inc.</a>. All rights reserved. (Last updated: 2017-03-30)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

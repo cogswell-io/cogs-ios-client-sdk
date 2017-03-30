@@ -3,7 +3,7 @@ import Quick
 import Nimble
 import CogsSDK
 
-class PubSubUnitTests: QuickSpec {
+class PubSubResponseValidationTests: QuickSpec {
     override func spec() {
 
         var url: String!
@@ -32,18 +32,17 @@ class PubSubUnitTests: QuickSpec {
             noWriteKeys = [readKey, adminKey]
         }
 
-        let defaultOptions = PubSubOptions(url: url, connectionTimeout: 30, autoReconnect: true,
-                                           minReconnectDelay: 5, maxReconnectDelay: 300, maxReconnectAttempts: -1)
+        let defaultOptions = PubSubOptions.defaultOptions
 
         describe("Cogs PubSub Service") {
 
             describe("get sessionUUID") {
+
                 it("returns sessionUUID") {
-
-                    let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
-
                     waitUntil(timeout: defaultTimeout) { done in
-                        connectionHandle.connect(sessionUUID: nil) {
+                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                        connectionHandle.onNewSession = { _ in
                             connectionHandle.getSessionUuid() { outcome in
                                 switch outcome {
                                 case .pubSubSuccess(let object):
@@ -61,6 +60,7 @@ class PubSubUnitTests: QuickSpec {
                                     expect(errorResponse.action == PubSubAction.sessionUuid.rawValue).to(beTruthy())
                                     expect(errorResponse.code).toNot(equal(PubSubResponseCode.success.rawValue))
 
+                                    connectionHandle.close()
                                     done()
                                 }
                             }
@@ -73,12 +73,14 @@ class PubSubUnitTests: QuickSpec {
                 let testChannel = "Test"
 
                 describe("subscribe to a channel") {
+
                     context("when read key is supplied") {
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { outcome in
                                         switch outcome {
                                         case .pubSubSuccess(let object):
@@ -94,6 +96,7 @@ class PubSubUnitTests: QuickSpec {
                                             fail("Expected success, got error response")
                                         }
 
+                                        connectionHandle.close()
                                         done()
                                     }
                                 }
@@ -102,11 +105,12 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession =  { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorResponse):
@@ -117,6 +121,7 @@ class PubSubUnitTests: QuickSpec {
                                             fail("Expected error response, got success")
                                         }
 
+                                        connectionHandle.close()
                                         done()
                                     }
                                 }
@@ -127,11 +132,12 @@ class PubSubUnitTests: QuickSpec {
 
                 describe("list subcriptions") {
                     context("when read key is supplied") {
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.listSubscriptions() { outcome in
 
@@ -149,6 +155,7 @@ class PubSubUnitTests: QuickSpec {
                                                 fail("Expected success, got error response")
                                             }
 
+                                            connectionHandle.close()
                                             done()
                                         }
                                     }
@@ -158,11 +165,12 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.listSubscriptions() { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorResponse):
@@ -173,6 +181,7 @@ class PubSubUnitTests: QuickSpec {
                                             fail("Expected error response, got success")
                                         }
 
+                                        connectionHandle.close()
                                         done()
                                     }
                                 }
@@ -182,12 +191,14 @@ class PubSubUnitTests: QuickSpec {
                 }
 
                 describe("unsubscribe from a channel") {
+
                     context("when read key is supplied") {
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.unsubscribe(channel: testChannel) { outcome in
                                             switch outcome {
@@ -203,6 +214,7 @@ class PubSubUnitTests: QuickSpec {
                                                 fail("Expected success, got error response")
                                             }
 
+                                            connectionHandle.close()
                                             done()
                                         }
                                     }
@@ -212,28 +224,36 @@ class PubSubUnitTests: QuickSpec {
 
                         it("returns not found") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.unsubscribe(channel: testChannel) { outcome in
-                                    switch outcome {
-                                    case .pubSubResponseError(let errorResponse):
-                                        expect(errorResponse.action) == PubSubAction.unsubscribe.rawValue
-                                        expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
-                                    default:
-                                        fail("Expected error response, got success")
+                                connectionHandle.onNewSession = { _ in
+                                    connectionHandle.subscribe(channel: UUID().uuidString, messageHandler: nil) { _ in
+                                        connectionHandle.unsubscribe(channel: testChannel) { outcome in
+                                            switch outcome {
+                                            case .pubSubResponseError(let errorResponse):
+                                                expect(errorResponse.action) == PubSubAction.unsubscribe.rawValue
+                                                expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
+
+                                            default:
+                                                fail("Expected error response, got success")
+                                            }
+
+                                            connectionHandle.close()
+                                            done()
+                                        }
                                     }
-
-                                    done()
                                 }
                             }
                         }
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.unsubscribe(channel: testChannel) { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorResponse):
@@ -244,6 +264,7 @@ class PubSubUnitTests: QuickSpec {
                                             fail("Expected error response, got object")
                                         }
 
+                                        connectionHandle.close()
                                         done()
                                     }
                                 }
@@ -253,12 +274,14 @@ class PubSubUnitTests: QuickSpec {
                 }
 
                 describe("unsubscribe from all channels") {
+
                     context("when read key is supplied") {
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
                         it("returns unsubscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: "Test", messageHandler: nil) { _ in
                                         connectionHandle.subscribe(channel: "Test2", messageHandler: nil) { _ in
                                             connectionHandle.unsubscribeAll() { outcome in
@@ -276,6 +299,7 @@ class PubSubUnitTests: QuickSpec {
                                                     fail("Expected success, got error response")
                                                 }
 
+                                                connectionHandle.close()
                                                 done()
                                             }
                                         }
@@ -286,11 +310,12 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when read key is not supplied") {
-                        let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.unsubscribeAll() { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorRespoinse):
@@ -301,6 +326,7 @@ class PubSubUnitTests: QuickSpec {
                                             fail("Expected error response, got object")
                                         }
 
+                                        connectionHandle.close()
                                         done()
                                     }
                                 }
@@ -315,17 +341,14 @@ class PubSubUnitTests: QuickSpec {
                 let testMessage = "Test message"
 
                 describe("publish") {
+
                     context("when write key is supplied") {
-
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
-
-                        afterEach {
-                            connectionHandle.close()
-                        }
 
                         it("returns published message") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
                                     }
@@ -336,6 +359,7 @@ class PubSubUnitTests: QuickSpec {
                                     expect(message.channel) == testChannel
                                     expect(message.message) == testMessage
 
+                                    connectionHandle.close()
                                     done()
                                 }
                             }
@@ -345,32 +369,35 @@ class PubSubUnitTests: QuickSpec {
                             let uniquechannel = UUID().uuidString
 
                             waitUntil { done in
-                                connectionHandle.publishWithAck(channel: uniquechannel, message: testMessage) { outcome in
-                                    switch outcome {
-                                    case .pubSubResponseError(let errorResponse):
-                                        expect(errorResponse.action) == PubSubAction.publish.rawValue
-                                        expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
-                                    default:
-                                        fail("Expected error response, got object")
+                                connectionHandle.onNewSession = { _ in
+                                    connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
+                                        connectionHandle.publishWithAck(channel: uniquechannel, message: testMessage) { outcome in
+                                            switch outcome {
+                                            case .pubSubResponseError(let errorResponse):
+                                                expect(errorResponse.action) == PubSubAction.publish.rawValue
+                                                expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
+
+                                            default:
+                                                fail("Expected error response, got object")
+                                            }
+
+                                            done()
+                                        }
                                     }
-
-                                    done()
                                 }
                             }
                         }
                     }
 
                     context("when write key in not supplied") {
-                        let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
-
-                        afterEach {
-                            connectionHandle.close()
-                        }
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.publish(channel: testChannel, message: testMessage) { error in
 
@@ -378,6 +405,7 @@ class PubSubUnitTests: QuickSpec {
                                             expect(error!.action) == PubSubAction.publish.rawValue
                                             expect(error!.code) == PubSubResponseCode.unauthorised.rawValue
 
+                                            connectionHandle.close()
                                             done()
                                         }
                                     }
@@ -388,16 +416,14 @@ class PubSubUnitTests: QuickSpec {
                 }
 
                 describe("publish with ack") {
-                    context("when write key is supplied") {
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
 
-                        afterEach {
-                            connectionHandle.close()
-                        }
+                    context("when write key is supplied") {
 
                         it("returns success ack") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.publishWithAck(channel: testChannel, message: testMessage) { outcome in
                                             switch outcome {
@@ -413,6 +439,7 @@ class PubSubUnitTests: QuickSpec {
                                                 fail("Expected success, got error response")
                                             }
 
+                                            connectionHandle.close()
                                             done()
                                         }
                                     }
@@ -424,7 +451,9 @@ class PubSubUnitTests: QuickSpec {
                             let uniquechannel = UUID().uuidString
 
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.publishWithAck(channel: uniquechannel, message: testMessage) { outcome in
                                         switch outcome {
                                         case .pubSubResponseError(let errorResponse):
@@ -435,6 +464,7 @@ class PubSubUnitTests: QuickSpec {
                                             fail("Expected error response, got success")
                                         }
 
+                                        connectionHandle.close()
                                         done()
                                     }
                                 }
@@ -443,15 +473,12 @@ class PubSubUnitTests: QuickSpec {
                     }
 
                     context("when write key is not supplied") {
-                        let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
 
-                        afterEach {
-                            connectionHandle.close()
-                        }
-                        
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                connectionHandle.connect(sessionUUID: nil) {
+                                let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
+
+                                connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.publishWithAck(channel: testChannel, message: testMessage) { outcome in
                                             switch outcome {
@@ -462,7 +489,8 @@ class PubSubUnitTests: QuickSpec {
                                             default:
                                                 fail("Expected error response, got success")
                                             }
-                                            
+
+                                            connectionHandle.close()
                                             done()
                                         }
                                     }

@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		529ADC861E730F23009CE0B8 /* PubSubIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC841E730F23009CE0B8 /* PubSubIntegrationTests.swift */; };
-		529ADC871E730F23009CE0B8 /* PubSubUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC851E730F23009CE0B8 /* PubSubUnitTests.swift */; };
+		529ADC861E730F23009CE0B8 /* PubSubFullSweepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */; };
+		529ADC871E730F23009CE0B8 /* PubSubResponseValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC851E730F23009CE0B8 /* PubSubResponseValidationTests.swift */; };
 		6CEB1F620C56EB8FB48B8564 /* Pods_CogsSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51758ACE7E8EB163482AD924 /* Pods_CogsSDK_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -18,8 +18,8 @@
 		46269C81953658C274FC748F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		51758ACE7E8EB163482AD924 /* Pods_CogsSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CogsSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5287BA3F23035CAA2585200A /* Pods-CogsSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CogsSDK_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CogsSDK_Tests/Pods-CogsSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		529ADC841E730F23009CE0B8 /* PubSubIntegrationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubIntegrationTests.swift; sourceTree = "<group>"; };
-		529ADC851E730F23009CE0B8 /* PubSubUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubUnitTests.swift; sourceTree = "<group>"; };
+		529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubFullSweepTests.swift; sourceTree = "<group>"; };
+		529ADC851E730F23009CE0B8 /* PubSubResponseValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubResponseValidationTests.swift; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* CogsSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CogsSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9138231816860894B5AD7FBA /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -79,8 +79,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				529ADC841E730F23009CE0B8 /* PubSubIntegrationTests.swift */,
-				529ADC851E730F23009CE0B8 /* PubSubUnitTests.swift */,
+				529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */,
+				529ADC851E730F23009CE0B8 /* PubSubResponseValidationTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -148,7 +148,7 @@
 				TargetAttributes = {
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						DevelopmentTeam = 8LL4A89AQ4;
+						DevelopmentTeam = F7NE7X9ZFW;
 						LastSwiftMigration = 0820;
 					};
 				};
@@ -194,7 +194,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		4991B8B85185E64D3676F16C /* [CP] Embed Pods Frameworks */ = {
@@ -234,8 +234,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				529ADC871E730F23009CE0B8 /* PubSubUnitTests.swift in Sources */,
-				529ADC861E730F23009CE0B8 /* PubSubIntegrationTests.swift in Sources */,
+				529ADC871E730F23009CE0B8 /* PubSubResponseValidationTests.swift in Sources */,
+				529ADC861E730F23009CE0B8 /* PubSubFullSweepTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,7 +334,7 @@
 			baseConfigurationReference = E712812D7E7B031BA84DF705 /* Pods-CogsSDK_Tests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 8LL4A89AQ4;
+				DEVELOPMENT_TEAM = F7NE7X9ZFW;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -357,7 +357,7 @@
 			baseConfigurationReference = 5287BA3F23035CAA2585200A /* Pods-CogsSDK_Tests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = 8LL4A89AQ4;
+				DEVELOPMENT_TEAM = F7NE7X9ZFW;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

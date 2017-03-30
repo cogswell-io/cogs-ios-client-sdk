@@ -96,13 +96,13 @@ public final class PubSubConnectionHandle {
             self.options           = PubSubOptions.defaultOptions
         }
 
-        self.onNewSession      = options?.onNewSessionHandler
-        self.onReconnect       = options?.onReconnectHandler
-        self.onRawRecord       = options?.onRawRecordHandler
-        self.onMessage         = options?.onMessageHandler
-        self.onClose           = options?.onCloseHandler
-        self.onError           = options?.onErrorHandler
-        self.onErrorResponse   = options?.onErrorResponseHandler
+        self.onNewSession          = self.options.onNewSessionHandler
+        self.onReconnect           = self.options.onReconnectHandler
+        self.onRawRecord           = self.options.onRawRecordHandler
+        self.onMessage             = self.options.onMessageHandler
+        self.onClose               = self.options.onCloseHandler
+        self.onError               = self.options.onErrorHandler
+        self.onErrorResponse       = self.options.onErrorResponseHandler
 
         self.keys                  = keys
         self.currentReconnectDelay = self.options.minReconnectDelay
@@ -157,7 +157,7 @@ public final class PubSubConnectionHandle {
             }
         }
 
-        webSocket.onText = {[weak self] (text: String)  in
+        webSocket.onText = {[weak self] (text: String) in
             guard let weakSelf = self else {return}
             
             weakSelf.onRawRecord?(text)
@@ -222,12 +222,14 @@ public final class PubSubConnectionHandle {
                 weakSelf.onError?(error)
             }
         }
+
+        connect(sessionUUID: nil)
     }
     
     /// Starts connection with the websocket.
     ///
     /// - Parameter sessionUUID: When supplied client session will be restored if possible.
-    public func connect(sessionUUID: String?, completion: (() -> ())? = nil) {
+    private func connect(sessionUUID: String?, completion: (() -> ())? = nil) {
         
         self.sessionUUID = sessionUUID
         self.connectHandler = completion
@@ -286,7 +288,6 @@ public final class PubSubConnectionHandle {
         writeToSocket(params: params)
     }
     
-
     /// Subscribes to a channel.
     ///
     /// The successful result contains a list of the subscribed channels. The connection needs read permissions in order to subscribe to a channel.
@@ -496,7 +497,7 @@ public final class PubSubConnectionHandle {
         }
     }
     
-    @objc private func reconnect() {
+    private func reconnect() {
         self.connect(sessionUUID: self.sessionUUID)
     }
 }
