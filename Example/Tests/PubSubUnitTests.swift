@@ -3,8 +3,8 @@ import Quick
 import Nimble
 import CogsSDK
 
-class PubSubResponseValidationTests: QuickSpec {
-    
+class PubSubUnitTests: QuickSpec {
+
     override func spec() {
         var readKey: String!
         var writeKey: String!
@@ -36,9 +36,9 @@ class PubSubResponseValidationTests: QuickSpec {
 
             describe("get sessionUUID") {
 
-                it("returns sessionUUID") {
+                xit("returns sessionUUID") {
                     waitUntil(timeout: defaultTimeout) { done in
-                        let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                        let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                         let connectionHandle = PubSubService.connect(socket: socket)
                         connectionHandle.onNewSession = { _ in
                             connectionHandle.getSessionUuid() { outcome in
@@ -52,6 +52,7 @@ class PubSubResponseValidationTests: QuickSpec {
                                     }
 
                                     connectionHandle.close()
+                                    
                                     done()
 
                                 case .pubSubResponseError(let errorResponse):
@@ -77,7 +78,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -108,7 +109,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: noReadKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: noReadKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession =  { _ in
@@ -136,7 +137,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -170,7 +171,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: noReadKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: noReadKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -199,7 +200,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns subscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -228,7 +229,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns not found") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -256,7 +257,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: noReadKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: noReadKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -285,7 +286,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns unsubscribed channels list") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -320,7 +321,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: noReadKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: noReadKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -354,7 +355,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns published message") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -378,7 +379,7 @@ class PubSubResponseValidationTests: QuickSpec {
                             let uniquechannel = UUID().uuidString
 
                             waitUntil { done in
-                                let socket = PubSubSocket(keys: noReadKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: noReadKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -406,7 +407,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: noWriteKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: noWriteKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -433,7 +434,7 @@ class PubSubResponseValidationTests: QuickSpec {
 
                         it("returns success ack") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -464,7 +465,7 @@ class PubSubResponseValidationTests: QuickSpec {
                             let uniquechannel = UUID().uuidString
 
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
 
                                 connectionHandle.onNewSession = { _ in
@@ -473,11 +474,11 @@ class PubSubResponseValidationTests: QuickSpec {
                                         case .pubSubResponseError(let errorResponse):
                                             expect(errorResponse.action) == PubSubAction.publish.rawValue
                                             expect(errorResponse.code).to(equal(PubSubResponseCode.notFound.rawValue))
-
+                                            
                                         default:
                                             fail("Expected error response, got success")
                                         }
-
+                                        
                                         connectionHandle.close()
                                         done()
                                     }
@@ -485,14 +486,14 @@ class PubSubResponseValidationTests: QuickSpec {
                             }
                         }
                     }
-
+                    
                     context("when write key is not supplied") {
-
+                        
                         it("returns unauthorised") {
                             waitUntil(timeout: defaultTimeout) { done in
-                                let socket = PubSubSocket(keys: noWriteKeys, options: defaultOptions)
+                                let socket = MockPubSubSocket(keys: noWriteKeys, options: defaultOptions)
                                 let connectionHandle = PubSubService.connect(socket: socket)
-
+                                
                                 connectionHandle.onNewSession = { _ in
                                     connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
                                         connectionHandle.publishWithAck(channel: testChannel, message: testMessage) { outcome in
@@ -504,7 +505,7 @@ class PubSubResponseValidationTests: QuickSpec {
                                             default:
                                                 fail("Expected error response, got success")
                                             }
-
+                                            
                                             connectionHandle.close()
                                             done()
                                         }

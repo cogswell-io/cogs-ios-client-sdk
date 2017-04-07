@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		44164C851E97904F00FF9C7A /* PubSubUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */; };
 		529ADC861E730F23009CE0B8 /* PubSubFullSweepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */; };
 		529ADC871E730F23009CE0B8 /* PubSubResponseValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC851E730F23009CE0B8 /* PubSubResponseValidationTests.swift */; };
 		6CEB1F620C56EB8FB48B8564 /* Pods_CogsSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51758ACE7E8EB163482AD924 /* Pods_CogsSDK_Tests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubUnitTests.swift; sourceTree = "<group>"; };
 		44ABBAE61E77354B007B35D1 /* CogsSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CogsSDK.h; sourceTree = "<group>"; };
 		44ABBAE71E77354B007B35D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		46269C81953658C274FC748F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -79,8 +81,9 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */,
+				44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */,
 				529ADC851E730F23009CE0B8 /* PubSubResponseValidationTests.swift */,
+				529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -235,6 +238,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				529ADC871E730F23009CE0B8 /* PubSubResponseValidationTests.swift in Sources */,
+				44164C851E97904F00FF9C7A /* PubSubUnitTests.swift in Sources */,
 				529ADC861E730F23009CE0B8 /* PubSubFullSweepTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
