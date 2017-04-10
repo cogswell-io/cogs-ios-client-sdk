@@ -1,23 +1,24 @@
 
 import Foundation
+@testable import CogsSDK
 
-public final class MockPubSubSocket: Socket {
+final class MockPubSubSocket: Socket {
 
     private var keys: [String]          = []
     private var channels: [String]      = []
     private let unauthMessage: String   = "Not Authorized"
     private let notFoundMessage: String = "Not Found"
-    public var isConnected: Bool {
+    var isConnected: Bool {
         return true
     }
-    public var options: PubSubOptions
+    var options: PubSubOptions
 
-    public var onConnect: ((Void) -> Void)?
-    public var onDisconnect: ((NSError?) -> Void)?
-    public var onText: ((String) -> Void)?
-    public var onError: ((Error) -> ())?
+    var onConnect: ((Void) -> Void)?
+    var onDisconnect: ((NSError?) -> Void)?
+    var onText: ((String) -> Void)?
+    var onError: ((Error) -> ())?
 
-    public init(keys: [String], options: PubSubOptions?) {
+    init(keys: [String], options: PubSubOptions?) {
         self.keys = keys
         
         if let ops = options {
@@ -27,15 +28,19 @@ public final class MockPubSubSocket: Socket {
         }
     }
 
-    public func connect(_ sessionUUID: String?) {
-        self.onConnect?()
+    func connect(_ sessionUUID: String?) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.onConnect?()
+        }
     }
 
-    public func disconnect() {
-        self.onDisconnect?(nil)
+    func disconnect() {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.onDisconnect?(nil)
+        }
     }
 
-    public func getSessionUUID(_ params: [String: Any]) {
+    func getSessionUUID(_ params: [String: Any]) {
         let response: [String: Any] = [
             "seq": params["seq"] as Any,
             "action": PubSubAction.sessionUuid.rawValue,
@@ -46,7 +51,7 @@ public final class MockPubSubSocket: Socket {
         sendResponse(response)
     }
 
-    public func subscribe(_ params: [String : Any]) {
+    func subscribe(_ params: [String : Any]) {
         var response: [String: Any] = [:]
 
         let readKeyIndex = keys.index(where: { $0.contains("R") })
@@ -73,7 +78,7 @@ public final class MockPubSubSocket: Socket {
         sendResponse(response)
     }
 
-    public func unsubscribe(_ params: [String : Any]) {
+    func unsubscribe(_ params: [String : Any]) {
         var response: [String: Any] = [:]
 
         let readKeyIndex = keys.index(where: { $0.contains("R") })
@@ -113,7 +118,7 @@ public final class MockPubSubSocket: Socket {
         sendResponse(response)
     }
 
-    public func unsubscribeAll(_ params: [String : Any]) {
+    func unsubscribeAll(_ params: [String : Any]) {
         var response: [String: Any] = [:]
 
         let readKeyIndex = keys.index(where: { $0.contains("R") })
@@ -140,7 +145,7 @@ public final class MockPubSubSocket: Socket {
         sendResponse(response)
     }
 
-    public func listSubscriptions(_ params: [String : Any]) {
+    func listSubscriptions(_ params: [String : Any]) {
         var response: [String: Any] = [:]
 
         let readKeyIndex = keys.index(where: { $0.contains("R") })
@@ -165,7 +170,7 @@ public final class MockPubSubSocket: Socket {
         sendResponse(response)
     }
 
-    public func publish(_ params: [String : Any]) {
+    func publish(_ params: [String : Any]) {
         var response: [String: Any] = [:]
 
         let writeKeyIndex = keys.index(where: { $0.contains("W") })
@@ -191,7 +196,7 @@ public final class MockPubSubSocket: Socket {
         sendResponse(response)
     }
 
-    public func publishWithAck(_ params: [String : Any]) {
+    func publishWithAck(_ params: [String : Any]) {
         var response: [String: Any] = [:]
 
         let writeKeyIndex = keys.index(where: { $0.contains("W") })
@@ -233,7 +238,7 @@ public final class MockPubSubSocket: Socket {
 
             let stringResponse = String(NSString(data: jsonData, encoding: String.Encoding.utf8.rawValue)!)
 
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) { 
                 self.onText?(stringResponse)
             }
         } catch {

@@ -54,10 +54,6 @@
 		41DA5B56D7F8AB56DBBF63B7AC1182CD /* ErrorUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62889E8505418A08FE55DB046504684D /* ErrorUtility.swift */; };
 		44164C831E97706D00FF9C7A /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44164C821E97706D00FF9C7A /* Socket.swift */; };
 		44536CC21E964CFF0012A8EF /* PubSubSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44536CC11E964CFF0012A8EF /* PubSubSocket.swift */; };
-		44536CC61E9653200012A8EF /* MockPubSubSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44536CC51E9653200012A8EF /* MockPubSubSocket.swift */; };
-		44AC0D251E8D4C3C003F386B /* GambitRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44AC0D221E8D4C3C003F386B /* GambitRequest.swift */; };
-		44AC0D261E8D4C3C003F386B /* GambitResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44AC0D231E8D4C3C003F386B /* GambitResponse.swift */; };
-		44AC0D271E8D4C3C003F386B /* GambitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44AC0D241E8D4C3C003F386B /* GambitService.swift */; };
 		455F250BB40F941B20FF4BFCA466F920 /* String+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2EAA8C15C9BFCB6852FF16670A6872D /* String+Utils.swift */; };
 		469E9C3ED9FD6009F7C9AAF9E537E212 /* Nimble.h in Headers */ = {isa = PBXBuildFile; fileRef = D2E6D32C79D5365D3EC5F801D9235954 /* Nimble.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49B76F95485B090F12F6A83D1E74F066 /* UInt8+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53FF65324DFB09E02BAA93320EC111C2 /* UInt8+Extension.swift */; };
@@ -71,6 +67,9 @@
 		4FD92749A713E58945796174141C0230 /* PKCS5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F6540143A38442A82E814325F24261 /* PKCS5.swift */; };
 		50B80F12A9BAE302F07F6CF94752F462 /* mach_excServer.c in Sources */ = {isa = PBXBuildFile; fileRef = 72AA75FDBA0809EB98CB51E785EE29FB /* mach_excServer.c */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		5217D72D4B6197446A8B84532C92F7B5 /* Quick-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FAA42C4C085835D52FEB3551ACD4449 /* Quick-dummy.m */; };
+		52735B161E9BCAD1009848DE /* GambitResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52735B131E9BCAD1009848DE /* GambitResponse.swift */; };
+		52735B171E9BCAD1009848DE /* GambitRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52735B141E9BCAD1009848DE /* GambitRequest.swift */; };
+		52735B181E9BCAD1009848DE /* GambitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52735B151E9BCAD1009848DE /* GambitService.swift */; };
 		548EA486918E27AD5186AE22E3828C87 /* Cryptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069F88CF7C2F815FAE3D779B40DBD37D /* Cryptors.swift */; };
 		551440A0F92574039C1D2EB39227D6B8 /* AsyncMatcherWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D13B00E4F0E5AAB86084B235AA88A4 /* AsyncMatcherWrapper.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		599669823A2EED2928C77F301F6B0515 /* BeNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD055970514F505782BFAC4DC96A823E /* BeNil.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
@@ -315,10 +314,6 @@
 		3F987A46AD0D7F135F3D5C0B6A27B8BF /* DigestType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DigestType.swift; path = Sources/CryptoSwift/DigestType.swift; sourceTree = "<group>"; };
 		44164C821E97706D00FF9C7A /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		44536CC11E964CFF0012A8EF /* PubSubSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubSocket.swift; sourceTree = "<group>"; };
-		44536CC51E9653200012A8EF /* MockPubSubSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockPubSubSocket.swift; sourceTree = "<group>"; };
-		44AC0D221E8D4C3C003F386B /* GambitRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitRequest.swift; sourceTree = "<group>"; };
-		44AC0D231E8D4C3C003F386B /* GambitResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitResponse.swift; sourceTree = "<group>"; };
-		44AC0D241E8D4C3C003F386B /* GambitService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitService.swift; sourceTree = "<group>"; };
 		46855CE14EF6CF9612EA416AFDBAC202 /* RandomAccessBlockModeWorker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RandomAccessBlockModeWorker.swift; path = Sources/CryptoSwift/BlockMode/RandomAccessBlockModeWorker.swift; sourceTree = "<group>"; };
 		46EB2C088B59E723FF26C0253CA9896E /* CTR.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CTR.swift; path = Sources/CryptoSwift/BlockMode/CTR.swift; sourceTree = "<group>"; };
 		47F654FA219AE3FA6CB8E10306CD3730 /* CryptoSwift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = CryptoSwift.xcconfig; sourceTree = "<group>"; };
@@ -333,6 +328,9 @@
 		4FCB799212668653E066D828972B99C8 /* BatchedCollection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BatchedCollection.swift; path = Sources/CryptoSwift/BatchedCollection.swift; sourceTree = "<group>"; };
 		51340AAA23BB9C8CA19EC4451374B02B /* RaisesException.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RaisesException.swift; path = Sources/Nimble/Matchers/RaisesException.swift; sourceTree = "<group>"; };
 		521BA1A79B845D5B7A453BAF789AF13D /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		52735B131E9BCAD1009848DE /* GambitResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitResponse.swift; sourceTree = "<group>"; };
+		52735B141E9BCAD1009848DE /* GambitRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitRequest.swift; sourceTree = "<group>"; };
+		52735B151E9BCAD1009848DE /* GambitService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GambitService.swift; sourceTree = "<group>"; };
 		53F41C1EA78AF074F6BCCC82A062441C /* CogsSDK.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = CogsSDK.xcconfig; sourceTree = "<group>"; };
 		53FF65324DFB09E02BAA93320EC111C2 /* UInt8+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UInt8+Extension.swift"; path = "Sources/CryptoSwift/UInt8+Extension.swift"; sourceTree = "<group>"; };
 		54A015532A95B3AB8F56E351BB080D5B /* CwlCatchBadInstruction.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CwlCatchBadInstruction.h; path = Sources/Lib/CwlPreconditionTesting/CwlPreconditionTesting/CwlCatchBadInstruction.h; sourceTree = "<group>"; };
@@ -616,9 +614,9 @@
 		10547FFAEA1BD9D5445EF0B6F6F56F08 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				44AC0D221E8D4C3C003F386B /* GambitRequest.swift */,
-				44AC0D231E8D4C3C003F386B /* GambitResponse.swift */,
-				44AC0D241E8D4C3C003F386B /* GambitService.swift */,
+				52735B131E9BCAD1009848DE /* GambitResponse.swift */,
+				52735B141E9BCAD1009848DE /* GambitRequest.swift */,
+				52735B151E9BCAD1009848DE /* GambitService.swift */,
 				A88DAD1690CFB9B677A25BC10455878D /* AuthKey.swift */,
 				D438CEF4731D6BBEE01A664E442B10F9 /* Date+Utils.swift */,
 				37B1627FC2ECAEFF78C98E647CF8DF16 /* DialectValidator.swift */,
@@ -631,7 +629,6 @@
 				AB7D6B3C66CB831B6B4D0061AD3FE451 /* SocketAuthentication.swift */,
 				B2EAA8C15C9BFCB6852FF16670A6872D /* String+Utils.swift */,
 				44536CC11E964CFF0012A8EF /* PubSubSocket.swift */,
-				44536CC51E9653200012A8EF /* MockPubSubSocket.swift */,
 				44164C821E97706D00FF9C7A /* Socket.swift */,
 			);
 			path = Classes;
@@ -1248,18 +1245,17 @@
 			files = (
 				365C8D5FA0F3073C681B825EF75D302D /* AuthKey.swift in Sources */,
 				F6C552275C5578571E817258B14A69A9 /* CogsSDK-dummy.m in Sources */,
-				44536CC61E9653200012A8EF /* MockPubSubSocket.swift in Sources */,
 				7CDB531FA58F47FFF1FD75DC3AD0009A /* Date+Utils.swift in Sources */,
-				44AC0D251E8D4C3C003F386B /* GambitRequest.swift in Sources */,
-				44AC0D261E8D4C3C003F386B /* GambitResponse.swift in Sources */,
 				9C5FA2684D9FDB0FC3CF07366ECED075 /* DialectValidator.swift in Sources */,
 				FDB85507B04D28034FD074C9167B6276 /* HandlersCache.swift in Sources */,
 				44536CC21E964CFF0012A8EF /* PubSubSocket.swift in Sources */,
 				418AC660618D87E5E360057EF32F4CFB /* PubSubConnectionHandle.swift in Sources */,
 				A4434C84FA2CB20A273DA073DE17002A /* PubSubOptions.swift in Sources */,
 				D3F40A3E4BB4384AF7A127DDCD985EE8 /* PubSubResponse.swift in Sources */,
-				44AC0D271E8D4C3C003F386B /* GambitService.swift in Sources */,
 				681BE492616D9241F948D110F50E3F01 /* PubSubService.swift in Sources */,
+				52735B181E9BCAD1009848DE /* GambitService.swift in Sources */,
+				52735B161E9BCAD1009848DE /* GambitResponse.swift in Sources */,
+				52735B171E9BCAD1009848DE /* GambitRequest.swift in Sources */,
 				44164C831E97706D00FF9C7A /* Socket.swift in Sources */,
 				FF4BB4F66415652535A183EF7F31ADE6 /* Request.swift in Sources */,
 				9A45D7BA07F43675A0890BA694882A7C /* SocketAuthentication.swift in Sources */,

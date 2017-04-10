@@ -1,7 +1,7 @@
 
 import Foundation
 
-public protocol Socket {
+protocol Socket {
 
     var isConnected: Bool { get }
     var options: PubSubOptions { get set }

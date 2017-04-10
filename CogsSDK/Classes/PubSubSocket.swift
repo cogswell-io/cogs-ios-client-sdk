@@ -2,36 +2,23 @@
 import Foundation
 import Starscream
 
-public final class PubSubSocket: Socket {
+final class PubSubSocket: Socket {
 
     private var webSocket: WebSocket
     private var autoReconnect: Bool = false
     private var sequence: Int = 0
-    public var isConnected: Bool {
+    var isConnected: Bool {
         return webSocket.isConnected
     }
 
     private var keys: [String]!
-    public var options: PubSubOptions
+    var options: PubSubOptions
+    var onConnect: ((Void) -> Void)?
+    var onDisconnect: ((NSError?) -> Void)?
+    var onText: ((String) -> Void)?
+    var onError: ((Error) -> ())?
 
-    /// On connect event handler
-    public var onConnect: ((Void) -> Void)?
-
-    /// On disconnect event handler
-    public var onDisconnect: ((NSError?) -> Void)?
-
-    /// On connect event handler
-    public var onText: ((String) -> Void)?
-
-    /// On error event handler
-    public var onError: ((Error) -> ())?
-
-    /// Description
-    ///
-    /// - Parameters:
-    ///   - keys: The provided project keys.
-    ///   - options: The connection options.
-    public init(keys: [String], options: PubSubOptions?) {
+    init(keys: [String], options: PubSubOptions?) {
 
         if let ops = options {
             self.options           = ops
@@ -63,7 +50,7 @@ public final class PubSubSocket: Socket {
         }
     }
 
-    public func connect(_ sessionUUID: String?) {
+    func connect(_ sessionUUID: String?) {
         let headers = SocketAuthentication.authenticate(keys: keys, sessionUUID: sessionUUID)
 
         webSocket.headers["Payload"] = headers.payloadBase64
@@ -72,35 +59,35 @@ public final class PubSubSocket: Socket {
         webSocket.connect()
     }
 
-    public func disconnect() {
+     func disconnect() {
         webSocket.disconnect()
     }
 
-    public func getSessionUUID(_ params: [String: Any]) {
+    func getSessionUUID(_ params: [String: Any]) {
         writeToSocket(params)
     }
 
-    public func subscribe(_ params: [String: Any]) {
+    func subscribe(_ params: [String: Any]) {
         writeToSocket(params)
     }
 
-    public func unsubscribe(_ params: [String : Any]) {
+    func unsubscribe(_ params: [String : Any]) {
         writeToSocket(params)
     }
 
-    public func unsubscribeAll(_ params: [String : Any]) {
+    func unsubscribeAll(_ params: [String : Any]) {
         writeToSocket(params)
     }
 
-    public func listSubscriptions(_ params: [String : Any]) {
+    func listSubscriptions(_ params: [String : Any]) {
         writeToSocket(params)
     }
 
-    public func publish(_ params: [String : Any]) {
+    func publish(_ params: [String : Any]) {
         writeToSocket(params)
     }
 
-    public func publishWithAck(_ params: [String : Any]) {
+    func publishWithAck(_ params: [String : Any]) {
         writeToSocket(params)
     }
 

@@ -1,7 +1,7 @@
 
 import Quick
 import Nimble
-import CogsSDK
+@testable import CogsSDK
 
 class PubSubResponseValidationTests: QuickSpec {
     

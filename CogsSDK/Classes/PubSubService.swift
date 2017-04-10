@@ -22,10 +22,13 @@ public final class PubSubService {
 
     /// Creates and configures a pub/sub connection.
     ///
-    /// - Parameter socket: socket instance
+    /// - Parameters:
+    ///   - keys: The provided project keys.
+    ///   - options: The connection options.
     /// - Returns: Returns a configured pub/sub connection handler to manage the connection.
-    public static func connect(socket: Socket) -> PubSubConnectionHandle {
+    public static func connect(keys: [String], options: PubSubOptions?) -> PubSubConnectionHandle {
+        let socket = PubSubSocket(keys: keys, options: options)
+        
         return PubSubConnectionHandle(socket: socket)
     }
 }
-

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		44164C851E97904F00FF9C7A /* PubSubUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */; };
+		44B44A381E9B9AD800839264 /* PubSubService+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B44A371E9B9AD800839264 /* PubSubService+Extension.swift */; };
+		44B44A3C1E9BA1A000839264 /* MockPubSubSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B44A3B1E9BA1A000839264 /* MockPubSubSocket.swift */; };
 		529ADC861E730F23009CE0B8 /* PubSubFullSweepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */; };
 		529ADC871E730F23009CE0B8 /* PubSubResponseValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC851E730F23009CE0B8 /* PubSubResponseValidationTests.swift */; };
 		6CEB1F620C56EB8FB48B8564 /* Pods_CogsSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51758ACE7E8EB163482AD924 /* Pods_CogsSDK_Tests.framework */; };
@@ -17,6 +19,8 @@
 		44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubUnitTests.swift; sourceTree = "<group>"; };
 		44ABBAE61E77354B007B35D1 /* CogsSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CogsSDK.h; sourceTree = "<group>"; };
 		44ABBAE71E77354B007B35D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		44B44A371E9B9AD800839264 /* PubSubService+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PubSubService+Extension.swift"; sourceTree = "<group>"; };
+		44B44A3B1E9BA1A000839264 /* MockPubSubSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockPubSubSocket.swift; sourceTree = "<group>"; };
 		46269C81953658C274FC748F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		51758ACE7E8EB163482AD924 /* Pods_CogsSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CogsSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5287BA3F23035CAA2585200A /* Pods-CogsSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CogsSDK_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CogsSDK_Tests/Pods-CogsSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -81,6 +85,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				44B44A3B1E9BA1A000839264 /* MockPubSubSocket.swift */,
+				44B44A371E9B9AD800839264 /* PubSubService+Extension.swift */,
 				44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */,
 				529ADC851E730F23009CE0B8 /* PubSubResponseValidationTests.swift */,
 				529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */,
@@ -239,7 +245,9 @@
 			files = (
 				529ADC871E730F23009CE0B8 /* PubSubResponseValidationTests.swift in Sources */,
 				44164C851E97904F00FF9C7A /* PubSubUnitTests.swift in Sources */,
+				44B44A381E9B9AD800839264 /* PubSubService+Extension.swift in Sources */,
 				529ADC861E730F23009CE0B8 /* PubSubFullSweepTests.swift in Sources */,
+				44B44A3C1E9BA1A000839264 /* MockPubSubSocket.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
