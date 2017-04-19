@@ -29,7 +29,6 @@ public enum PubSubOutcome {
     case pubSubSuccess(Any)
 }
 
-
 /// Pub/Sub connection handler
 public final class PubSubConnectionHandle {
 
@@ -37,34 +36,33 @@ public final class PubSubConnectionHandle {
     private var currentReconnectAtempts: Int = 0
     private var autoReconnect: Bool
 
-    private var webSocket : WebSocket
+    private var webSocket : Socket
     private var options: PubSubOptions
-    private var keys: [String]!
     private var sessionUUID: String?
     private var sequence: Int = 0
-    
+
     private let lock = DispatchSemaphore(value: 1)
     private var handlerDispatcher = HandlersCache()
     private var callbackQueue = DispatchQueue.main
 
     private var channelHandlers = [String : (PubSubMessage) -> ()]()
     private var connectHandler: (() -> ())?
-    
+
     /// New session event handler.
     ///
     /// Indicates that the session associated with this connection is not a resumed session, therefore there are no subscriptions associated with this session. If there had been a previous session and the connection was replaced by an auto-reconnect, the previous session was not restored resulting in all subscriptions being lost.
     public var onNewSession: ((String) -> ())?
-    
+
     /// Reconnect event handler.
     ///
     /// The event is emitted on socket reconnection if it is disconnected for any reason.
     public var onReconnect: (() -> ())?
-    
+
     /// Raw record event handler.
     ///
     /// The event is emitted for every raw record received from the server, whether a response to a request or a message. This is mostly useful for debugging issues with server communication.
     public var onRawRecord: ((RawRecord) -> ())?
-    
+
     /// Message event handler.
     ///
     /// The event is emitted whenever the socket receives messages from any channel.
@@ -72,12 +70,12 @@ public final class PubSubConnectionHandle {
 
     /// Close event handler
     public var onClose: ((Error?) -> ())?
-    
+
     /// General error event handler.
     ///
     /// The event is emitted on any connection errors, failed publishes, or when any exception is thrown.
     public var onError: ((Error) -> ())?
-    
+
     /// Response error event handler.
     ///
     /// The event is emitted whenever a message is sent to the user with an error status code.
@@ -85,16 +83,11 @@ public final class PubSubConnectionHandle {
 
     /// Initializes and returns a connection handler.
     ///
-    /// - Parameters:
-    ///   - keys: The provided project keys
-    ///   - options: The connection options.
-    public init(keys: [String], options: PubSubOptions?) {
+    /// - Parameter socket: Socket instance
+    init(socket: Socket) {
 
-        if let ops = options {
-            self.options           = ops
-        } else {
-            self.options           = PubSubOptions.defaultOptions
-        }
+        self.webSocket = socket
+        self.options   = socket.options
 
         self.onNewSession          = self.options.onNewSessionHandler
         self.onReconnect           = self.options.onReconnectHandler
@@ -104,26 +97,22 @@ public final class PubSubConnectionHandle {
         self.onError               = self.options.onErrorHandler
         self.onErrorResponse       = self.options.onErrorResponseHandler
 
-        self.keys                  = keys
-        self.currentReconnectDelay = self.options.minReconnectDelay
-        self.autoReconnect         = self.options.autoReconnect
+        self.currentReconnectDelay = socket.options.minReconnectDelay
+        self.autoReconnect         = socket.options.autoReconnect
 
-        webSocket                  = WebSocket(url: URL(string: self.options.url)!)
-        webSocket.timeout          = self.options.connectionTimeout
-        
         webSocket.onConnect = { [weak self] in
-            guard let weakSelf = self else {return}
-            
+            guard let weakSelf = self else { return }
+
             weakSelf.connectHandler?()
             weakSelf.autoReconnect         = weakSelf.options.autoReconnect
             weakSelf.currentReconnectDelay = weakSelf.options.minReconnectDelay
             weakSelf.currentReconnectAtempts = 0
-            weakSelf.getSessionUuid{ _ in }
+            weakSelf.getSessionUuid { _ in }
         }
-        
+
         webSocket.onDisconnect = {[weak self] (error: NSError?) in
-            guard let weakSelf = self else {return}
-            
+            guard let weakSelf = self else { return }
+
             if let err = error, err.code != 1000 {
                 weakSelf.onClose?(error)
             } else {
@@ -157,15 +146,21 @@ public final class PubSubConnectionHandle {
             }
         }
 
+        webSocket.onError = { [weak self] (error: Error) in
+            guard let weakSelf = self else { return }
+
+            weakSelf.onError?(error)
+        }
+
         webSocket.onText = {[weak self] (text: String) in
-            guard let weakSelf = self else {return}
-            
+            guard let weakSelf = self else { return }
+
             weakSelf.onRawRecord?(text)
-            
+
             DialectValidator.parseAndAutoValidate(record: text) { json, error, responseError in
                 var seq: Int?
                 var response: PubSubResponse?
-                
+
                 if let error = error {
                     weakSelf.onError?(error)
                 } else if let respError = responseError {
@@ -175,7 +170,7 @@ public final class PubSubConnectionHandle {
                     do {
                         response = try PubSubResponse(json: j)
                         seq = response?.seq
-   
+
                         if let sessionUUID = response?.uuid {
                             if sessionUUID == weakSelf.sessionUUID {
                                 weakSelf.onReconnect?()
@@ -195,11 +190,11 @@ public final class PubSubConnectionHandle {
                         }
                     }
                 }
-                
+
                 // call method's completion handler
                 weakSelf.callbackQueue.async { [weak self] in
                     guard let weakSelf = self else { return }
-                    
+
                     if let sequence = seq, let completion = weakSelf.handlerDispatcher.object(forKey: sequence),
                         let closure = completion.closure {
                         completion.completed = true
@@ -209,7 +204,7 @@ public final class PubSubConnectionHandle {
                 }
             }
         }
-        
+
         handlerDispatcher.dispose = {[weak self] handler, sequence in
             guard let weakSelf = self else { return }
 
@@ -217,7 +212,7 @@ public final class PubSubConnectionHandle {
                 if let closure = handler.closure {
                     closure(nil, PubSubErrorResponse(code: Int(101), message: "Timeout awaiting response to sequence \(sequence)"))
                 }
-                
+
                 let error = NSError(domain: "CogsSDKError - Timeout", code: Int(101), userInfo: [NSLocalizedDescriptionKey: "Timeout awaiting response to sequence \(sequence)"])
                 weakSelf.onError?(error)
             }
@@ -225,21 +220,16 @@ public final class PubSubConnectionHandle {
 
         connect(sessionUUID: nil)
     }
-    
+
     /// Starts connection with the websocket.
     ///
     /// - Parameter sessionUUID: When supplied client session will be restored if possible.
     private func connect(sessionUUID: String?, completion: (() -> ())? = nil) {
-        
+
         self.sessionUUID = sessionUUID
         self.connectHandler = completion
-        
-        let headers = SocketAuthentication.authenticate(keys: keys, sessionUUID: self.sessionUUID)
-        
-        webSocket.headers["Payload"] = headers.payloadBase64
-        webSocket.headers["PayloadHMAC"] = headers.payloadHmac
-        
-        webSocket.connect()
+
+        webSocket.connect(sessionUUID)
     }
 
     /// Drops connection.
@@ -250,8 +240,8 @@ public final class PubSubConnectionHandle {
             handlerDispatcher.removeAllObjects()
         }
     }
-    
-    ///  Disconnects from the websocket.
+
+    /// Disconnects from the websocket.
     public func close() {
         if webSocket.isConnected {
             self.autoReconnect = false
@@ -260,14 +250,14 @@ public final class PubSubConnectionHandle {
             handlerDispatcher.removeAllObjects()
         }
     }
-    
+
     /// Get session UUID.
     ///
     /// - Parameter completion: The closure called when the `getSessionUuid` is complete.
     public func getSessionUuid(completion: @escaping (PubSubOutcome) -> ()) {
-        
+
         let seq = incrementSequence()
-        
+
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
                 completion(PubSubOutcome.pubSubResponseError(err))
@@ -277,33 +267,33 @@ public final class PubSubConnectionHandle {
                 }
             }
         }
-        
+
         handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
-        
+
         let params: [String: Any] = [
             "seq": seq ,
-            "action": "session-uuid"
+            "action": PubSubAction.sessionUuid.rawValue
         ]
 
-        writeToSocket(params: params)
+        webSocket.getSessionUUID(params)
     }
-    
+
     /// Subscribes to a channel.
     ///
     /// The successful result contains a list of the subscribed channels. The connection needs read permissions in order to subscribe to a channel.
     ///
     /// - Parameters:
-    ///   - channel: The chanel name.
-    ///   - messageHandler: The channel specific handler which will be called with each message received from this channel.    
+    ///   - channel: The channel name.
+    ///   - messageHandler: The channel specific handler which will be called with each message received from this channel.
     ///   - completion: The closure called when the `subscribe` is complete.
     public func subscribe(channel: String, messageHandler: ((PubSubMessage) -> ())?, completion: @escaping (PubSubOutcome) -> ()) {
-        
+
         let seq = incrementSequence()
-        
+
         if let msgHandler = messageHandler {
             channelHandlers[channel] = msgHandler
         }
-        
+
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
                 channelHandlers.removeValue(forKey: channel)
@@ -314,18 +304,18 @@ public final class PubSubConnectionHandle {
                 }
             }
         }
-        
+
         handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
-        
+
         let params: [String: Any] = [
             "seq": sequence,
-            "action": "subscribe",
+            "action": PubSubAction.subscribe.rawValue,
             "channel": channel
         ]
 
-        writeToSocket(params: params)
+        webSocket.subscribe(params)
     }
-    
+
     /// Unsubscribes from a channel.
     ///
     /// The successful result contains an array with currently subscribed channels without the channel just unsubscribed from. The connection needs read permission in order to unsubscribe from the channel.
@@ -334,9 +324,9 @@ public final class PubSubConnectionHandle {
     ///   - channel: The name of the channel to unsubscribe from.
     ///   - completion: The closure called when the `unsubscribe` is complete.
     public func unsubscribe(channel: String, completion: @escaping (PubSubOutcome) -> ()) {
-        
+
         let seq = incrementSequence()
-        
+
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
                 completion(PubSubOutcome.pubSubResponseError(err))
@@ -347,27 +337,27 @@ public final class PubSubConnectionHandle {
                 }
             }
         }
-        
+
         handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
 
         let params: [String: Any] = [
             "seq": sequence,
-            "action": "unsubscribe",
+            "action": PubSubAction.unsubscribe.rawValue,
             "channel": channel
         ]
 
-        writeToSocket(params: params)
+        webSocket.unsubscribe(params)
     }
-    
+
     /// Unsubscribes from all channels
     ///
     /// The successful result should be an empty array. The connection needs read permission in order to unsubscribe from all channels.
     ///
     /// - Parameter completion: The closure called when the `unsubscribeAll` is complete.
     public func unsubscribeAll(completion: @escaping (PubSubOutcome) -> ()) {
-        
+
         let seq = incrementSequence()
-        
+
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
                 completion(PubSubOutcome.pubSubResponseError(err))
@@ -378,26 +368,26 @@ public final class PubSubConnectionHandle {
                 }
             }
         }
-        
+
         handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
 
         let params: [String: Any] = [
             "seq": sequence,
-            "action": "unsubscribe-all"
+            "action": PubSubAction.unsubscribeAll.rawValue
         ]
 
-        writeToSocket(params: params)
+        webSocket.unsubscribeAll(params)
     }
-    
+
     /// Gets all subscriptions.
     ///
     /// The successful result contains an array with currently subscribed channels.
     ///
     /// - Parameter completion: The closure called when the `listSubscriptions` is complete.
     public func listSubscriptions(completion: @escaping (PubSubOutcome) -> ()) {
-        
+
         let seq = incrementSequence()
-        
+
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
                 completion(PubSubOutcome.pubSubResponseError(err))
@@ -407,19 +397,19 @@ public final class PubSubConnectionHandle {
                 }
             }
         }
-        
+
         handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
-        
+
         let params: [String: Any] = [
             "seq": sequence,
-            "action": "subscriptions"
+            "action": PubSubAction.subscriptions.rawValue
         ]
 
-        writeToSocket(params: params)
+        webSocket.listSubscriptions(params)
     }
-    
-    /// Publishes a message to a channel. 
-    /// 
+
+    /// Publishes a message to a channel.
+    ///
     /// The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
     ///
     /// - Parameters:
@@ -430,18 +420,18 @@ public final class PubSubConnectionHandle {
 
         let seq = incrementSequence()
         handlerDispatcher.setObject(Handler(errorHandler), forKey: seq)
-        
+
         let params: [String: Any] = [
             "seq": sequence,
-            "action": "pub",
+            "action": PubSubAction.publish.rawValue,
             "chan": channel,
             "msg": message
         ]
 
-        writeToSocket(params: params)
+        webSocket.publish(params)
     }
 
-    /// Publishes a message to a channel with acknowledgement. 
+    /// Publishes a message to a channel with acknowledgement.
     ///
     /// The connection must have write permissions to successfully publish a message. The message string is limited to 64KiB. Messages that exceed this limit will result in the termination of the websocket connection.
     ///
@@ -450,9 +440,9 @@ public final class PubSubConnectionHandle {
     ///   - message: The message to publish.
     ///   - completion: The closure called when the `publishWithAck` is complete.
     public func publishWithAck(channel: String, message: String, completion: @escaping (PubSubOutcome) -> ()) {
-        
+
         let seq = incrementSequence()
-        
+
         func completionHandler(response: PubSubResponse?, error: PubSubErrorResponse?) -> (){
             if let err = error {
                 completion(PubSubOutcome.pubSubResponseError(err))
@@ -462,39 +452,25 @@ public final class PubSubConnectionHandle {
                 }
             }
         }
-        
+
         handlerDispatcher.setObject(Handler(completionHandler), forKey: seq)
-        
+
         let params: [String: Any] = [
             "seq": sequence,
-            "action": "pub",
+            "action": PubSubAction.publish.rawValue,
             "chan": channel,
             "msg": message,
             "ack": true
         ]
-        
-        writeToSocket(params: params)
+
+        webSocket.publishWithAck(params)
     }
-    
+
     private func incrementSequence() -> Int {
         lock.wait()
         defer { lock.signal() }
         sequence += 1
         return sequence
-    }
-
-    private func writeToSocket(params: [String: Any]) {
-        guard webSocket.isConnected else {
-            self.onError?(NSError(domain: WebSocket.ErrorDomain, code: Int(100), userInfo: [NSLocalizedDescriptionKey: "Web socket is disconnected"]))
-            return
-        }
-        
-        do {
-            let data: Data = try JSONSerialization.data(withJSONObject: params, options: .init(rawValue: 0))
-            webSocket.write(data: data)
-        } catch {
-            self.onError?(error)
-        }
     }
     
     private func reconnect() {

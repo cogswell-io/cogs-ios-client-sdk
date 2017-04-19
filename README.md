@@ -229,8 +229,7 @@ let options = PubSubOptions(url: url,
                                 print("\(responseError.message) \n \(responseError.code)")
                             })
         
-let pubSubService = PubSubService()
-let connection = pubSubService.connnect(keys: keys,
+let connection = PubSubService.connnect(keys: keys,
                                      options: options)
 ```
 

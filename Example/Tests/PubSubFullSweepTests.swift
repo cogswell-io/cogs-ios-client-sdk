@@ -1,10 +1,10 @@
-// https://github.com/Quick/Quick
 
 import Quick
 import Nimble
-import CogsSDK
+@testable import CogsSDK
 
 class PubSubFullSweepTests: QuickSpec {
+    
     override func spec() {
         let testChannel = "Test channel"
         let testMessage = "Test message"
@@ -60,7 +60,8 @@ class PubSubFullSweepTests: QuickSpec {
 
             it("pubsub successfully connects, subscribes, lists subscribtions, publishes and receives message, closes the connection") {
                 waitUntil(timeout: defaultTimeout) { done in
-                    let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                    let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                    let connectionHandle = PubSubService.connect(socket: socket)
 
                     connectionHandle.onNewSession = { _ in
                         connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { outcome in
@@ -146,7 +147,8 @@ class PubSubFullSweepTests: QuickSpec {
 
             it("pubsub successfully interacts with two clients (each client connects, subscribes, publishes message, receives message)") {
                 waitUntil(timeout: defaultTimeout) { done in
-                    let clientOneConnectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                    let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                    let clientOneConnectionHandle = PubSubService.connect(socket: socket)
 
                     clientOneConnectionHandle.onNewSession = { _ in
                         clientOneConnectionHandle.subscribe(channel: testChannel, messageHandler: { message in
@@ -190,7 +192,8 @@ class PubSubFullSweepTests: QuickSpec {
                 }
 
                 waitUntil(timeout: defaultTimeout) { done in
-                    let clientTwoConnectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                    let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                    let clientTwoConnectionHandle = PubSubService.connect(socket: socket)
 
                     clientTwoConnectionHandle.onNewSession = { _ in
                         clientTwoConnectionHandle.subscribe(channel: testChannel, messageHandler: { message in
@@ -241,7 +244,8 @@ class PubSubFullSweepTests: QuickSpec {
                 var sessionUUID: String!
 
                 waitUntil(timeout: 15) { done in
-                    let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                    let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                    let connectionHandle = PubSubService.connect(socket: socket)
 
                     connectionHandle.onNewSession = { _ in
                         getSessionUUID(connectionHandle) { uuid in
@@ -267,7 +271,8 @@ class PubSubFullSweepTests: QuickSpec {
                 var sessionUuid: String?
 
                 waitUntil(timeout: 310) { done in
-                    let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                    let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                    let connectionHandle = PubSubService.connect(socket: socket)
 
                     connectionHandle.onNewSession = { uuid in
                         if sessionUuid != nil {
@@ -290,7 +295,8 @@ class PubSubFullSweepTests: QuickSpec {
 
             it("returns the same uuid when session is restored") {
                 waitUntil(timeout: 15) { done in
-                    let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                    let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                    let connectionHandle = PubSubService.connect(socket: socket)
 
                     connectionHandle.onNewSession = { _ in
                         getSessionUUID(connectionHandle) { oldUuid in
@@ -318,7 +324,8 @@ class PubSubFullSweepTests: QuickSpec {
 
                 it("receives text record") {
                     waitUntil(timeout: defaultTimeout) { done in
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                        let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(socket: socket)
 
                         connectionHandle.onNewSession = { _ in
                             connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
@@ -340,7 +347,8 @@ class PubSubFullSweepTests: QuickSpec {
 
                 it("receives only message records") {
                     waitUntil(timeout: defaultTimeout) { done in
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                        let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(socket: socket)
 
                         connectionHandle.onNewSession = { _ in
                             connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in
@@ -367,7 +375,8 @@ class PubSubFullSweepTests: QuickSpec {
 
                     it("emits error response record") {
                         waitUntil(timeout: defaultTimeout) { done in
-                            let connectionHandle = PubSubService.connect(keys: noReadKeys, options: defaultOptions)
+                            let socket = PubSubSocket(keys: noReadKeys, options: defaultOptions)
+                            let connectionHandle = PubSubService.connect(socket: socket)
 
                             connectionHandle.onNewSession = { _ in
                                 connectionHandle.subscribe(channel: testChannel, messageHandler: nil) { _ in }
@@ -399,7 +408,8 @@ class PubSubFullSweepTests: QuickSpec {
 
                     it("emits error response record") {
                         waitUntil(timeout: defaultTimeout) { done in
-                            let connectionHandle = PubSubService.connect(keys: noWriteKeys, options: defaultOptions)
+                            let socket = PubSubSocket(keys: noWriteKeys, options: defaultOptions)
+                            let connectionHandle = PubSubService.connect(socket: socket)
 
                             connectionHandle.onNewSession = { _ in
                                 connectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
@@ -431,7 +441,8 @@ class PubSubFullSweepTests: QuickSpec {
 
                 it("emits reconnect event") {
                     waitUntil(timeout: 15) { done in
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                        let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(socket: socket)
 
                         connectionHandle.onNewSession = { _ in
                             connectionHandle.dropConnection()
@@ -459,7 +470,8 @@ class PubSubFullSweepTests: QuickSpec {
                     var isEmitting: Bool = false
 
                     waitUntil(timeout: defaultTimeout) { done in
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                        let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(socket: socket)
 
                         connectionHandle.onNewSession = { _ in
                             connectionHandle.close()
@@ -487,7 +499,8 @@ class PubSubFullSweepTests: QuickSpec {
                     var isEmitting: Bool = false
 
                     waitUntil(timeout: defaultTimeout) { done in
-                        let connectionHandle = PubSubService.connect(keys: allKeys, options: defaultOptions)
+                        let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
+                        let connectionHandle = PubSubService.connect(socket: socket)
                         
                         connectionHandle.onNewSession = { _ in
                             isEmitting = true
