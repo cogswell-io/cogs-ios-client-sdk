@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		44164C851E97904F00FF9C7A /* PubSubUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */; };
+		441BE8B11EB796CC008F7004 /* Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 441BE8B01EB796CC008F7004 /* Keys.plist */; };
 		44B44A381E9B9AD800839264 /* PubSubService+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B44A371E9B9AD800839264 /* PubSubService+Extension.swift */; };
 		44B44A3C1E9BA1A000839264 /* MockPubSubSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44B44A3B1E9BA1A000839264 /* MockPubSubSocket.swift */; };
 		529ADC861E730F23009CE0B8 /* PubSubFullSweepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529ADC841E730F23009CE0B8 /* PubSubFullSweepTests.swift */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PubSubUnitTests.swift; sourceTree = "<group>"; };
+		441BE8B01EB796CC008F7004 /* Keys.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Keys.plist; sourceTree = "<group>"; };
 		44ABBAE61E77354B007B35D1 /* CogsSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CogsSDK.h; sourceTree = "<group>"; };
 		44ABBAE71E77354B007B35D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		44B44A371E9B9AD800839264 /* PubSubService+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PubSubService+Extension.swift"; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				441BE8B01EB796CC008F7004 /* Keys.plist */,
 				44B44A3B1E9BA1A000839264 /* MockPubSubSocket.swift */,
 				44B44A371E9B9AD800839264 /* PubSubService+Extension.swift */,
 				44164C841E97904F00FF9C7A /* PubSubUnitTests.swift */,
@@ -185,6 +188,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				441BE8B11EB796CC008F7004 /* Keys.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

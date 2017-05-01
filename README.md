@@ -604,8 +604,8 @@ cogsService.message(messageRequest) { dat, rsp, err in
 ```
 
 ## PubSub Tests
-- Drag the ```Keys.plist``` file into the project pane in Xcode and add it to the ```CogsSDK_Tests``` target. Check ```Copy items if needed```
-- Go to the Test navigator in Xcode
+- Locate the ```Keys.plist``` file from the ```Tests``` folder in the project pane in Xcode and populate ```adminKey```, ```readKey``` and ```writeKey``` with your own keys
+- Go to the Test navigator in Xcode (the rhombus icon among the buttons on the top)
 - Expand ```CogsSDK_Tests``` and select test class or single test to run
 - Click on the play button to the right
 
