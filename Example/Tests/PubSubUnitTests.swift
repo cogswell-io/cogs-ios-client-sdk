@@ -36,10 +36,10 @@ class PubSubUnitTests: QuickSpec {
 
             describe("get sessionUUID") {
 
-                xit("returns sessionUUID") {
+                it("returns sessionUUID") {
                     waitUntil(timeout: defaultTimeout) { done in
                         let socket = MockPubSubSocket(keys: allKeys, options: defaultOptions)
-                        let connectionHandle = PubSubService.connect(socket: socket)
+                        var connectionHandle: PubSubConnectionHandle! = PubSubService.connect(socket: socket)
                         connectionHandle.onNewSession = { _ in
                             connectionHandle.getSessionUuid() { outcome in
                                 switch outcome {
@@ -52,7 +52,7 @@ class PubSubUnitTests: QuickSpec {
                                     }
 
                                     connectionHandle.close()
-                                    
+                                    connectionHandle = nil
                                     done()
 
                                 case .pubSubResponseError(let errorResponse):
@@ -61,6 +61,7 @@ class PubSubUnitTests: QuickSpec {
                                     expect(errorResponse.code).toNot(equal(PubSubResponseCode.success.rawValue))
 
                                     connectionHandle.close()
+                                    connectionHandle = nil
                                     done()
                                 }
                             }
