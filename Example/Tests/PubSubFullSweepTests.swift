@@ -4,7 +4,7 @@ import Nimble
 @testable import CogsSDK
 
 class PubSubFullSweepTests: QuickSpec {
-    
+
     override func spec() {
         let testChannel = "Test channel"
         let testMessage = "Test message"
@@ -36,25 +36,6 @@ class PubSubFullSweepTests: QuickSpec {
         }
 
         let defaultOptions = PubSubOptions.defaultOptions
-
-        func getSessionUUID(_ connectionHandle: PubSubConnectionHandle, completion: @escaping (String) -> Void) {
-            connectionHandle.getSessionUuid() { outcome in
-                switch outcome {
-                case .pubSubSuccess(let object):
-                    if let uuid = object as? String {
-                        expect(uuid).toNot(beNil())
-                        expect(uuid).toNot(beEmpty())
-
-                        completion(uuid)
-                    } else {
-                        fail("Expected String, got \(object)")
-                    }
-
-                default:
-                    fail("Expected success, got error response")
-                }
-            }
-        }
 
         describe("Full Sweep Test") {
 
@@ -117,10 +98,10 @@ class PubSubFullSweepTests: QuickSpec {
 
                                             default:
                                                 fail("Expected success, got error response")
-                                                
+
                                                 done()
                                             }
-                                            
+
                                             connectionHandle.close()
 
                                             connectionHandle.onClose = { (error) in
@@ -245,23 +226,35 @@ class PubSubFullSweepTests: QuickSpec {
 
                 waitUntil(timeout: 15) { done in
                     let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
-                    let connectionHandle = PubSubService.connect(socket: socket)
+                    var connectionHandle: PubSubConnectionHandle! = PubSubService.connect(socket: socket)
 
-                    connectionHandle.onNewSession = { _ in
-                        getSessionUUID(connectionHandle) { uuid in
-                            sessionUUID = uuid
+                    connectionHandle.onNewSession = { uuid in
+                        sessionUUID = uuid
 
-                            connectionHandle.dropConnection()
-                        }
+                        connectionHandle.dropConnection()
                     }
 
                     connectionHandle.onReconnect = {
-                        getSessionUUID(connectionHandle) { uuid in
+                        connectionHandle.getSessionUuid { outcome in
+                            switch outcome {
+                            case .pubSubSuccess(let object):
+                                if let uuid = object as? String {
+                                    expect(uuid).toNot(beNil())
+                                    expect(uuid).toNot(beEmpty())
 
-                            expect(uuid == sessionUUID).to(beTruthy())
+                                    expect(uuid == sessionUUID).to(beTruthy())
 
-                            connectionHandle.close()
-                            done()
+                                    connectionHandle.close()
+                                    connectionHandle = nil
+                                    done()
+
+                                } else {
+                                    fail("Expected String, got \(object)")
+                                }
+
+                            default:
+                                fail("Expected success, got error response")
+                            }
                         }
                     }
                 }
@@ -294,22 +287,36 @@ class PubSubFullSweepTests: QuickSpec {
         describe("Get Session Uuid Test") {
 
             it("returns the same uuid when session is restored") {
+                var oldUuid: String!
+
                 waitUntil(timeout: 15) { done in
                     let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
-                    let connectionHandle = PubSubService.connect(socket: socket)
+                    var connectionHandle: PubSubConnectionHandle! = PubSubService.connect(socket: socket)
 
-                    connectionHandle.onNewSession = { _ in
-                        getSessionUUID(connectionHandle) { oldUuid in
+                    connectionHandle.onNewSession = { uuid in
+                        oldUuid = uuid
+                        connectionHandle.dropConnection()
 
-                            connectionHandle.dropConnection()
+                        connectionHandle.onReconnect = {
+                            connectionHandle.getSessionUuid { outcome in
+                                switch outcome {
+                                case .pubSubSuccess(let object):
+                                    if let newUuid = object as? String {
+                                        expect(newUuid).toNot(beNil())
+                                        expect(newUuid).toNot(beEmpty())
 
-                            connectionHandle.onReconnect = { 
-                                getSessionUUID(connectionHandle) { newUuid in
+                                        expect(oldUuid == newUuid).to(beTruthy())
 
-                                    expect(oldUuid == newUuid).to(beTruthy())
+                                        connectionHandle.close()
+                                        connectionHandle = nil
+                                        done()
 
-                                    connectionHandle.close()
-                                    done()
+                                    } else {
+                                        fail("Expected String, got \(object)")
+                                    }
+
+                                default:
+                                    fail("Expected success, got error response")
                                 }
                             }
                         }
@@ -401,7 +408,7 @@ class PubSubFullSweepTests: QuickSpec {
                         }
                     }
                 }
-                
+
                 context("when write key is not supplied") {
                     var isEmitting: Bool = false
                     var error: PubSubErrorResponse?
@@ -414,7 +421,7 @@ class PubSubFullSweepTests: QuickSpec {
                             connectionHandle.onNewSession = { _ in
                                 connectionHandle.publish(channel: testChannel, message: testMessage) { _ in }
                             }
-                            
+
                             connectionHandle.onErrorResponse = { responseError in
                                 isEmitting = true
                                 error = responseError
@@ -423,19 +430,19 @@ class PubSubFullSweepTests: QuickSpec {
                                 done()
                             }
                         }
-                        
+
                         waitUntil(timeout: 11) { done in
                             expect(isEmitting == true).to(beTruthy())
                             expect(error).toNot(beNil())
                             expect(error!.action == PubSubAction.publish.rawValue).to(beTruthy())
                             expect(error!.code == PubSubResponseCode.unauthorised.rawValue).to(beTruthy())
-                            
+
                             done()
                         }
                     }
                 }
             }
-            
+
             describe("onReconnect Test") {
                 var isEmitting: Bool = false
 
@@ -455,10 +462,10 @@ class PubSubFullSweepTests: QuickSpec {
                             done()
                         }
                     }
-
+                    
                     waitUntil(timeout: 16) { done in
                         expect(isEmitting == true).to(beTruthy())
-
+                        
                         done()
                     }
                 }
@@ -468,18 +475,18 @@ class PubSubFullSweepTests: QuickSpec {
                 
                 it("emits close event") {
                     var isEmitting: Bool = false
-
+                    
                     waitUntil(timeout: defaultTimeout) { done in
                         let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
                         let connectionHandle = PubSubService.connect(socket: socket)
-
+                        
                         connectionHandle.onNewSession = { _ in
                             connectionHandle.close()
                         }
                         
                         connectionHandle.onClose = { (error) in
                             isEmitting = true
-
+                            
                             connectionHandle.close()
                             done()
                         }
@@ -494,17 +501,17 @@ class PubSubFullSweepTests: QuickSpec {
             }
             
             describe("onNewSession Test") {
-
+                
                 it("emits on new session event") {
                     var isEmitting: Bool = false
-
+                    
                     waitUntil(timeout: defaultTimeout) { done in
                         let socket = PubSubSocket(keys: allKeys, options: defaultOptions)
                         let connectionHandle = PubSubService.connect(socket: socket)
                         
                         connectionHandle.onNewSession = { _ in
                             isEmitting = true
-
+                            
                             connectionHandle.close()
                             done()
                         }

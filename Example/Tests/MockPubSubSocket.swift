@@ -20,7 +20,7 @@ final class MockPubSubSocket: Socket {
 
     init(keys: [String], options: PubSubOptions?) {
         self.keys = keys
-        
+
         if let ops = options {
             self.options           = ops
         } else {
@@ -59,7 +59,7 @@ final class MockPubSubSocket: Socket {
         if readKeyIndex != nil {
             self.channels.append(params["channel"] as! String)
 
-             response = [
+            response = [
                 "seq": params["seq"] as Any,
                 "action": PubSubAction.subscribe.rawValue,
                 "code": PubSubResponseCode.success.rawValue,
@@ -176,7 +176,7 @@ final class MockPubSubSocket: Socket {
         let writeKeyIndex = keys.index(where: { $0.contains("W") })
 
         if writeKeyIndex != nil {
-             response = [
+            response = [
                 "id": UUID().uuidString.lowercased(),
                 "action": PubSubAction.message.rawValue,
                 "time": Date().toISO8601,
@@ -237,8 +237,8 @@ final class MockPubSubSocket: Socket {
             let jsonData = try JSONSerialization.data(withJSONObject: response, options: .init(rawValue: 0))
 
             let stringResponse = String(NSString(data: jsonData, encoding: String.Encoding.utf8.rawValue)!)
-
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) { 
+            
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                 self.onText?(stringResponse)
             }
         } catch {
