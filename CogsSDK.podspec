@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'CogsSDK'
-  s.version          = '1.0.14'
+  s.version          = '1.0.15'
   s.summary          = 'CogsSDK is the Swift client SDK of Cogswell publish/subscribe platform.'
 
 # This description is used to generate tags and improve search results.
