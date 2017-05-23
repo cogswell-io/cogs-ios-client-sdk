@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'CogsSDK'
-  s.version          = '1.0.12'
+  s.version          = '1.0.13'
   s.summary          = 'CogsSDK is the Swift client SDK of Cogswell publish/subscribe platform.'
 
 # This description is used to generate tags and improve search results.
@@ -19,10 +19,10 @@ Pod::Spec.new do |s|
         https://cogswell.io
                        DESC
 
-  s.homepage         = 'https://inceptdev.com/divanov/aviata-cogs-ios-client-sdk'
+  s.homepage         = 'https://github.com/cogswell-io/cogs-ios-client-sdk'
   s.license          = { :type => 'Apache', :file => 'LICENSE' }
   s.author           = { 'Aviata Inc.' => 'https://cogswell.io' }
-  s.source           = { :git => 'https://inceptdev.com/divanov/aviata-cogs-ios-client-sdk.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/cogswell-io/cogs-ios-client-sdk.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '9.0'
   s.source_files = 'CogsSDK/Classes/**/*'
