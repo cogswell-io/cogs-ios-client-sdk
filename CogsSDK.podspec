@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/cogswell-io/cogs-ios-client-sdk'
   s.license          = { :type => 'Apache', :file => 'LICENSE' }
   s.author           = { 'Aviata Inc.' => 'https://cogswell.io' }
-  s.source           = { :git => 'https://inceptdev.com/divanov/aviata-cogs-ios-client-sdk.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/cogswell-io/cogs-ios-client-sdk.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '9.0'
   s.source_files = 'CogsSDK/Classes/**/*'
